@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Date, Integer, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 
@@ -14,6 +14,40 @@ class Company(db.Model):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     cif: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
 
+
+
+    employees: Mapped[list["Employee"]] = relationship (
+        "Employee",
+        back_populates = "company",
+        cascade= "all, delete-orphan"
+    )
+
+
+    shifts: Mapped[list["Shifts"]] = relationship (
+        "Shifts",
+        back_populates = "company",
+        cascade= "all, delete-orphan"
+    )
+
+    suggestions: Mapped[list["Suggestions"]] = relationship (
+        "Suggestions",
+        back_populates = "company",
+        cascade= "all, delete-orphan"
+    )
+
+    holidays: Mapped[list["Holidays"]] = relationship (
+        "Holidays",
+        back_populates = "company",
+        cascade = "all, delete-orphan"
+    )
+
+    payrolls: Mapped[list["Payroll"]] = relationship (
+        "Payroll",
+        back_populates = "company",
+        cascade = "all, delete-orphan"
+    )
+
+    
     def serialize(self):
         return {
             "id": self.id,
