@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+*body{
+    background-color: #fff7ee;
+}
+nav{
+    background-color: #a476ff;
+    position: sticky;
+    top: 0;
+    padding: 1rem 2rem;
+    box-shadow: none;
+}
+.Name{
+    color: #ffff;
+    font-family: "Bebas Neue", sans-serif;
+}
