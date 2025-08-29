@@ -81,7 +81,7 @@ def get_employee(id):
 def create_employee():
     data = request.get_json(silent=True)
     if not data:
-        return jsonify({"error": "JSON body requerido"}), 400
+        return jsonify({"error": "JSON body required"}), 400
 
     # company_id requerido y valido
     company_id = data.get("company_id")
@@ -114,3 +114,15 @@ def create_employee():
     db.session.add(new_employee)
     db.session.commit()
     return jsonify(new_employee.serialize()), 201
+
+@api.route("/employees/<int:id>", methods=["PUT"])
+def update_employee(id):
+    employee = db.session.get(Employee, id)
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+    
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "JSON body required"}), 400
+    
+    
