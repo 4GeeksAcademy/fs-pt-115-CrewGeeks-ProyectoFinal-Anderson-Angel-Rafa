@@ -8,7 +8,7 @@ export const Navbar = () => {
 			<nav>
 				<div className="navbar">
 					<a className="Name" href="#">CREWGEEKS</a>
-					<button></button>
+					<button ></button>
 				</div>				
 			</nav>
 		</header>
