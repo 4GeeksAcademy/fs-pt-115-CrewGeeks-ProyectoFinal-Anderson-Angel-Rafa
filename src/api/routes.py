@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Company, Employee, User, Role
+from api.models import db, Company, Employee, Role
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
@@ -93,22 +93,20 @@ def create_employee():
     if role_id and not db.session.get(Role, role_id):
         return jsonify({"error": f"Role id={role_id} no existe"}), 400
 
-    # user_id
-    user_id = data.get("user_id")
-    if user_id and not db.session.get(User, user_id):
-        return jsonify({"error": f"User id={user_id} no existe"}), 400
-
     
+    #hash
+
     new_employee = Employee(
         company_id = company_id,
-        user_id    = user_id,
         first_name = data.get("first_name"),
         last_name  = data.get("last_name"),
         dni        = data.get("dni"),
         address    = data.get("address"),
         seniority  = data.get("seniority"),
         email      = data.get("email"),
-        role_id    = role_id
+        role_id    = role_id,
+        birth      = data.get("birth"),
+        phone      = data.get("phone") 
     )
 
     db.session.add(new_employee)
@@ -126,3 +124,43 @@ def update_employee(id):
         return jsonify({"error": "JSON body required"}), 400
     
     
+    #Validar/actualizar Foreign keys
+    if "company_id" in data:
+        if not db.session.get(Company, data["company_id"]):
+            return jsonify({"error": f"Company id={data["company_id"]} does not exist"}), 400
+        employee.company_id = data["company_id"]
+
+
+    if "role_id" in data:
+        if data["role_id"] and not db.session.get(Role, data["role_id"]):
+            return jsonify({"error": f"Role id={data["role_id"]} does not exist"}), 400
+        employee.role_id = data["role id"]
+
+    #actualizar campos
+    for field in ["first_name", "last_name", "dni", "adress", "seniority", "email", "birth", "phone"]:
+        if field in data:
+            vars(employee)[field] = data[field]
+
+    #re-hash
+
+
+    db.session.commit()
+    return jsonify(employee.serialize()), 200   
+
+
+@api.route("/employees/<int:id>", methods=["DELETE"])
+def delete_employee(id):
+    employee = db.session.get(Employee, id)
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+    
+    db.session.delete(employee)
+    db.session.commit()
+    return jsonify({"message": f"Employee id={id} deleted"}), 200
+        
+
+
+
+        
+
+                              
