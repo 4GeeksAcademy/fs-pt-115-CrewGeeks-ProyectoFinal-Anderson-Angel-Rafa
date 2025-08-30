@@ -10,6 +10,7 @@ db = SQLAlchemy()
 
 class Company(db.Model):
     __tablename__ = "company"
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     cif: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
@@ -69,8 +70,43 @@ class Employee(db.Model):
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     seniority: Mapped[Date] = mapped_column(Date, nullable=False)
     phone: Mapped[str] = mapped_column(String(50), nullable=False)
-    role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), nullable=False)
+    role_id: Mapped[int] = mapped_column(ForeignKey("role.id"), nullable=False)
     # password: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    
+    company: Mapped["Company"] = relationship ("Company", back_populates = "employees")
+    role: Mapped["Role"] = relationship ("Role", back_populates = "employees")
+
+    shifts: Mapped[list["Shifts"]] = relationship (
+        "Shifts",
+        back_populates = "employee",
+        cascade = "all, delete-orphan"
+        )
+    
+    suggestions: Mapped[list["Suggestions"]] = relationship (
+        "Suggestions", 
+        back_populates = "employee",
+        cascade = "all, delete-orphan"
+        )
+
+    holidays: Mapped[list["Holidays"]] = relationship (
+        "Holidays",
+        back_populates = "employee",
+        foreign_keys = ["Holidays.employee_id"],
+        cascade = "all, delete-orphan"
+    )
+
+    approved_holidays: Mapped[list["Holidays"]] = relationship (
+        "Holidays",
+        back_populates = "approved_user",
+        foreign_keys = ["Holidays.approved_user_id"]
+    )
+
+    payrolls: Mapped[list["Payroll"]] = relationship (
+        "Payroll",
+        back_populates = "employee",
+        cascade = "all, delete-orphan"   
+    )
 
     def serialize(self):
         return {
@@ -88,13 +124,16 @@ class Employee(db.Model):
         }
 
 
-class Roles(db.Model):
-    __tablename__ = "roles"
+class Role(db.Model):
+    __tablename__ = "role"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     salary_id: Mapped[int] = mapped_column(ForeignKey("salary.id"), nullable=False)
+
+    salary: Mapped["Salary"] = relationship ("Salary", back_populates = "roles")
+    employees: Mapped[list["Employee"]] = relationship ("Employee", back_populates = "role")
 
     def serialize(self):
         return {
@@ -111,6 +150,12 @@ class Salary(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     amount: Mapped[int] = mapped_column(Integer, nullable=False)
 
+    roles: Mapped[list["Role"]] = relationship (
+        "Role",
+        back_populates = "salary",
+        cascade = "all, delete-orphan"
+    )
+
     def serialize(self):
         return {
             "id": self.id,
@@ -125,7 +170,10 @@ class Payroll(db.Model):
     company_id: Mapped[int] = mapped_column(ForeignKey("company.id"), nullable=False)
     employee_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=False)
     period_year: Mapped[int] = mapped_column(Integer, nullable=False)
-    period_month: Mapped[int] = mapped_column(Integer, nullable=False)  # 1..12
+    period_month: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    company: Mapped["Company"] = relationship ("Company", back_populates = "payrolls")
+    employee: Mapped["Employee"] = relationship ("Employee", back_populates = "payrolls")
 
     def serialize(self):
         return {
@@ -145,6 +193,9 @@ class Shifts(db.Model):
     employee_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=False)
     shift_type: Mapped[str] = mapped_column(String(50), nullable=False)
 
+    company: Mapped["Company"] = relationship ("Company", back_populates = "shifts")
+    employee: Mapped["Employee"] = relationship ("Employee", back_populates = "shifts")
+
     def serialize(self):
         return {
             "id": self.id,
@@ -163,8 +214,20 @@ class Holidays(db.Model):
     start_date: Mapped[Date] = mapped_column(Date, nullable=False)
     end_date: Mapped[Date] = mapped_column(Date, nullable=False)
     status: Mapped[str] = mapped_column(String(255), nullable=False)
-    approved_user_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=False)
+    approved_user_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=True)
     remaining_days: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    company: Mapped["Company"] = relationship ("Company", back_populates = "holidays")
+    employee: Mapped["Employee"] = relationship (
+        "Employee",
+        back_populates = "holidays",
+        foreign_keys = [employee_id]
+    )
+    approved_user: Mapped["Employee"] = relationship (
+        "Employee",
+        back_populates = "approved_holidays",
+        foreign_keys = [approved_user_id]
+    )
 
     def serialize(self):
         return {
@@ -186,6 +249,9 @@ class Suggestions(db.Model):
     company_id: Mapped[int] = mapped_column(ForeignKey("company.id"), nullable=False)
     employee_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=False)
     content: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    company: Mapped["Company"] = relationship ("Company", back_populates = "suggestions")
+    employee: Mapped["Employee"] = relationship ("Employee", back_populates = "suggestions")
 
     def serialize(self):
         return {
