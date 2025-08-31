@@ -21,7 +21,7 @@ nav {
 }
 
 /* Estilo para el nombre principal */
-.Name {
+.title {
   color: #ffffff; 
   font-family: "Bebas Neue", sans-serif;
   font-weight: bold;
@@ -29,7 +29,7 @@ nav {
   text-decoration: none;
 }
 
-.Sub_Name {
+.sub_Title {
   
   text-decoration: none;
   color: #ffffff;
@@ -42,7 +42,7 @@ nav {
 
 }
 
-.Button_Login {
+.button_Login {
   color: #7046aa;
   font-size: 18px;
   padding: 14px 35px;
@@ -56,7 +56,7 @@ nav {
 }
 
 
-.Button_Login::after {
+.button_Login::after {
   content: "";
   position: absolute;
   top: -50px;
@@ -68,7 +68,7 @@ nav {
   transition: transform 0.5s ease;
 }
 
-.Button_Login:hover::after {
+.button_Login:hover::after {
  
   transform: rotate(150deg);
 }
@@ -92,11 +92,11 @@ nav {
   }
 }
 
-.Button_Login:hover {
+.button_Login:hover {
   animation: wideMatrixGlow 2.5s infinite ease-in-out;
   transform: translateY(-4px);
 }
-.Button_Login:focus {
+.button_Login:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(155,108,245,0.6); 
 }
