@@ -454,8 +454,6 @@ def delete_holiday(id):
 
 
 
-
-
 #Suggestions TODAS FUNCIONANDO
 
 @api.route("/suggestions", methods=["GET"])

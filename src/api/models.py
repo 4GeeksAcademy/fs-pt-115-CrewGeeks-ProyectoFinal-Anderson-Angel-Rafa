@@ -7,6 +7,7 @@ db = SQLAlchemy()
 # --------------------
 # Company
 # --------------------
+
 class Company(db.Model):
     __tablename__ = "company"
 
@@ -45,8 +46,9 @@ class Company(db.Model):
 
 
 # --------------------
-# Holidays (antes que Employee para poder referenciar columnas)
+# Holidays
 # --------------------
+
 class Holidays(db.Model):
     __tablename__ = "holidays"
 
@@ -87,6 +89,7 @@ class Holidays(db.Model):
 # --------------------
 # Employee
 # --------------------
+
 class Employee(db.Model):
     __tablename__ = "employee"
 
@@ -118,13 +121,13 @@ class Employee(db.Model):
     holidays: Mapped[list["Holidays"]] = relationship(
         "Holidays",
         back_populates="employee",
-        foreign_keys=[Holidays.employee_id],          # << desambiguado
+        foreign_keys=[Holidays.employee_id],  
         cascade="all, delete-orphan",
     )
     approved_holidays: Mapped[list["Holidays"]] = relationship(
         "Holidays",
         back_populates="approved_user",
-        foreign_keys=[Holidays.approved_user_id],     # << desambiguado
+        foreign_keys=[Holidays.approved_user_id], 
     )
     payrolls: Mapped[list["Payroll"]] = relationship(
         "Payroll",
@@ -151,6 +154,7 @@ class Employee(db.Model):
 # --------------------
 # Role / Salary
 # --------------------
+
 class Role(db.Model):
     __tablename__ = "role"
 
@@ -190,6 +194,7 @@ class Salary(db.Model):
 # --------------------
 # Payroll
 # --------------------
+
 class Payroll(db.Model):
     __tablename__ = "payroll"
 
@@ -215,6 +220,7 @@ class Payroll(db.Model):
 # --------------------
 # Shifts
 # --------------------
+
 class Shifts(db.Model):
     __tablename__ = "shifts"
 
@@ -238,6 +244,7 @@ class Shifts(db.Model):
 # --------------------
 # Suggestions
 # --------------------
+
 class Suggestions(db.Model):
     __tablename__ = "suggestions"
 
