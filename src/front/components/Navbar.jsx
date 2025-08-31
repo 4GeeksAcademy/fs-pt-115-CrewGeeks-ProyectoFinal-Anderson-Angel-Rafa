@@ -7,11 +7,15 @@ export const Navbar = () => {
 		<header>
 			<nav>
 				<div className="navbar">
-					<a className="Name" href="#">CREWGEEKS</a>
-					<button ></button>
-				</div>				
+					<div> 
+						<a className="title" href="#">CREWGEEKS</a>
+						<a className="sub-Title" href="#">Te ayudamos con tu epsacio de trabajo</a>
+					</div>	
+					
+				</div>
+				<button className=" button-Login" >LOG IN</button>
 			</nav>
 		</header>
-		
+
 	);
 };
