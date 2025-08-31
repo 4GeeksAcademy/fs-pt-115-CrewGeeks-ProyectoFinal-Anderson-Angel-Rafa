@@ -19,7 +19,7 @@ api = Blueprint('api', __name__)
 # Allow CORS requests to this API
 CORS(api)
 
-# tabla companies
+# tabla companies funcionando todos los endpoints
 
 
 @api.route("/companies", methods=["GET"])
@@ -70,7 +70,8 @@ def delete_company(id):
     return jsonify(company.serialize()), 200                        
 
 
-#tabla employees
+#tabla employees FUNCIONANDO TODAS
+
 
 @api.route("/employees", methods=["GET"])
 def get_employees():
@@ -142,12 +143,12 @@ def update_employee(id):
     if "role_id" in data:
         if data["role_id"] and not db.session.get(Role, data["role_id"]):
             return jsonify({"error": f"Role id={data["role_id"]} does not exist"}), 400
-        employee.role_id = data["role id"]
+        employee.role_id = data["role_id"]
 
     #actualizar campos
-    for field in ["first_name", "last_name", "dni", "adress", "seniority", "email", "birth", "phone"]:
+    for field in ["first_name", "last_name", "dni", "address", "seniority", "email", "birth", "phone"]:
         if field in data:
-            vars(employee)[field] = data[field]
+            setattr(employee, field, data[field])
 
 
     #re-hash
@@ -167,7 +168,12 @@ def delete_employee(id):
     db.session.commit()
     return jsonify({"message": f"Employee id={id} deleted"}), 200
         
-#roles
+
+
+
+#roles FUNCIONANDO TODAS
+
+
 
 #todos_los_roles
 @api.route("/roles", methods=["GET"])
@@ -185,7 +191,7 @@ def get_role(id):
 
 @api.route("/roles", methods=["POST"])
 def create_role():
-    data = request.get_json(Silent=True)
+    data = request.get_json(silent=True)
     if not data: 
         return jsonify({"error": "JSON body required"}), 400
     
@@ -222,7 +228,7 @@ def update_role(id):
 
     for field in ["name", "description"]:
         if field in data:
-            vars(role, field, data[field])
+            setattr(role, field, data[field])
 
     db.session.commit()
     return jsonify(role.serialize()), 200
@@ -238,7 +244,10 @@ def delete_role(id):
     return jsonify({"message": f"Role id={id} deleted"}), 200
 
 
-#payroll
+
+
+
+#payroll TODAS FUNCIONANDO
 
 #por_id
 @api.route("/payroll/<int:id>", methods=["GET"])
@@ -262,7 +271,7 @@ def create_payroll():
     
     payroll = Payroll(
         company_id=data["company_id"],
-        employee_id=data["empolyee_id"], 
+        employee_id=data["employee_id"], 
         period_year=data["period_year"],
         period_month=data["period_month"]
     )
@@ -278,7 +287,7 @@ def update_payroll(id):
     if not payroll:
         return jsonify({"error": "Payroll not found"}), 404
     
-    data = request.get_son(silent=True)
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "JSON body required"}), 400
     
@@ -302,7 +311,12 @@ def delete_payroll(id):
     return jsonify({"message": "Payroll succesfully deleted"}), 200
 
 
-#shifts 
+
+
+#shifts TODAS FUNCIONANDO
+
+
+
 
 #por_id
 @api.route("/shifts/<int:id>", methods=["GET"])
@@ -321,14 +335,14 @@ def get_all_shifts():
 
 @api.route("/shifts", methods=["POST"])
 def create_shift():
-    data = request.get_son(silent=True)
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "JSON body required"}), 400
 
     shift = Shifts(
         company_id=data["company_id"],
         employee_id=data["employee_id"],
-        shift_id=data["shift_id"]
+        shift_type=data["shift_type"]
     )       
 
     db.session.add(shift)
@@ -363,6 +377,11 @@ def delete_shift(id):
     db.session.commit()
     return jsonify({"error": "Shift succesfully deleted"}), 200
 
+
+
+
+#todos_los_hollidays  TODAS FUNCIONAN
+
 #por_id
 @api.route("/holidays/<int:id>", methods=["GET"])
 def get_holiday(id):
@@ -370,8 +389,6 @@ def get_holiday(id):
     if not holiday:
         return jsonify({"error": "Holidy request not found"}), 404
     return jsonify(holiday.serialize()), 200
-
-#todos_los_hollidays
 
 @api.route("/holidays", methods=["GET"])
 def get_all_holidays():
@@ -433,11 +450,11 @@ def delete_holiday(id):
 
     db.session.delete(holiday)
     db.session.commit()
-    return jsonify({"message": "Holiday eliminado exitosamente"}), 200
+    return jsonify({"message": "Holiday succesfully deleted"}), 200
 
 
 
-#Suggestions
+#Suggestions TODAS FUNCIONANDO
 
 @api.route("/suggestions", methods=["GET"])
 def get_suggestions():
@@ -523,7 +540,10 @@ def delete_suggestions(id):
     return jsonify({"message": f'Suggestion id={id} deleted'}), 200
 
 
-#Salaries
+
+
+
+#Salaries TODAS FUNCIONANDO/ MIRAR LO DEL ID
 
 
 @api.route("/salaries", methods=["GET"])
