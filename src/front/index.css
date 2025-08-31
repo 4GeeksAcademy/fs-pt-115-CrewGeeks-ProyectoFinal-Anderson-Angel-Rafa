@@ -29,7 +29,7 @@ nav {
   text-decoration: none;
 }
 
-.sub_Title {
+.sub-Title {
   
   text-decoration: none;
   color: #ffffff;
@@ -42,7 +42,7 @@ nav {
 
 }
 
-.button_Login {
+.button-Login {
   color: #7046aa;
   font-size: 18px;
   padding: 14px 35px;
@@ -56,7 +56,7 @@ nav {
 }
 
 
-.button_Login::after {
+.button-Login::after {
   content: "";
   position: absolute;
   top: -50px;
@@ -68,7 +68,7 @@ nav {
   transition: transform 0.5s ease;
 }
 
-.button_Login:hover::after {
+.button-Login:hover::after {
  
   transform: rotate(150deg);
 }
@@ -92,11 +92,11 @@ nav {
   }
 }
 
-.button_Login:hover {
+.button-Login:hover {
   animation: wideMatrixGlow 2.5s infinite ease-in-out;
   transform: translateY(-4px);
 }
-.button_Login:focus {
+.button-Login:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(155,108,245,0.6); 
 }

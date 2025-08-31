@@ -9,11 +9,11 @@ export const Navbar = () => {
 				<div className="navbar">
 					<div> 
 						<a className="title" href="#">CREWGEEKS</a>
-						<a className="sub_Title" href="#">Te ayudamos con tu epsacio de trabajo</a>
+						<a className="sub-Title" href="#">Te ayudamos con tu epsacio de trabajo</a>
 					</div>	
 					
 				</div>
-				<button className=" button_Login" >LOG IN</button>
+				<button className=" button-Login" >LOG IN</button>
 			</nav>
 		</header>
 
