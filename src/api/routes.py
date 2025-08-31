@@ -147,7 +147,7 @@ def update_employee(id):
     #actualizar campos
     for field in ["first_name", "last_name", "dni", "adress", "seniority", "email", "birth", "phone"]:
         if field in data:
-        vars(employee)[field] = data[field]
+            vars(employee)[field] = data[field]
 
 
     #re-hash
@@ -437,7 +437,153 @@ def delete_holiday(id):
 
 
 
+#Suggestions
 
+@api.route("/suggestions", methods=["GET"])
+def get_suggestions():
+    suggestions = db.session.query(Suggestions).all()
+    return jsonify([s.serialize() for s in suggestions]), 200
+
+
+@api.route("/suggestions/<int:id>", methods=["GET"])
+def get_suggestions(id):
+    suggestion = db.session.get(Suggestions,id)
+    if not suggestion:
+        return jsonify({"error": "Suggestion not found"}), 404
+    return jsonify(suggestion.serialize()), 200
+
+
+@api.route("/suggestions", methods=["POST"])
+def create_suggestion():
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "JSON body required"}), 400
+    
+    company_id = data.get("company_id")
+    employee_id = data.get("employee_id")
+
+    if not company_id or not db.session.get(Company, company_id):
+        return jsonify ({"error": "company_id invalido"}), 400
+    
+    employee = db.session.get(Employee, employee_id) if employee_id else None
+    if not employee:
+        return jsonify({"error": "employee_id invalido"}), 400
+    if employee.company_id != company_id:
+        return jsonify({"error": "El empleado no pertenece a esta company"}), 400
+    
+    content = data.get("content")
+    if not content:
+        return jsonify({"error": "content requerido"}), 400
+    
+    item = Suggestions(company_id=company_id, employee_id=employee_id, content=content)
+    db.session.add(item)
+    db.session.commit()
+    return jsonify(item.serialize()), 201
+                              
+
+@api.route("/suggestions/<int:id>", methods=["PUT"])
+def update_suggestion(id):
+    suggestion = db.session.get(Suggestions, id)
+    if not suggestion:
+        return jsonify({"error": "Suggestion not found"}), 404
+    
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "JSON body required"}), 400
+    
+    if "company_id" in data:
+        if not db.session.get(Company, data["company_id"]):
+            return jsonify({"error": f'Company id={data["company_id"]} does not exist'}), 400
+        suggestion.company_id = data["company_id"]
+
+    if "employee_id" in data:
+        employee = db.session.get(Employee, data["employee_id"])
+        if not employee:
+            return jsonify({"error": f'Employee id={data["employee_id"]} does not exist'}), 400
+        suggestion.employee_id = data["employee_id"]
+
+    employee = db.session.get(Employee, suggestion.employee_id)
+    if employee.company_id != suggestion.company_id:
+        return jsonify({"error": "El employee no pertenece a esta company"}), 400
+    
+    if "content" in data:
+        suggestion.content = data["content"]
+
+    db.session.commit()
+    return jsonify(suggestion.serialize()), 200
+
+
+@api.route("/suggestions/<int:id>", methods=["DELETE"])
+def delete_suggestions(id):
+    suggestion = db.session.get(Suggestions, id)
+    if not suggestion:
+        return jsonify({"error": "Suggestion not found"}), 404
+    db.session.delete(suggestion)
+    db.session.commit()
+    return jsonify({"message": f'Suggestion id={id} deleted'}), 200
+
+
+#Salaries
+
+
+@api.route("/salaries", methods=["GET"])
+def get_salaries():
+    salaries = db.session.query(Salary).all()
+    return jsonify([s.serialize() for s in salaries]), 200
+
+@api.route("/salaries/<int:id>", methods=["GET"])
+def get_salary(id):
+    salary = db.session.get(Salary, id)
+    if not salary:
+        return jsonify({"error": "Salary not found"}), 404
+    return jsonify(salary.serialize()), 200
+
+@api.route("/salaries", methods=["POST"])
+def create_salary():
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "JSON body required"}), 400
+
+    salary_amount = data.get("amount")
+    try:
+        amount = int(salary_amount)
+    except (TypeError, ValueError):
+        return jsonify({"error": "amount debe ser un entero"}), 400
+
+    if amount <= 0:
+        return jsonify({"error": "amount debe ser mayor que 0"}), 400
+
+    salary = Salary(amount=amount)
+    db.session.add(salary)
+    db.session.commit()
+    return jsonify(salary.serialize()), 201
+
+@api.route("/salaries/<int:id>", methods=["PUT"])
+def update_salary(id):
+    salary = db.session.get(Salary, id)
+    if not salary:
+        return jsonify({"error" : "Salary not found"}), 404
+    
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "JSON body required"}), 400
+    
+    if "amount" in data:
+        salary.amount = data["amount"]
+
+    db.session.commit()
+    return jsonify(salary.serialize()), 200
+
+
+@api.route("/salaries/<int:id>", methods=["DELETE"])
+def delete_salary(id):
+    salary = db.session.get(Salary, id)
+    if not salary:
+        return jsonify({"error": "Salary not found"}), 404
+    
+    db.session.delete(salary)
+    db.session.commit()
+    return jsonify({"msg" : f'Salary id={id} deleted'}), 200
 
 
 
