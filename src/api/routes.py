@@ -272,7 +272,7 @@ def create_payroll():
     return jsonify(payroll.serialize()), 200
 
 
-@api.route("/payroll/<int:id>", metodhs=["PUT"])
+@api.route("/payroll/<int:id>", methods=["PUT"])
 def update_payroll(id): 
     payroll = db.session.get(Payroll, id)
     if not payroll:
@@ -446,7 +446,7 @@ def get_suggestions():
 
 
 @api.route("/suggestions/<int:id>", methods=["GET"])
-def get_suggestions(id):
+def get_suggestion(id):
     suggestion = db.session.get(Suggestions,id)
     if not suggestion:
         return jsonify({"error": "Suggestion not found"}), 404
