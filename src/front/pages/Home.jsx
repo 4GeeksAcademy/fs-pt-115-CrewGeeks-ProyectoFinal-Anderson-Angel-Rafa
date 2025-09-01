@@ -23,7 +23,7 @@ export const Home = () => {
 						<p className="about-p">
 							En CrewGeeks transformamos la gestión de recursos humanos en una experiencia ágil, sencilla y eficiente.
 							<br></br>
-							Ofrecemos una plataforma única para administrar currículums, controlar nóminas, gestionar vacaciones y permisos en un solo lugar.
+							Ofrecemos una plataforma única para administrar empleados, controlar nóminas, gestionar vacaciones y permisos en un solo lugar.
 							<br></br>
 							Nuestro modelo combina tecnología e innovación para que tu empresa ahorre tiempo, reduzca errores y potencie el talento de su equipo.
 							Confiar en CrewGeeks es dar un paso hacia una gestión moderna, automatizada y transparente, donde las personas son el verdadero motor del éxito empresarial.
