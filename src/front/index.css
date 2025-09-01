@@ -1,5 +1,4 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Contrail+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=TASA+Explorer:wght@400..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Contrail+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=TASA+Explorer:wght@400..800&display=swap");
 *,
 *::before,
 *::after {
@@ -54,7 +53,7 @@ nav {
   gap: 16px;
 }
 
-.navbar>div {
+.navbar > div {
   display: flex;
   flex-direction: column;
   line-height: 1;
@@ -72,7 +71,6 @@ nav {
   text-decoration: none;
   letter-spacing: 0.5px;
 }
-
 
 .sub-Name {
   text-decoration: none;
@@ -148,7 +146,6 @@ nav {
 }
 
 .button-Login:focus {
-
   outline: none;
   box-shadow: 0 0 0 3px rgba(155, 108, 245, 0.6);
 }
@@ -233,7 +230,6 @@ nav {
 }
 
 @keyframes slide {
-
   0%,
   20% {
     margin-left: 0;
@@ -316,7 +312,7 @@ nav {
     display: none;
   }
 
-  .menu-toggle:checked~.nav-actions {
+  .menu-toggle:checked ~ .nav-actions {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -326,7 +322,7 @@ nav {
     flex-wrap: wrap;
   }
 
-  .navbar>div {
+  .navbar > div {
     flex: 1 1 auto;
   }
 
