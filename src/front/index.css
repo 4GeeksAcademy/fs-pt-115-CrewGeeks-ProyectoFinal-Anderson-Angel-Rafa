@@ -60,8 +60,12 @@ nav {
   line-height: 1;
 }
 
-.Name {
+/* Estilo para el nombre principal */
+.name {
   color: #ffffff;
+
+
+
   font-family: "Bebas Neue", sans-serif;
   font-weight: 700;
   font-size: clamp(28px, 8vw, 80px);
@@ -69,7 +73,8 @@ nav {
   letter-spacing: 0.5px;
 }
 
-.Sub_Name {
+
+.sub-Name {
   text-decoration: none;
   color: #ffffff;
   font-family: "Contrail One", sans-serif;
@@ -78,8 +83,9 @@ nav {
   opacity: 0.95;
 }
 
+
 /* Botón de acción (login) */
-.Button_Login {
+.button-Login {
   color: var(--purple-900);
   font-size: clamp(14px, 2.6vw, 18px);
   padding: 12px 22px;
@@ -94,7 +100,9 @@ nav {
   backdrop-filter: saturate(120%) blur(2px);
 }
 
-.Button_Login::after {
+
+
+.button-Login::after {
   content: "";
   position: absolute;
   top: -50px;
@@ -106,7 +114,9 @@ nav {
   transition: transform 0.5s ease;
 }
 
-.Button_Login:hover::after {
+
+.button-Login:hover::after {
+  
   transform: rotate(150deg);
 }
 
@@ -132,12 +142,13 @@ nav {
   }
 }
 
-.Button_Login:hover {
+.button-Login:hover {
   animation: wideMatrixGlow 2.5s infinite ease-in-out;
   transform: translateY(-2px);
 }
 
-.Button_Login:focus {
+.button-Login:focus {
+
   outline: none;
   box-shadow: 0 0 0 3px rgba(155, 108, 245, 0.6);
 }
