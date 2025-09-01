@@ -1,60 +1,98 @@
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Contrail+One&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
-body {
-  background-color: #fff7ee;
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Contrail+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=TASA+Explorer:wght@400..800&display=swap');
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-/* Ajustes al contenedor del navbar */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #fffcf9;
+  color: #222;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+:root {
+  --purple: #9b6cf5;
+  --purple-700: #7b55d9;
+  --purple-900: #7046aa;
+  --radius: 28px;
+  --page-pad: clamp(16px, 3vw, 40px);
+}
+
+/* ================= NAVBAR ================= */
 nav {
   background-color: #a476ff;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  height: 125px;
-  padding: 1rem 2rem;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 72px;
+  padding: 0 var(--page-pad);
 }
 
-/* El div que contiene los textos */
-.navbar > div {
+.navbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.navbar>div {
   display: flex;
   flex-direction: column;
-  
+  line-height: 1;
 }
 
-/* Estilo para el nombre principal */
 .Name {
-  color: #ffffff; 
+  color: #ffffff;
   font-family: "Bebas Neue", sans-serif;
-  font-weight: bold;
-  font-size: 5rem;
+  font-weight: 700;
+  font-size: clamp(28px, 8vw, 80px);
   text-decoration: none;
+  letter-spacing: 0.5px;
 }
 
 .Sub_Name {
-  
   text-decoration: none;
   color: #ffffff;
   font-family: "Contrail One", sans-serif;
-
- 
-  margin-top: -30px; 
-  margin-left: 25px;
-  margin-bottom: 17px;
-
+  margin: 0;
+  font-size: clamp(14px, 2.8vw, 24px);
+  opacity: 0.95;
 }
 
+/* Botón de acción (login) */
 .Button_Login {
-  color: #7046aa;
-  font-size: 18px;
-  padding: 14px 35px;
+  color: var(--purple-900);
+  font-size: clamp(14px, 2.6vw, 18px);
+  padding: 12px 22px;
   border-radius: 40px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
   background: transparent;
   z-index: 0;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  backdrop-filter: saturate(120%) blur(2px);
 }
-
 
 .Button_Login::after {
   content: "";
@@ -69,34 +107,381 @@ nav {
 }
 
 .Button_Login:hover::after {
- 
   transform: rotate(150deg);
 }
 
-/* Animación del glow en el hover */
 @keyframes wideMatrixGlow {
   0% {
-    box-shadow: 0 0 10px #fcc5e4, 0 0 10px #fda34b;
+    box-shadow: 0 0 10px #332280, 0 0 10px #9c6ad6;
   }
+
   25% {
-    box-shadow: 0 0 10px #ff7882, 0 0 10px #c8699e;
+    box-shadow: 0 0 10px #725add, 0 0 10px #672ba0;
   }
+
   50% {
     box-shadow: 0 0 10px #7046aa, 0 0 10px #0c1db8;
   }
+
   75% {
     box-shadow: 0 0 10px #020f75, 0 0 10px #7046aa;
   }
+
   100% {
-    box-shadow: 0 0 10px #fcc5e4, 0 0 10px #fda34b;
+    box-shadow: 0 0 10px #872faf, 0 0 10px #355de0;
   }
 }
 
 .Button_Login:hover {
   animation: wideMatrixGlow 2.5s infinite ease-in-out;
-  transform: translateY(-4px);
+  transform: translateY(-2px);
 }
+
 .Button_Login:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(155,108,245,0.6); 
+  box-shadow: 0 0 0 3px rgba(155, 108, 245, 0.6);
+}
+
+/* Toggle menu móvil sin JS (checkbox hack) */
+.menu-toggle {
+  display: none;
+}
+
+.menu-icon {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.menu-icon span {
+  width: 22px;
+  height: 2px;
+  background: #fff;
+  position: relative;
+  display: block;
+}
+
+.menu-icon span::before,
+.menu-icon span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #fff;
+}
+
+.menu-icon span::before {
+  top: -6px;
+}
+
+.menu-icon span::after {
+  top: 6px;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ================= SLIDER ================= */
+.slider-frame {
+  width: min(100%, 1450px);
+  aspect-ratio: 16 / 9;
+  /* mantiene proporción en responsive */
+  margin: clamp(16px, 4vw, 50px) auto 0;
+  overflow: hidden;
+  position: relative;
+  border-radius: 18px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+}
+
+.slider-frame ul {
+  display: flex;
+  padding: 0;
+  margin: 0;
+  width: 400%;
+  animation: slide 16s infinite ease-in-out;
+}
+
+.slider-frame li {
+  list-style: none;
+  flex: 0 0 25%;
+}
+
+.slider-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@keyframes slide {
+
+  0%,
+  20% {
+    margin-left: 0;
+  }
+
+  25%,
+  45% {
+    margin-left: -100%;
+  }
+
+  50%,
+  70% {
+    margin-left: -200%;
+  }
+
+  75%,
+  95% {
+    margin-left: -300%;
+  }
+}
+
+/* ================= ABOUT ME ================= */
+.about-me {
+  padding: clamp(32px, 8vw, 200px) var(--page-pad);
+}
+
+.about-me-wraper {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: clamp(16px, 3vw, 24px);
+  align-items: start;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.about-me-text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.title-About {
+  font-family: "Bebas Neue", sans-serif;
+  margin: 0;
+  font-size: clamp(32px, 6vw, 60px);
+  color: #a476ff;
+}
+
+.about-p {
+  margin: 0;
+  font-size: clamp(14px, 2vw, 20px);
+  line-height: 1.7;
+}
+
+.about-me-img {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
+.about-me-img img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Corregir media query (clase escrita correctamente) */
+@media (max-width: 900px) {
+  nav {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .menu-icon {
+    display: inline-flex;
+  }
+
+  .nav-actions {
+    display: none;
+  }
+
+  .menu-toggle:checked~.nav-actions {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .navbar {
+    flex-wrap: wrap;
+  }
+
+  .navbar>div {
+    flex: 1 1 auto;
+  }
+
+  .about-me-wraper {
+    grid-template-columns: 1fr;
+  }
+
+  .about-me-img {
+    order: 2;
+  }
+}
+
+/* ================= CARDS / CONTENIDOS ================= */
+.cartas-contenidos {
+  font-family: "Bebas Neue", sans-serif;
+  color: #a476ff;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  font-size: clamp(32px, 6vw, 60px);
+  margin: 0 0 clamp(40px, 10vw, 120px) 0;
+  padding: 0 var(--page-pad);
+  max-width: 1100px;
+  margin-inline: auto;
+  transform: translateX(-90px);
+}
+
+.contenido-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+  max-width: 1100px;
+  margin-inline: auto;
+  padding: 0 var(--page-pad);
+}
+
+@media (min-width: 600px) {
+  .contenido-grid {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .contenido-grid {
+    grid-template-columns: repeat(4, minmax(240px, 1fr));
+  }
+}
+
+.card {
+  background: var(--purple);
+  color: #fff;
+  border-radius: 28px;
+  padding: 24px 28px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
+  transition: 0.2s transform, 0.2s box-shadow;
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  grid-template-areas: "icon title" ". text";
+  column-gap: 14px;
+  row-gap: 10px;
+  min-height: 200px;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.16);
+}
+
+.iconos-decarta {
+  grid-area: icon;
+  align-self: start;
+}
+
+.iconos-decarta img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  display: block;
+}
+
+.title-card {
+  font-family: "TASA Explorer", sans-serif;
+  grid-area: title;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: clamp(16px, 2.2vw, 22px);
+  align-self: center;
+}
+
+.text-card {
+  font-family: "Montserrat", sans-serif;
+  grid-area: text;
+  margin: 6px 0 0;
+  font-size: clamp(13px, 1.6vw, 16px);
+  line-height: 1.6;
+  opacity: 0.96;
+  max-width: 38ch;
+}
+
+/* CARD GRANDE */
+.card.card--personal {
+  background: linear-gradient(180deg, var(--purple), var(--purple-700));
+  grid-column: 1 / -1;
+  grid-template-columns: 70px 1fr;
+  column-gap: 20px;
+  padding: 28px 32px;
+  min-height: 220px;
+}
+
+.card--personal .iconos-decarta img {
+  margin-top: 10px;
+  width: 60px;
+  height: 60px;
+}
+
+.card--personal .title-card {
+  font-family: "TASA Explorer", sans-serif;
+  font-size: clamp(18px, 2.6vw, 26px);
+}
+
+.card--personal .text-card {
+  font-family: "Montserrat", sans-serif;
+  margin-top: -6px;
+  font-size: clamp(14px, 1.8vw, 18px);
+  line-height: 1.65;
+  max-width: 80ch;
+}
+
+/* Específicas */
+.card--nominas {
+  padding: 22px 24px;
+}
+
+.card--nominas .iconos-decarta img,
+.card--nominas .title-card,
+.card--nominas .text-card {
+  margin-left: -6px;
+}
+
+.card--cuadrantes {
+  padding: 22px 24px;
+}
+
+.card--cuadrantes .iconos-decarta img,
+.card--cuadrantes .title-card,
+.card--cuadrantes .text-card {
+  margin-left: -6px;
+}
+
+.card--vacaciones {
+  padding: 24px;
+}
+
+.card--vacaciones .iconos-decarta img,
+.card--vacaciones .title-card,
+.card--vacaciones .text-card {
+  margin-left: -6px;
+}
+
+.card--sugerencias {
+  padding: 22px 24px;
+}
+
+.card--sugerencias .iconos-decarta img,
+.card--sugerencias .title-card,
+.card--sugerencias .text-card {
+  margin-left: -6px;
 }
