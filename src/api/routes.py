@@ -412,7 +412,7 @@ def create_holiday():
         start_date=data["start_date"],
         end_date=data["end_date"],
         status=data["status"],
-        approved_user_id=data.get("approved_user_id"),  # opcional
+        approved_user_id=data.get("approved_user_id"),
         remaining_days=data["remaining_days"]
     )
     db.session.add(holiday)
