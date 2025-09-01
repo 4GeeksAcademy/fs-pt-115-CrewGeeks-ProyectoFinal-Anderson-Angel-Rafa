@@ -9,7 +9,7 @@ export const Navbar = () => {
 				<div className="navbar">
 					<div> 
 						<a className="name" href="#">CREWGEEKS</a>
-						<a className="sub-Name" href="#">Te ayudamos con tu epsacio de trabajo</a>
+						<a className="sub-Name" href="#">Te ayudamos con tu espacio de trabajo</a>
 					</div>	
 					
 				</div>
