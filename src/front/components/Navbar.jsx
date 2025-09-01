@@ -8,8 +8,8 @@ export const Navbar = () => {
 			<nav>
 				<div className="navbar">
 					<div> 
-						<a className="title" href="#">CREWGEEKS</a>
-						<a className="sub-Title" href="#">Te ayudamos con tu epsacio de trabajo</a>
+						<a className="name" href="#">CREWGEEKS</a>
+						<a className="sub-Name" href="#">Te ayudamos con tu epsacio de trabajo</a>
 					</div>	
 					
 				</div>
