@@ -8,12 +8,12 @@ export const Navbar = () => {
 			<nav>
 				<div className="navbar">
 					<div> 
-						<a className="Name" href="#">CREWGEEKS</a>
-						<a className="Sub_Name" href="#">Te ayudamos con tu epsacio de trabajo</a>
+						<a className="name" href="#">CREWGEEKS</a>
+						<a className="sub-Name" href="#">Te ayudamos con tu epsacio de trabajo</a>
 					</div>	
 					
 				</div>
-				<button className="btn Button_Login" >LOG IN</button>
+				<button className="btn button-Login" >LOG IN</button>
 			</nav>
 		</header>
 
