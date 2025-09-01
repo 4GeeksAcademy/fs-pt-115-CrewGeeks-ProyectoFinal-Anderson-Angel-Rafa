@@ -59,8 +59,12 @@ nav {
   line-height: 1;
 }
 
+/* Estilo para el nombre principal */
 .name {
   color: #ffffff;
+
+
+
   font-family: "Bebas Neue", sans-serif;
   font-weight: 700;
   font-size: clamp(28px, 8vw, 80px);
@@ -76,6 +80,7 @@ nav {
   font-size: clamp(14px, 2.8vw, 24px);
   opacity: 0.95;
 }
+
 
 /* Botón de acción (login) */
 .button-Login {
@@ -93,6 +98,8 @@ nav {
   backdrop-filter: saturate(120%) blur(2px);
 }
 
+
+
 .button-Login::after {
   content: "";
   position: absolute;
@@ -105,7 +112,9 @@ nav {
   transition: transform 0.5s ease;
 }
 
+
 .button-Login:hover::after {
+  
   transform: rotate(150deg);
 }
 

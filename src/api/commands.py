@@ -1,6 +1,6 @@
 
 import click
-from api.models import db, User
+from api.models import db, Employee
 
 """
 In this file, you can add as many commands as you want using the @app.cli.command decorator
@@ -10,24 +10,24 @@ with youy database, for example: Import the price of bitcoin every night as 12am
 def setup_commands(app):
     
     """ 
-    This is an example command "insert-test-users" that you can run from the command line
-    by typing: $ flask insert-test-users 5
-    Note: 5 is the number of users to add
+    This is an example command "insert-test-Employees" that you can run from the command line
+    by typing: $ flask insert-test-Employees 5
+    Note: 5 is the number of Employees to add
     """
-    @app.cli.command("insert-test-users") # name of our command
+    @app.cli.command("insert-test-Employees") # name of our command
     @click.argument("count") # argument of out command
-    def insert_test_users(count):
-        print("Creating test users")
+    def insert_test_Employees(count):
+        print("Creating test Employees")
         for x in range(1, int(count) + 1):
-            user = User()
-            user.email = "test_user" + str(x) + "@test.com"
-            user.password = "123456"
-            user.is_active = True
-            db.session.add(user)
+            employee = Employee()
+            employee.email = "test_Employee" + str(x) + "@test.com"
+            employee.password = "123456"
+            employee.is_active = True
+            db.session.add(employee)
             db.session.commit()
-            print("User: ", user.email, " created.")
+            print("Employee: ", employee.email, " created.")
 
-        print("All test users created")
+        print("All test Employees created")
 
     @app.cli.command("insert-test-data")
     def insert_test_data():
