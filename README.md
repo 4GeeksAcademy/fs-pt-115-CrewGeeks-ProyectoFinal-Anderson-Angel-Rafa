@@ -37,6 +37,9 @@ Arrancamos con SQLAlchemy para asegurar consistencia desde el backend. Entidades
 
 <h2>🚦 Cómo ejecutar (rápido)</h2>
 <pre>
+
+  Esta es una prueba para hacer un pull request 
+
 </pre>
 
 <h2>📌 Rutas principales</h2>
