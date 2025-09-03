@@ -1,6 +1,8 @@
 from flask import jsonify, Blueprint, request
 from api.models import db, Company
 from flask_cors import CORS
+from flask import Flask
+from flask_bcrypt import Bcrypt
 
 company_bp = Blueprint('company', __name__, url_prefix = '/companies')
 

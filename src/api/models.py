@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Date, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
@@ -104,6 +105,7 @@ class Employee(db.Model):
     seniority: Mapped[Date] = mapped_column(Date, nullable=False)
     phone: Mapped[str] = mapped_column(String(50), nullable=False)
     role_id: Mapped[int] = mapped_column(ForeignKey("role.id"), nullable=False)
+    password_hash: Mapped[str] = mapped_column(nullable = False)
 
     company: Mapped["Company"] = relationship("Company", back_populates="employees")
     role: Mapped["Role"] = relationship("Role", back_populates="employees")
@@ -134,6 +136,12 @@ class Employee(db.Model):
         back_populates="employee",
         cascade="all, delete-orphan",
     )
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     def serialize(self):
         return {

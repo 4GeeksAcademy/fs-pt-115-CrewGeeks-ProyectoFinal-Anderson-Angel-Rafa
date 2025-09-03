@@ -22,8 +22,16 @@ def get_employee(id):
 @employee_bp.route("/", methods=["POST"])
 def create_employee():
     data = request.get_json(silent=True)
-    if not data:
+    if not data["email"] or not data["password"]:
         return jsonify({"error": "JSON body required"}), 400
+    
+    existing_employee = db.session.execute(db.select(Employee).where(
+        Employee.email == data["email"]
+    )).scalar_one_or_none()
+
+    if existing_employee:
+        return jsonify({"msg": "Employee with this email already exist"}), 400 
+    
 
     # company_id requerido y valido
     company_id = data.get("company_id")
@@ -48,8 +56,9 @@ def create_employee():
         email      = data.get("email"),
         role_id    = role_id,
         birth      = data.get("birth"),
-        phone      = data.get("phone") 
+        phone      = data.get("phone"),
     )
+    new_employee.set_password(data["password"])
 
     db.session.add(new_employee)
     db.session.commit()
@@ -100,3 +109,5 @@ def delete_employee(id):
     db.session.delete(employee)
     db.session.commit()
     return jsonify({"message": f"Employee id={id} deleted"}), 200
+
+#@employee_bp.route('/login', methods = [POST])
