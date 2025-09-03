@@ -1,6 +1,7 @@
 import React, { useEffect } from "react"
 
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import { Navbar } from "../components/Navbar.jsx";
 
 export const Home = () => {
 
