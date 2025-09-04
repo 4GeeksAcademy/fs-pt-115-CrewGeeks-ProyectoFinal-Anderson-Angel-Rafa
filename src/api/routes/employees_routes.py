@@ -87,11 +87,11 @@ def create_employee():
     db.session.commit()
     return jsonify(new_employee.serialize()), 201
 
-@employee_bp.route("/edit", methods=["PUT"])   
+@employee_bp.route("/edit/<int:id>", methods=["PUT"])   
 @jwt_required()
 def update_employee(id):
-    employee_id = get_jwt_identity()
-    employee = db.session.get(Employee, int(employee_id))
+    #employee_id = get_jwt_identity()           esto cuando tengamos admin
+    employee = db.session.get(Employee, id)   #sera int(employee_id) cuando tengamos admin
     if not employee:
         return jsonify({"error": "Employee not found"}), 404
     
@@ -125,11 +125,11 @@ def update_employee(id):
     return jsonify(employee.serialize()), 200   
 
 
-@employee_bp.route("/delete", methods=["DELETE"])  
-@jwt_required()
-def delete_employee():
-    employee_id = get_jwt_identity()
-    employee = db.session.get(Employee, int(employee_id))
+@employee_bp.route("/delete/<int:id>", methods=["DELETE"])     #ESTA RUTA HABRA QUE TOCARLA, CON PERMISOS QUE PUEDA BORRAR CUALQUIER EMPLOYEE, COMO EMPLEADO NORMAL, ESTA RUTA ESTARA BLOQUEADA.
+@jwt_required()    #NECESITAREMOS REQUIRED ROLE PARA GESTIONAR ESTE ENDPOINT 
+def delete_employee(id):
+    #employee_id = get_jwt_identity()
+    employee = db.session.get(Employee, id)#sera int(employee_id)
     if not employee:
         return jsonify({"error": "Employee not found"}), 404
     
