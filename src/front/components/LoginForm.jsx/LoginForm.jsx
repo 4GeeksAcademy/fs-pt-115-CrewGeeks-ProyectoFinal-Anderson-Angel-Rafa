@@ -1,13 +1,13 @@
 import './LoginForm.css'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { login } from '../../services/servicesEmployee';
 
 export const LoginForm = () => {
 
     const navigate = useNavigate()
 
     const [employeeData, setEmployeeData] = useState({
-        companyId : '',
         email: '',
         password: ''
     });
@@ -19,19 +19,27 @@ export const LoginForm = () => {
         })
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log('Datos enviados:', employeeData);
+        const result = await login(employeeData);
+
+        if (result) {
+            
+            console.log('Login succesfully:', result);
+
+            setEmployeeData({
+                email : '',
+                password: ''
+            });
+
+            navigate('/profile')
+            
+
+        }
+
         
 
-        setEmployeeData({
-            companyId: '',
-            email: '',
-            password: ''
-        });
-
-        navigate('/profile')
     };
 
     return (
@@ -39,18 +47,6 @@ export const LoginForm = () => {
             <form className='login-form' onSubmit={handleSubmit}>
                 <h2 className='login-tittle'>Iniciar Sesion</h2>
 
-                <span className='form-group'>
-                    <label htmlFor="companyId">ID de empresa</label>
-                    <input
-                        type="text"
-                        id='companyId'
-                        name='companyId'
-                        value={employeeData.companyId}
-                        onChange={handleChange}
-                        placeholder='Ingresa el ID de tu empresa'
-                        required
-                    />
-                </span>
 
                 <span className='form-group'>
                     <label htmlFor="email">Email</label>
