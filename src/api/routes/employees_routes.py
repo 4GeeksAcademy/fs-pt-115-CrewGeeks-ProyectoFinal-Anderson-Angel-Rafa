@@ -1,6 +1,9 @@
 from flask import jsonify, Blueprint, request
 from api.models import db, Employee, Company, Role
 from flask_cors import CORS
+from flask_jwt_extended import create_access_token ,get_jwt_identity, jwt_required
+
+
 
 employee_bp = Blueprint ('employee', __name__, url_prefix = '/employees')
 
@@ -12,9 +15,13 @@ def get_employees():
     return jsonify([e.serialize() for e in employees]), 200              
 
 
-@employee_bp.route('/<int:id>', methods=['GET'])
-def get_employee(id):
-    employee = db.session.get(Employee, id)
+@employee_bp.route('/profile', methods=['GET'])
+@jwt_required()
+def get_employee():
+
+    employee_id = get_jwt_identity()
+    employee = db.session.get(Employee, int(employee_id))
+    #employee = db.session.get(Employee, id)
     if not employee:
             return jsonify({"error": "Employee not found"}), 404
     return jsonify(employee.serialize()), 200
@@ -22,6 +29,7 @@ def get_employee(id):
 @employee_bp.route("/", methods=["POST"])
 def create_employee():
     data = request.get_json(silent=True)
+
     if not data["email"] or not data["password"]:
         return jsonify({"error": "JSON body required"}), 400
     
@@ -110,4 +118,26 @@ def delete_employee(id):
     db.session.commit()
     return jsonify({"message": f"Employee id={id} deleted"}), 200
 
-#@employee_bp.route('/login', methods = [POST])
+@employee_bp.route('/login', methods = ["POST"])
+def login():
+    data = request.get_json()
+
+    if not data["email"] or not data["password"]:
+        return jsonify({"error": "JSON body required"}), 400
+    
+    employee = db.session.execute(db.select(Employee).where(
+        Employee.email == data["email"]
+    )).scalar_one_or_none()
+
+    if employee is None:
+        return({"msg" : "Invalid email or password"}), 401
+    
+    if employee.check_password(data["password"]):
+        access_token = create_access_token(identity = str(Employee.id))
+        return jsonify({"msg" : "Login successful", "token": access_token}), 200
+    else:
+        return jsonify({"msg" : "Invalid email or password"}), 401
+    
+    
+
+
