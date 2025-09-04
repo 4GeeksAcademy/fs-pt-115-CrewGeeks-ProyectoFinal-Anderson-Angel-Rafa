@@ -10,7 +10,14 @@ employee_bp = Blueprint ('employee', __name__, url_prefix = '/employees')
 CORS(employee_bp)
 
 @employee_bp.route("/", methods=["GET"])
+@jwt_required()
 def get_employees():
+    employee_id = get_jwt_identity()
+    employee = db.session.get(Employee, int(employee_id))
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+
+
     employees = db.session.query(Employee).all()                   
     return jsonify([e.serialize() for e in employees]), 200              
 
@@ -22,12 +29,20 @@ def get_employee():
     employee_id = get_jwt_identity()
     employee = db.session.get(Employee, int(employee_id))
     if not employee:
-            return jsonify({"error": "Employee not found"}), 404
+        return jsonify({"error": "Employee not found"}), 404
     return jsonify(employee.serialize()), 200
 
 
 @employee_bp.route("/", methods=["POST"])
+@jwt_required()
 def create_employee():
+
+    employee_id = get_jwt_identity()
+    employee = db.session.get(Employee, int(employee_id))
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+
+
     data = request.get_json(silent=True)
 
     if not data["email"] or not data["password"]:
@@ -72,9 +87,11 @@ def create_employee():
     db.session.commit()
     return jsonify(new_employee.serialize()), 201
 
-@employee_bp.route("/<int:id>", methods=["PUT"])
+@employee_bp.route("/edit", methods=["PUT"])   
+@jwt_required()
 def update_employee(id):
-    employee = db.session.get(Employee, id)
+    employee_id = get_jwt_identity()
+    employee = db.session.get(Employee, int(employee_id))
     if not employee:
         return jsonify({"error": "Employee not found"}), 404
     
@@ -108,9 +125,11 @@ def update_employee(id):
     return jsonify(employee.serialize()), 200   
 
 
-@employee_bp.route("/<int:id>", methods=["DELETE"])
-def delete_employee(id):
-    employee = db.session.get(Employee, id)
+@employee_bp.route("/delete", methods=["DELETE"])  
+@jwt_required()
+def delete_employee():
+    employee_id = get_jwt_identity()
+    employee = db.session.get(Employee, int(employee_id))
     if not employee:
         return jsonify({"error": "Employee not found"}), 404
     
