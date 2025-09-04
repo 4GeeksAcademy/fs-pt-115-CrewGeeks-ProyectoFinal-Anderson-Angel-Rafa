@@ -21,10 +21,10 @@ def get_employee():
 
     employee_id = get_jwt_identity()
     employee = db.session.get(Employee, int(employee_id))
-    #employee = db.session.get(Employee, id)
     if not employee:
             return jsonify({"error": "Employee not found"}), 404
     return jsonify(employee.serialize()), 200
+
 
 @employee_bp.route("/", methods=["POST"])
 def create_employee():
@@ -118,6 +118,7 @@ def delete_employee(id):
     db.session.commit()
     return jsonify({"message": f"Employee id={id} deleted"}), 200
 
+
 @employee_bp.route('/login', methods = ["POST"])
 def login():
     data = request.get_json()
@@ -133,7 +134,7 @@ def login():
         return({"msg" : "Invalid email or password"}), 401
     
     if employee.check_password(data["password"]):
-        access_token = create_access_token(identity = str(Employee.id))
+        access_token = create_access_token(identity = str(employee.id))
         return jsonify({"msg" : "Login successful", "token": access_token}), 200
     else:
         return jsonify({"msg" : "Invalid email or password"}), 401
