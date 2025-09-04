@@ -1,11 +1,42 @@
 import './LoginForm.css'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const LoginForm = () => {
 
+    const navigate = useNavigate()
+
+    const [employeeData, setEmployeeData] = useState({
+        companyId : '',
+        email: '',
+        password: ''
+    });
+
+    const handleChange = (e) => {
+        setEmployeeData({
+            ...employeeData,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        console.log('Datos enviados:', employeeData);
+        
+
+        setEmployeeData({
+            companyId: '',
+            email: '',
+            password: ''
+        });
+
+        navigate('/profile')
+    };
 
     return (
         <section className='login-container'>
-            <form className='login-form'>
+            <form className='login-form' onSubmit={handleSubmit}>
                 <h2 className='login-tittle'>Iniciar Sesion</h2>
 
                 <span className='form-group'>
@@ -14,7 +45,8 @@ export const LoginForm = () => {
                         type="text"
                         id='companyId'
                         name='companyId'
-                        //value={}
+                        value={employeeData.companyId}
+                        onChange={handleChange}
                         placeholder='Ingresa el ID de tu empresa'
                         required
                     />
@@ -26,7 +58,8 @@ export const LoginForm = () => {
                         type="email"
                         id='email'
                         name='email'
-                        //value={}
+                        value={employeeData.email}
+                        onChange={handleChange}
                         placeholder='Ingresa tu email'
                         required
                     />
@@ -38,8 +71,9 @@ export const LoginForm = () => {
                         type="password"
                         id='password'
                         name='password'
-                        //value={}
-                        placeholder='Ingresa el ID de tu empresa'
+                        value={employeeData.password}
+                        onChange={handleChange}
+                        placeholder='Ingresa tu contraseña'
                         required
                     />
                 </span>
