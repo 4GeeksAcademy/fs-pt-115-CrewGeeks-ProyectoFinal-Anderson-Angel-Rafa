@@ -1,6 +1,6 @@
+import "./ContactForm.css"
 
-
-export const Formulario = () => {
+export const ContactForm = () => {
     return (
         <>
             <div className="container">
@@ -12,18 +12,9 @@ export const Formulario = () => {
                 <input type="text" id="mobile" placeholder="movil" required/>
                 <h4>Type Your Message Here...</h4>
                 <textarea required></textarea>
-                <input type="submit" value={"send"} id="button"></input>
+                <input type="submit" value={"send"} id="button-Form"></input>
                </form>
             </div>
-
-
-
-
-
-
-
-
-
 
         </>
 

@@ -1,0 +1,84 @@
+/* ================= ABOUT ME ================= */
+.about-me {
+  padding: clamp(32px, 8vw, 200px) var(--page-pad);
+}
+
+.about-me-wraper {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: clamp(16px, 3vw, 24px);
+  align-items: start;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.about-me-text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.title-About {
+  font-family: "Bebas Neue", sans-serif;
+  margin: 0;
+  font-size: clamp(32px, 6vw, 60px);
+  color: #a476ff;
+}
+
+.about-p {
+  margin: 0;
+  font-size: clamp(14px, 2vw, 20px);
+  line-height: 1.7;
+}
+
+.about-me-img {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
+.about-me-img img {
+  object-fit: cover;
+  width: 1200px;
+  height: 740px;
+}
+
+/* Corregir media query (clase escrita correctamente) */
+@media (max-width: 900px) {
+  nav {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .menu-icon {
+    display: inline-flex;
+  }
+
+  .nav-actions {
+    display: none;
+  }
+
+  .menu-toggle:checked ~ .nav-actions {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .navbar {
+    flex-wrap: wrap;
+  }
+
+  .navbar > div {
+    flex: 1 1 auto;
+  }
+
+  .about-me-wraper {
+    grid-template-columns: 1fr;
+  }
+
+  .about-me-img {
+    order: 2;
+  }
+}
+

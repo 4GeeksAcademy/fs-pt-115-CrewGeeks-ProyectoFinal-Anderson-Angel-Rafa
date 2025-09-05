@@ -1,0 +1,136 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+}
+
+.container form {
+  width: 670px;
+  height: 600px;
+  display: flex;
+  justify-content: center;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(30px);
+  flex-wrap: wrap;
+}
+
+.container form h1 {
+  color: var(--purple);
+  font-weight: 700;
+  line-height: 2;
+  margin-top: 20px;
+  width: 500px;
+  text-align: center;
+}
+.container form input {
+  width: 300px;
+  height: 50px;
+  padding-left: 10px;
+  outline: none;
+  border: none;
+  font-size: 20px;
+  margin-top: 10px;
+  background: none;
+  border-bottom: 2px solid var(--purple);
+  color: var(--purple);
+}
+.container form input::placeholder {
+  color: var(--purple);
+}
+.container form #lastname,
+.container form #mobile {
+  margin-left: 20px;
+}
+
+.container form h4 {
+  color: var(--purple);
+  font-weight: 300;
+  width: 600px;
+  margin-top: 20px;
+}
+
+.container form textarea {
+  background: none;
+  border: none;
+  border-bottom: 2px solid var(--purple);
+  color: var(--purple);
+  font-weight: 200;
+  font: 20px;
+  padding: 10px;
+  outline: none;
+  min-height: 90px;
+  max-height: 90px;
+  min-width: 620px;
+  max-width: 620px;
+}
+.container form h4 {
+  font-size: 20px;
+}
+.container form #button-Form {
+  width: 200px;
+  background-color: #a476ff;
+  font-size: 18px;
+  padding: 14px 35px;
+  border-radius: 40px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+   
+
+  z-index: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  backdrop-filter: saturate(120%) blur(2px);
+}
+
+
+#button-Form::after{
+  content: "";
+  position: absolute;
+  top: -50px;
+  left: -100px;
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #9b6cf5 0%, #ffffff 100%);
+  z-index: -1;
+  transition: transform 0.5s ease;
+}
+
+.container form #buttom-Form:hover::after {
+ transform: rotate(150deg);
+}
+
+@keyframes wideMatrixGlow {
+  0% {
+    box-shadow: 0 0 10px #332280, 0 0 10px #9c6ad6;
+  }
+
+  25% {
+    box-shadow: 0 0 10px #725add, 0 0 10px #672ba0;
+  }
+
+  50% {
+    box-shadow: 0 0 10px #7046aa, 0 0 10px #0c1db8;
+  }
+
+  75% {
+    box-shadow: 0 0 10px #020f75, 0 0 10px #7046aa;
+  }
+
+  100% {
+    box-shadow: 0 0 10px #872faf, 0 0 10px #355de0;
+  }
+}
+
+#button-Form:hover {
+  animation: wideMatrixGlow 2.5s infinite ease-in-out;
+  transform: translateY(-2px);
+}
+
+#button.Form:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(155, 108, 245, 0.6);
+}
