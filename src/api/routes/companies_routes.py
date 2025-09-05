@@ -1,5 +1,5 @@
 from flask import jsonify, Blueprint, request
-from api.models import db, Company
+from api.models import db, Company , Employee
 from flask_cors import CORS
 from flask import Flask
 from flask_bcrypt import Bcrypt
@@ -35,7 +35,7 @@ def get_company(id):
     return jsonify(company.serialize()), 200                         
     
 
-
+# con autorizacion
 @company_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_company():
@@ -49,6 +49,23 @@ def create_company():
     db.session.add(new_company)                                     
     db.session.commit()                                             
     return jsonify(new_company.serialize()), 201                    
+
+# para pruebas sin autorizacion
+# @company_bp.route("/", methods=["POST"])
+# def create_company():
+#     data = request.get_json(silent=True)
+#     if not data:
+#         return jsonify({"error": "JSON body required"}), 400
+#     if "name" not in data or "cif" not in data:
+#         return jsonify({"error": "Missing required fields: name, cif"}), 400
+#     new_company = Company(
+#         name=data["name"],
+#         cif=data["cif"]
+#     )
+#     db.session.add(new_company)
+#     db.session.commit()
+#     return jsonify(new_company.serialize()), 201
+
 
 
 @company_bp.route("/<int:id>", methods=["PUT"])                    
@@ -84,4 +101,4 @@ def delete_company(id):
     
     db.session.delete(company)                                      
     db.session.commit()                                             
-    return jsonify(company.serialize()), 200    
+    return jsonify({"message": f"Company id={id} deleted"}), 200   

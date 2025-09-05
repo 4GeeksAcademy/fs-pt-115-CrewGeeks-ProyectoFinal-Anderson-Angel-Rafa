@@ -36,6 +36,8 @@ def get_role(id):
         return jsonify({"error": "Role not found"}), 404
     return jsonify(role.serialize()), 200
 
+
+# con autorizacion
 @role_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_role():
@@ -62,6 +64,25 @@ def create_role():
     db.session.add(new_role)
     db.session.commit()
     return jsonify(new_role.serialize()), 201
+
+
+#para pruebas
+# @role_bp.route("/", methods=["POST"])
+# def create_role():
+#     data = request.get_json(silent=True)
+#     if not data:
+#         return jsonify({"error": "JSON body required"}), 400
+#     salary_id = data.get("salary_id")
+#     if not salary_id or not db.session.get(Salary, salary_id):
+#         return jsonify({"error": "salary_id invalid"}), 400
+#     new_role = Role(
+#         name=data.get("name"),
+#         description=data.get("description"),
+#         salary_id=salary_id
+#     )
+#     db.session.add(new_role)
+#     db.session.commit()
+#     return jsonify(new_role.serialize()), 201
 
 
 
