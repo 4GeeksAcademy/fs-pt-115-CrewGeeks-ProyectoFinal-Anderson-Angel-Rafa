@@ -1,6 +1,8 @@
 from flask import jsonify, Blueprint, request
 from api.models import db, Employee, Company, Role, Salary
 from flask_cors import CORS
+from flask_jwt_extended import get_jwt_identity, jwt_required
+
 
 role_bp = Blueprint('role', __name__, url_prefix = '/roles')
 
@@ -8,20 +10,41 @@ CORS(role_bp)
 
 
 @role_bp.route("/", methods=["GET"])
+@jwt_required()
 def get_roles():
+    employee_id = int(get_jwt_identity())
+    employee = db.session.get(Employee, employee_id)
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+
+
     roles = db.session.query(Role).all()
     return jsonify([r.serialize() for r in roles]), 200
 
 #por_id
 @role_bp.route("/<int:id>", methods=["GET"])
-def get_role(id): 
+@jwt_required()
+def get_role(id):
+    employee_id = int(get_jwt_identity())
+    employee = db.session.get(Employee, employee_id)
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+
+
     role = db.session.get(Role, id)
     if not role:
         return jsonify({"error": "Role not found"}), 404
     return jsonify(role.serialize()), 200
 
 @role_bp.route("/", methods=["POST"])
+@jwt_required()
 def create_role():
+    employee_id = int(get_jwt_identity())
+    employee = db.session.get(Employee, employee_id)
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+
+
     data = request.get_json(silent=True)
     if not data: 
         return jsonify({"error": "JSON body required"}), 400
@@ -43,7 +66,14 @@ def create_role():
 
 
 @role_bp.route ("/<int:id>", methods=["PUT"])
+@jwt_required()
 def update_role(id):
+    employee_id = int(get_jwt_identity())
+    employee = db.session.get(Employee, employee_id)
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+
+
     role = db.session.get(Role, id)
     if not role:
         return jsonify({"error": "Roles not found"}), 404
@@ -54,7 +84,7 @@ def update_role(id):
     
     if "salary_id" in data:
         if not db.session.get(Salary, data["salary_id"]):
-            return jsonify({"error": f"Salary id={data["salary_id"]} does not exist"}), 400
+            return jsonify({"error": f"Salary id={data['salary_id']} does not exist"}), 400
         role.salary_id = data["salary_id"]
 
     for field in ["name", "description"]:
@@ -64,12 +94,18 @@ def update_role(id):
     db.session.commit()
     return jsonify(role.serialize()), 200
 
-@role_bp.route("/roles/<int:id>", methods=["DELETE"])
+@role_bp.route("/<int:id>", methods=["DELETE"])
+@jwt_required()
 def delete_role(id):
+    employee_id = int(get_jwt_identity())
+    employee = db.session.get(Employee, employee_id)
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+
     role = db.session.get(Role, id)
     if not role:
         return jsonify({"error": "Role not found"}), 404
-    
+
     db.session.delete(role)
     db.session.commit()
     return jsonify({"message": f"Role id={id} deleted"}), 200
