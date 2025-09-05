@@ -32,7 +32,7 @@ def get_employee():
         return jsonify({"error": "Employee not found"}), 404
     return jsonify(employee.serialize()), 200
 
-
+# con autorizacion
 @employee_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_employee():
@@ -86,6 +86,46 @@ def create_employee():
     db.session.add(new_employee)
     db.session.commit()
     return jsonify(new_employee.serialize()), 201
+
+#para pruebas
+# @employee_bp.route("/", methods=["POST"])
+# def create_employee():
+#     data = request.get_json(silent=True)
+#     if not data:
+#         return jsonify({"error": "JSON body required"}), 400
+#     if not data.get("email") or not data.get("password"):
+#         return jsonify({"error": "Missing required fields: email, password"}), 400
+#     # comprobar que el email no exista
+#     existing_employee = db.session.execute(
+#         db.select(Employee).where(Employee.email == data["email"])
+#     ).scalar_one_or_none()
+#     if existing_employee:
+#         return jsonify({"msg": "Employee with this email already exists"}), 400
+#     # company_id requerido y válido
+#     company_id = data.get("company_id")
+#     if not company_id or not db.session.get(Company, company_id):
+#         return jsonify({"error": "company_id invalid"}), 400
+#     # role_id opcional pero debe existir
+#     role_id = data.get("role_id")
+#     if role_id and not db.session.get(Role, role_id):
+#         return jsonify({"error": f"Role id={role_id} does not exist"}), 400
+#     # crear empleado
+#     new_employee = Employee(
+#         company_id = company_id,
+#         first_name = data.get("first_name"),
+#         last_name  = data.get("last_name"),
+#         dni        = data.get("dni"),
+#         address    = data.get("address"),
+#         seniority  = data.get("seniority"),
+#         email      = data.get("email"),
+#         role_id    = role_id,
+#         birth      = data.get("birth"),
+#         phone      = data.get("phone"),
+#     )
+#     new_employee.set_password(data["password"])
+#     db.session.add(new_employee)
+#     db.session.commit()
+#     return jsonify(new_employee.serialize()), 201
 
 @employee_bp.route("/edit/<int:id>", methods=["PUT"])   
 @jwt_required()

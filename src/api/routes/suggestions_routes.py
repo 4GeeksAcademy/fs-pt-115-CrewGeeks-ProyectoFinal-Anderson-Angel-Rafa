@@ -49,8 +49,8 @@ def create_suggestion():
     if not data:
         return jsonify({"error": "JSON body required"}), 400
     
-    company_id = data.get("company_id")
-    employee_id = data.get("employee_id")
+    company_id = int(data.get("company_id"))
+    employee_id = int(data.get("employee_id"))
 
     if not company_id or not db.session.get(Company, company_id):
         return jsonify ({"error": "company_id invalido"}), 400
