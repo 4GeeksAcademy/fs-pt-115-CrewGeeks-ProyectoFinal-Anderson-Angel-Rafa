@@ -1,6 +1,7 @@
 from flask import jsonify, Blueprint, request
 from api.models import db, Employee, Company, Role, Salary, Payroll, Shifts, Holidays
 from flask_cors import CORS
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 holidays_bp = Blueprint('holidays', __name__, url_prefix = '/holidays')
 
@@ -8,7 +9,13 @@ CORS(holidays_bp)
 
 
 @holidays_bp.route("/", methods=["GET"])
+@jwt_required()
 def get_all_holidays():
+    employee_id = get_jwt_identity()
+    employee = db.session.get(Employee, int(employee_id))
+    if not employee: 
+        return jsonify({"error": "Employee not found"}), 404
+    
     holidays = Holidays.query.all()
     return jsonify([h.serialize() for h in holidays]), 200
 
@@ -16,7 +23,13 @@ def get_all_holidays():
 
 #por_id
 @holidays_bp.route("/<int:id>", methods=["GET"])
+@jwt_required()
 def get_holiday(id):
+    employee_id = get_jwt_identity()
+    employee = db.session.get(Employee, int(employee_id))
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+    
     holiday = db.session.get(Holidays, id)
     if not holiday:
         return jsonify({"error": "Holidy request not found"}), 404
@@ -25,7 +38,13 @@ def get_holiday(id):
 
 
 @holidays_bp.route('/', methods=['POST'])
+@jwt_required()
 def create_holiday():
+    employee_id = get_jwt_identity()
+    employee = db.session.get(Employee, int(employee_id))
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "JSON body requerido"}), 400
@@ -49,7 +68,13 @@ def create_holiday():
 
 
 @holidays_bp.route('/<int:id>', methods=['PUT'])
+@jwt_required()
 def update_holiday(id):
+    employee_id = get_jwt_identity()
+    employee = db.session.get(Employee, int(employee_id))
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+
     holiday = db.session.get(Holidays, id)
     if not holiday:
         return jsonify({"error": "Holiday request not found"}), 404
@@ -71,7 +96,13 @@ def update_holiday(id):
 
 
 @holidays_bp.route('/<int:id>', methods=['DELETE'])
+@jwt_required()
 def delete_holiday(id):
+    employee_id = get_jwt_identity()
+    employee = db.session.get(Employee, int(employee_id))
+    if not employee:
+        return jsonify({"error": "Employee not found"}), 404
+
     holiday = db.session.get(Holidays, id)
     if not holiday:
         return jsonify({"error": "Holiday request not found"}), 404
