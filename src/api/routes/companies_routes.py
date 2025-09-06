@@ -68,7 +68,7 @@ def create_company():
 
 
 
-@company_bp.route("/<int:id>", methods=["PUT"])                    
+@company_bp.route("/edit/<int:id>", methods=["PUT"])                    
 @jwt_required()
 def update_company(id):
     employee_id = int(get_jwt_identity())
@@ -87,7 +87,7 @@ def update_company(id):
     return jsonify(company.serialize()), 200                        
 
 
-@company_bp.route("/<int:id>", methods=["DELETE"])                
+@company_bp.route("/delete/<int:id>", methods=["DELETE"])                
 @jwt_required()
 def delete_company(id):
     employee_id = int(get_jwt_identity())

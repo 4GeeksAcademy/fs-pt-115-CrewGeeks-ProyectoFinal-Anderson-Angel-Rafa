@@ -63,7 +63,7 @@ def create_payroll():
     return jsonify(payroll.serialize()), 200
 
 
-@payroll_bp.route("/<int:id>", methods=["PUT"])
+@payroll_bp.route("/edit/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_payroll(id):
     employee_id = int(get_jwt_identity())
@@ -89,7 +89,7 @@ def update_payroll(id):
     return jsonify(payroll.serialize()), 200
 
 
-@payroll_bp.route("/<int:id>", methods=["DELETE"])
+@payroll_bp.route("/delete/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_payroll(id):
     employee_id = int(get_jwt_identity())

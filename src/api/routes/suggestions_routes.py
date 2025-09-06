@@ -71,7 +71,7 @@ def create_suggestion():
     return jsonify(item.serialize()), 201
                               
 
-@suggestions_bp.route("/<int:id>", methods=["PUT"])
+@suggestions_bp.route("/edit/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_suggestion(id):
     employee_id = int(get_jwt_identity())
@@ -109,7 +109,7 @@ def update_suggestion(id):
     return jsonify(suggestion.serialize()), 200
 
 
-@suggestions_bp.route("/<int:id>", methods=["DELETE"])
+@suggestions_bp.route("/delete/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_suggestions(id):
     employee_id = int(get_jwt_identity())

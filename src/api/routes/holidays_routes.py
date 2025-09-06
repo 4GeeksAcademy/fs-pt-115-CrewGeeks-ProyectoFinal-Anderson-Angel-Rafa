@@ -67,7 +67,7 @@ def create_holiday():
     return jsonify(holiday.serialize()), 201
 
 
-@holidays_bp.route('/<int:id>', methods=['PUT'])
+@holidays_bp.route('/edit/<int:id>', methods=['PUT'])
 @jwt_required()
 def update_holiday(id):
     employee_id = get_jwt_identity()
@@ -95,7 +95,7 @@ def update_holiday(id):
     return jsonify(holiday.serialize()), 200
 
 
-@holidays_bp.route('/<int:id>', methods=['DELETE'])
+@holidays_bp.route('/delete/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_holiday(id):
     employee_id = get_jwt_identity()

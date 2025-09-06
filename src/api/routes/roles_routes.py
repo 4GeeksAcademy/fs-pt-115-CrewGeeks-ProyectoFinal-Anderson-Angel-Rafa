@@ -86,7 +86,7 @@ def create_role():
 
 
 
-@role_bp.route ("/<int:id>", methods=["PUT"])
+@role_bp.route ("/edit/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_role(id):
     employee_id = int(get_jwt_identity())
@@ -115,7 +115,7 @@ def update_role(id):
     db.session.commit()
     return jsonify(role.serialize()), 200
 
-@role_bp.route("/<int:id>", methods=["DELETE"])
+@role_bp.route("/delete/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_role(id):
     employee_id = int(get_jwt_identity())

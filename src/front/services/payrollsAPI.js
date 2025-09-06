@@ -1,47 +1,47 @@
 export const urlApi = import.meta.env.VITE_BACKEND_URL + "/api";
 
 
-export const getAllRoles = async () => {
+export const getAllPayrolls = async () => {
     try {
-        const response = await fetch(`${urlApi}/roles`, {
+        const response = await fetch(`${urlApi}/payroll`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`
             }
         });
         const data = await response.json();
         if (!response.ok) {
-            throw new Error(data.error || data.msg || "Error al traer todos los roles")
+            throw new Error(data.error || data.msg || "Error al traer todas las nominas")
         }
         return data;
     } catch (error) {
-        console.error("getAllRoles failed:", error);
+        console.error("getAllPayrolls failed:", error);
         throw error;
     }
 }
 
 
-export const getRole = async (id) => {
+export const getPayroll = async (id) => {
     try {
-        const response = await fetch(`${urlApi}/roles/${id}`, {
+        const response = await fetch(`${urlApi}/payroll/${id}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`
             }
         });
         const data = await response.json();
         if (!response.ok) {
-            throw new Error(data.error || data.msg || "Error al traer el rol")
+            throw new Error(data.error || data.msg || "Error al traer la nomina")
         }
         return data;
     } catch (error) {
-        console.error("getRole failed:", error);
+        console.error("getPayroll failed:", error);
         throw error
     }
 }
 
 
-export const createRole = async (payload) => {
+export const createPayroll = async (payload) => {
   try {
-    const response = await fetch(`${urlApi}/roles`, {
+    const response = await fetch(`${urlApi}/payroll`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -51,19 +51,19 @@ export const createRole = async (payload) => {
     });
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.error || data.msg || "Error al crear el rol");
+      throw new Error(data.error || data.msg || "Error al crear la nomina");
     }
     return data;
   } catch (error) {
-    console.error("createRole failed:", error);
+    console.error("createPayroll failed:", error);
     throw error;
   }
 };
 
 
-export const editRole = async (id, payload) => {
+export const editPayroll = async (id, payload) => {
   try {
-    const response = await fetch(`${urlApi}/roles/edit/${id}`, {
+    const response = await fetch(`${urlApi}/payroll/edit/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -74,30 +74,30 @@ export const editRole = async (id, payload) => {
     const data = await response.json();
     if (!response.ok) {
       throw new Error(
-        data.error || data.msg || "Error al actualizar el rol"
+        data.error || data.msg || "Error al actualizar la nomina"
       );
     }
     return data;
   } catch (error) {
-    console.error("editRole failed:", error);
+    console.error("editPayroll failed:", error);
     throw error;
   }
 };
 
 
-export const deleteRole = async (id) => {
+export const deletePayroll = async (id) => {
   try {
-    const response = await fetch(`${urlApi}/roles/delete/${id}`, {
+    const response = await fetch(`${urlApi}/payroll/delete/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.error || data.msg || "Error al borrar el rol");
+      throw new Error(data.error || data.msg || "Error al borrar la nomina");
     }
     return data;
   } catch (error) {
-    console.error("deleteRole failed:", error);
+    console.error("deletePayroll failed:", error);
     throw error;
   }
 };
