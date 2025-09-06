@@ -4,16 +4,19 @@ import useGlobalReducer from "../hooks/useGlobalReducer";  // Custom hook for ac
 import { LoginForm } from "../components/LoginForm/LoginForm";
 
 
+
 export const LoginPage = () => {
-  
+
 
   return (
     <>
-        <LoginForm/>
+
+
+      <LoginForm />
 
     </>
-      
 
-     
+
+
   );
 };

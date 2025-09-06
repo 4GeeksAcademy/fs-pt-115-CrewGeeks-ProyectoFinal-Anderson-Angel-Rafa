@@ -1,7 +1,7 @@
 import './LoginForm.css'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../../services/servicesEmployee';
+import { login } from '../../services/authAPI';
 
 export const LoginForm = () => {
 
@@ -69,7 +69,7 @@ export const LoginForm = () => {
                         name='password'
                         value={employeeData.password}
                         onChange={handleChange}
-                        placeholder='Ingresa tu contraseña'
+                        placeholder='Ingresa tu contraseña' 
                         required
                     />
                 </span>

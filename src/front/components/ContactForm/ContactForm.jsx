@@ -1,9 +1,31 @@
 import "./ContactForm.css"
+//import { useFetch } from "../../hooks/useFetch";
 
 export const ContactForm = () => {
+
+    // const options = {
+    //     method: "POST",
+    //     headers: {},
+    //     body: {}
+
+    // }
+    // const {data, error, loading} = useFetch('/employees', options )
+
+    // console.log(data);
+    
+    // if(loading || !data) {
+    //     return <p>Cagando....</p>
+    // }
+
     return (
         <>
             <div className="container">
+                {/* {error && <p>{error}</p>}
+                {
+                    data.map(e => (
+                        <p key={e.id}>{e.first_name}</p>
+                    ))
+                } */}
                <form>
                 <h1>Contacta con nosotros</h1>
                 <input type="text" id="firstName" placeholder="First Name" required/>
