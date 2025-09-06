@@ -60,7 +60,7 @@ def create_shift():
     return jsonify(shift.serialize()), 200
 
 
-@shift_bp.route("/<int:id>", methods=["PUT"])
+@shift_bp.route("/edit/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_shift(id):
     employee_id = int(get_jwt_identity())
@@ -84,7 +84,7 @@ def update_shift(id):
     return jsonify(shift.serialize()), 200
 
 
-@shift_bp.route("/<int:id>", methods=["DELETE"])
+@shift_bp.route("/delete/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_shift(id):
     employee_id = int(get_jwt_identity())

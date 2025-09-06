@@ -1,47 +1,47 @@
 export const urlApi = import.meta.env.VITE_BACKEND_URL + "/api";
 
 
-export const getAllRoles = async () => {
+export const getAllHolidays = async () => {
     try {
-        const response = await fetch(`${urlApi}/roles`, {
+        const response = await fetch(`${urlApi}/holidays`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`
             }
         });
         const data = await response.json();
         if (!response.ok) {
-            throw new Error(data.error || data.msg || "Error al traer todos los roles")
+            throw new Error(data.error || data.msg || "Error al traer todas las vacaciones")
         }
         return data;
     } catch (error) {
-        console.error("getAllRoles failed:", error);
+        console.error("getAllHolidays failed:", error);
         throw error;
     }
 }
 
 
-export const getRole = async (id) => {
+export const getHollidays = async (id) => {
     try {
-        const response = await fetch(`${urlApi}/roles/${id}`, {
+        const response = await fetch(`${urlApi}/shifts/${id}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`
             }
         });
         const data = await response.json();
         if (!response.ok) {
-            throw new Error(data.error || data.msg || "Error al traer el rol")
+            throw new Error(data.error || data.msg || "Error al traer las vacaciones")
         }
         return data;
     } catch (error) {
-        console.error("getRole failed:", error);
+        console.error("getHollidays failed:", error);
         throw error
     }
 }
 
 
-export const createRole = async (payload) => {
+export const createHollidays = async (payload) => {
   try {
-    const response = await fetch(`${urlApi}/roles`, {
+    const response = await fetch(`${urlApi}/shifts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -51,19 +51,19 @@ export const createRole = async (payload) => {
     });
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.error || data.msg || "Error al crear el rol");
+      throw new Error(data.error || data.msg || "Error al crear las vacaciones");
     }
     return data;
   } catch (error) {
-    console.error("createRole failed:", error);
+    console.error("createHollidays failed:", error);
     throw error;
   }
 };
 
 
-export const editRole = async (id, payload) => {
+export const editHollidays = async (id, payload) => {
   try {
-    const response = await fetch(`${urlApi}/roles/edit/${id}`, {
+    const response = await fetch(`${urlApi}/hollidays/edit/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -74,30 +74,30 @@ export const editRole = async (id, payload) => {
     const data = await response.json();
     if (!response.ok) {
       throw new Error(
-        data.error || data.msg || "Error al actualizar el rol"
+        data.error || data.msg || "Error al actualizar las vacaciones"
       );
     }
     return data;
   } catch (error) {
-    console.error("editRole failed:", error);
+    console.error("editHollidays failed:", error);
     throw error;
   }
 };
 
 
-export const deleteRole = async (id) => {
+export const deleteHollidays = async (id) => {
   try {
-    const response = await fetch(`${urlApi}/roles/delete/${id}`, {
+    const response = await fetch(`${urlApi}/hollidays/delete/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.error || data.msg || "Error al borrar el rol");
+      throw new Error(data.error || data.msg || "Error al borrar las vacaciones");
     }
     return data;
   } catch (error) {
-    console.error("deleteRole failed:", error);
+    console.error("deleteHollidays failed:", error);
     throw error;
   }
 };

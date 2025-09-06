@@ -85,7 +85,7 @@ def create_salary():
 #     return jsonify(salary.serialize()), 201
 
 
-@salary_bp.route("/<int:id>", methods=["PUT"])
+@salary_bp.route("/edit/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_salary(id):
     employee_id = int(get_jwt_identity())
@@ -110,7 +110,7 @@ def update_salary(id):
 
 
 
-@salary_bp.route("/<int:id>", methods=["DELETE"])
+@salary_bp.route("/delete/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_salary(id):
     employee_id = int(get_jwt_identity())
