@@ -3,7 +3,7 @@ from api.models import db, Employee, Company, Role, Salary, Payroll, Shifts, Hol
 from flask_cors import CORS
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy.exc import IntegrityError
-from api.utils.helpers_auth import (
+from api.utiles.helpers_auth import (
     get_jwt_company_id,
     is_admin_or_hr,
     current_employee_id,
