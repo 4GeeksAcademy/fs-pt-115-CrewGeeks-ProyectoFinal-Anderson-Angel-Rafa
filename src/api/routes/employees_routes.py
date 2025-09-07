@@ -194,7 +194,7 @@ def delete_employee(id):
     db.session.commit()
     return jsonify({"message": f"Employee id={id} deleted"}), 200
 
-
+#login sin comprobaciones
 @employee_bp.route('/login', methods=["POST"])
 def login():
     data = request.get_json()
@@ -214,6 +214,44 @@ def login():
         return jsonify({"msg": "Login successful", "token": access_token}), 200
     else:
         return jsonify({"msg": "Invalid email or password"}), 401
+
+
+      
+#nueva ruta de login con comprobaciones de administrador
+# @employee_bp.route('/login', methods= ["POST"])
+# def login():
+#     data = request.get_json(silent=True)
+#     if not data or not data.get("email") or not data.get("password"):
+#         return jsonify({"error": "JSON body required"}), 400
+    
+
+#     employee = db.session.execute(
+#         db.select(Employee).where(Employee.email == data["email"])
+#     ).scalar_one_or_none()
+
+#     if employee is None or not employee.check_password(data["password"]):
+#         return jsonify({"msg": "Invalid email or password"}), 401
+    
+#     # aqui cogemos el rol de la tabla de roles
+#     role_name = (employee.role.name if getattr(employee, "role", None) else "") or ""
+#     # quitamos espacios en blanco y convertimos a minuscula
+#     role_lower = role_name.strip().lower()
+#     if "admin" in role_lower:
+#         system_role = "ADMIN"
+#     elif "hr" in role_lower or "recursos" in role_lower:
+#         system_role = "HR"
+#     else:
+#         system_role = "EMPLOYEE"
+
+#     # con esto, incluimos company_id y system_role en el token para poder gestionar permisos
+#     additional_claims = {
+#         "company_id": employee.company_id,
+#         "system_role": system_role
+#     }
+#     access_token = create_access_token(identity=str(employee.id), additional_claims=additional_claims)
+#     return jsonify({"msg": "Login succesful", "token": access_token}), 200
+
+
 
 
 # cloudinary
@@ -241,3 +279,4 @@ def login():
 
 #     db.session.commit()
 #     return jsonify({"msg": "ya esta en la nube", "imageUrl": upload_result["secure_url"]}), 200
+
