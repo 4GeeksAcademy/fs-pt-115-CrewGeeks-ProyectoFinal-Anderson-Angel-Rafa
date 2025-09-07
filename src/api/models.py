@@ -1,7 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Date, Integer, ForeignKey
+from sqlalchemy import String, Date, Integer, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from flask_bcrypt import generate_password_hash, check_password_hash
+#from typing import Optional
 
 db = SQLAlchemy()
 
@@ -105,6 +106,7 @@ class Employee(db.Model):
     seniority: Mapped[Date] = mapped_column(Date, nullable=False)
     phone: Mapped[str] = mapped_column(String(50), nullable=False)
     role_id: Mapped[int] = mapped_column(ForeignKey("role.id"), nullable=False)
+    #image: Mapped[Optional[str]] = mapped_column(Text)
     password_hash: Mapped[str] = mapped_column(nullable = False)
 
     company: Mapped["Company"] = relationship("Company", back_populates="employees")
@@ -155,6 +157,7 @@ class Employee(db.Model):
             "email": self.email,
             "seniority": self.seniority,
             "phone": self.phone,
+            #"image" : self.image,
             "role_id": self.role_id,
         }
 

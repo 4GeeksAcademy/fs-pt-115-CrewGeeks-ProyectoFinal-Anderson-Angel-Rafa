@@ -5,6 +5,9 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 from flask_mail import Message
 # import app
 from api.mail_config import mail
+# import cloudinary
+# import cloudinary.uploader
+# from cloudinary import CloudinaryImage
 
 
 employee_bp = Blueprint('employee', __name__,
@@ -211,3 +214,30 @@ def login():
         return jsonify({"msg": "Login successful", "token": access_token}), 200
     else:
         return jsonify({"msg": "Invalid email or password"}), 401
+
+
+# cloudinary
+# @employee_bp.route("/upload-img", methods=["POST"])
+# @jwt_required()
+# def upload_ing():
+#     employee_id = get_jwt_identity()
+#     file = request.files.get("file")
+#     employee = db.session.get(Employee, int(employee_id))
+#     if not file:
+#         return jsonify({"error": "No se envio el archivo "}), 400
+#     upload_result = cloudinary.uploader.upload(file)
+
+#     # Obtenemos el public_id de la imagen subida desde upload_result
+#     public_id = upload_result.get("public_id")
+
+#     image = CloudinaryImage(public_id)
+#     transformed_url = image.build_url(
+#         transformation=[
+#             {"crop": "fill", "gravity": "face", "width": 400, "height": 400}
+#         ]
+#     )
+
+#     employee.image = transformed_url
+
+#     db.session.commit()
+#     return jsonify({"msg": "ya esta en la nube", "imageUrl": upload_result["secure_url"]}), 200
