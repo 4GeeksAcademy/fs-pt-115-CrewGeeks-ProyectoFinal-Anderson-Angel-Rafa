@@ -159,12 +159,12 @@ def update_employee(id):
     # Validar/actualizar Foreign keys
     if "company_id" in data:
         if not db.session.get(Company, data["company_id"]):
-            return jsonify({"error": f"Company id={data["company_id"]} does not exist"}), 400
+            return jsonify({"error": f"Company id={data['company_id']} does not exist"}), 400
         employee.company_id = data["company_id"]
 
     if "role_id" in data:
         if data["role_id"] and not db.session.get(Role, data["role_id"]):
-            return jsonify({"error": f"Role id={data["role_id"]} does not exist"}), 400
+            return jsonify({"error": f"Role id={data['role_id']} does not exist"}), 400
         employee.role_id = data["role_id"]
 
     # actualizar campos
