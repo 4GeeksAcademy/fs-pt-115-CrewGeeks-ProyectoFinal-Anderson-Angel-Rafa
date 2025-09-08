@@ -3,42 +3,68 @@ import "./ContactForm.css"
 
 export const ContactForm = () => {
 
-    // const options = {
-    //     method: "POST",
-    //     headers: {},
-    //     body: {}
+  // const options = {
+  //     method: "POST",
+  //     headers: {},
+  //     body: {}
 
-    // }
-    // const {data, error, loading} = useFetch('/employees', options )
+  // }
+  // const {data, error, loading} = useFetch('/employees', options )
 
-    // console.log(data);
-    
-    // if(loading || !data) {
-    //     return <p>Cagando....</p>
-    // }
+  // console.log(data);
 
-    return (
-        <>
-            <div className="container">
-                {/* {error && <p>{error}</p>}
+  // if(loading || !data) {
+  //     return <p>Cagando....</p>
+  // }
+
+  return (
+    <>
+      <section className="contact-section">
+        {/* {error && <p>{error}</p>}
                 {
                     data.map(e => (
                         <p key={e.id}>{e.first_name}</p>
                     ))
                 } */}
-               <form>
-                <h1>Contacta con nosotros</h1>
-                <input type="text" id="firstName" placeholder="First Name" required/>
-                <input type="text" id="lastName" placeholder="Last Name" required/>
-                <input type="email" id="email" placeholder="Email" required/>
-                <input type="text" id="mobile" placeholder="movil" required/>
-                <h4>Type Your Message Here...</h4>
-                <textarea required></textarea>
-                <input type="submit" value={"send"} id="button-Form"></input>
-               </form>
+
+        <form id="contacto" className="contact-card" noValidate>
+          <h2 className="contact-title">CONTACTA CON NOSOTROS</h2>
+
+          <div className="form-grid">
+            <div className="field">
+              <label htmlFor="firstname">Nombre</label>
+              <input id="firstname" type="text" placeholder="Tu nombre" />
             </div>
 
-        </>
+            <div className="field">
+              <label htmlFor="lastname">Apellido</label>
+              <input id="lastname" type="text" placeholder="Tus apellidos" />
+            </div>
 
-    );
+            <div className="field">
+              <label htmlFor="email">Email</label>
+              <input id="email" type="email" placeholder="tu@email.com" />
+            </div>
+
+            <div className="field">
+              <label htmlFor="mobile">Móvil</label>
+              <input id="mobile" type="tel" placeholder="+34 600 000 000" />
+            </div>
+
+            <div className="field field--full">
+              <label htmlFor="message">¡CUENTANOS!</label>
+              <textarea id="message" rows="5" placeholder="Escribe tu mensaje..." />
+            </div>
+          </div>
+
+          <button id="button-Form" type="submit">Enviar</button>
+        </form>
+      </section>
+
+
+
+
+    </>
+
+  );
 };

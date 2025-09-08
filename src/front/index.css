@@ -7,16 +7,11 @@
   padding: 0;
 }
 
-html,
-body {
-  height: 100%;
-}
+
 
 body {
-  display: flex;
-  justify-content: center;
   margin: 0;
-  background-color: #fffcf9;
+  background-color: #fff;
   color: #222;
 }
 
@@ -31,7 +26,7 @@ a {
 }
 
 :root {
-  --purple: #9b6cf5;
+  --purple: #b68fffcb;
   --purple-700: #7b55d9;
   --purple-900: #7046aa;
   --radius: 28px;
@@ -82,7 +77,6 @@ nav {
   opacity: 0.95;
 }
 
-
 /* Botón de acción (login) */
 .button-Login {
   width: 200px;
@@ -100,8 +94,6 @@ nav {
   backdrop-filter: saturate(120%) blur(2px);
 }
 
-
-
 .button-Login::after {
   content: "";
   position: absolute;
@@ -114,9 +106,7 @@ nav {
   transition: transform 0.5s ease;
 }
 
-
 .button-Login:hover::after {
-  
   transform: rotate(150deg);
 }
 
@@ -151,7 +141,6 @@ nav {
   outline: none;
   box-shadow: 0 0 0 3px rgba(155, 108, 245, 0.6);
 }
-
 
 .menu-toggle {
   display: none;
@@ -200,6 +189,92 @@ nav {
   gap: 12px;
 }
 
+/*-----------footer----------------*/
+
+.container-footer {
+  
+  text-align: center;
+  height: 80px;
+  
+}
+
+.content-Div {
+  display: flex;
+  background: #a175f7;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.footer-redes h2 {
+  padding-top: 15px;
+  color: white;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 60px;
+  font-weight: bold;
+  margin-left: 40px;
+}
+
+.footer-redes p {
+  font-family: "Monserrat", sans-serif;
+  font-weight: bolder;
+  font-size: 20px;
+  margin: 0;
+  margin-left: 55px;
+  margin-top: -15px;
+}
+
+.img-redes {
+  display: flex;
+  margin-top: 5px;
+}
+
+.img-redes a {
+  background:#a476ff;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+  margin-top: -15px;
+  margin-left: 13px;
+}
+
+.img-redes a:hover{
+  background: #ddd;
+}
+
+.img-redes img {
+  width: 18px;
+  height: 18px;
+}
+
+.footer-infolegal {
+  display: flex;
+  justify-content: center;
+  gap: 200px;
+  font-size: 17px;
+  font-family: "Monserrat", sans-serif;
+  flex: 1;
+}
+
+.footer-infolegal a {
+  color: #000;
+  text-decoration: none;
+  transition: color 0.3;
+}
+
+.footer-infolegal a:hover{
+  color: white;
+}
 
 
-/*-----------formulario----------------*/
+.copy-footer {
+  font-size: 14px;
+  font-weight: bold;
+  font-family: "Monserrat", sans-serif;
+  display: flex;
+  justify-content: center;
+  background: #a175f7;
+}

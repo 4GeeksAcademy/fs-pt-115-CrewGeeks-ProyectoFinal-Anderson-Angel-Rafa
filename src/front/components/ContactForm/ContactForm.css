@@ -1,136 +1,130 @@
-.container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #fff;
+:root {
+  --purple2: #ccb5f777;
+  --purple: #9b6cf5;
+  --ink: #111;
+  --muted: #6b6b6b;
+  --field-bg: #e9eff6;
+  --field-br: #bfc6d1;
 }
 
-.container form {
-  width: 670px;
-  height: 600px;
-  display: flex;
-  justify-content: center;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(30px);
-  flex-wrap: wrap;
+.contact-section {
+  margin-top: clamp(32px, 4vw, 64px);
+  margin-bottom: clamp(32px, 4vw, 64px);
+  padding-inline: 12px;
 }
 
-.container form h1 {
+.contact-card {
+  width: min(980px, 96vw);
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(8px);
+  border-radius: 18px;
+  padding: clamp(18px, 3vw, 28px);
+  box-sizing: border-box;
+}
+
+.contact-title {
+  font-family: "Bebas Neue", sans-serif;
+  margin: 0 0 clamp(14px, 2.5vw, 22px);
+  text-align: left;
+  font-weight: 900;
+  font-size: clamp(3.6rem, 4vw, 3rem);
   color: var(--purple);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  gap: 18px 24px;
+}
+.field--full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 780px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field > label {
+  display: block;
+  margin: 2px 8px 8px;
   font-weight: 700;
-  line-height: 2;
-  margin-top: 20px;
-  width: 500px;
-  text-align: center;
-}
-.container form input {
-  width: 300px;
-  height: 50px;
-  padding-left: 10px;
-  outline: none;
-  border: none;
-  font-size: 20px;
-  margin-top: 10px;
-  background: none;
-  border-bottom: 2px solid var(--purple);
   color: var(--purple);
-}
-.container form input::placeholder {
-  color: var(--purple);
-}
-.container form #lastname,
-.container form #mobile {
-  margin-left: 20px;
+  letter-spacing: 0.2px;
 }
 
-.container form h4 {
-  color: var(--purple);
-  font-weight: 300;
-  width: 600px;
-  margin-top: 20px;
+.field > input,
+.field > textarea {
+  width: 100% !important;
+  background: var(--purple2);
+  border: 2px solid var(--purple2) !important;
+  border-radius: 22px;
+  padding: 12px 14px;
+  font-size: 16px;
+  color: var(--ink);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+    background-color 0.2s ease;
 }
 
-.container form textarea {
-  background: none;
-  border: none;
-  border-bottom: 2px solid var(--purple);
-  color: var(--purple);
-  font-weight: 200;
-  font: 20px;
-  padding: 10px;
-  outline: none;
-  min-height: 90px;
-  max-height: 90px;
-  min-width: 620px;
-  max-width: 620px;
+.field > textarea {
+  border-radius: 18px;
+  min-height: 140px;
+  resize: vertical;
 }
-.container form h4 {
-  font-size: 20px;
+
+.field :is(input, textarea)::placeholder {
+  color: var(--muted);
 }
-.container form #button-Form {
-  width: 200px;
-  background-color: #a476ff;
-  font-size: 18px;
-  padding: 14px 35px;
+
+.field :is(input, textarea):focus-visible {
+  border-color: var(--purple) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--purple) 28%, white);
+  background: #f6f7ff;
+}
+
+#button-Form {
+  display: block;
+  margin: clamp(14px, 3vw, 22px) auto 0;
+  width: clamp(220px, 36vw, 320px);
+  padding: 14px 32px;
   border-radius: 40px;
+  color: #fff;
+  background: linear-gradient(135deg, #a476ff, #b995ff);
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  border: 2px solid rgba(255, 255, 255, 0.65);
   cursor: pointer;
   position: relative;
   overflow: hidden;
-   
-
-  z-index: 0;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 2px solid rgba(255, 255, 255, 0.65);
-  backdrop-filter: saturate(120%) blur(2px);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.2s ease;
 }
-
-
-#button-Form::after{
+#button-Form::after {
   content: "";
   position: absolute;
-  top: -50px;
-  left: -100px;
-  width: 400px;
-  height: 400px;
-  background: linear-gradient(135deg, #9b6cf5 0%, #ffffff 100%);
-  z-index: -1;
-  transition: transform 0.5s ease;
+  top: -60%;
+  left: -12%;
+  width: 160%;
+  height: 220%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 255, 255, 0.85),
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.6s ease;
 }
-
-.container form #buttom-Form:hover::after {
- transform: rotate(150deg);
-}
-
-@keyframes wideMatrixGlow {
-  0% {
-    box-shadow: 0 0 10px #332280, 0 0 10px #9c6ad6;
-  }
-
-  25% {
-    box-shadow: 0 0 10px #725add, 0 0 10px #672ba0;
-  }
-
-  50% {
-    box-shadow: 0 0 10px #7046aa, 0 0 10px #0c1db8;
-  }
-
-  75% {
-    box-shadow: 0 0 10px #020f75, 0 0 10px #7046aa;
-  }
-
-  100% {
-    box-shadow: 0 0 10px #872faf, 0 0 10px #355de0;
-  }
-}
-
 #button-Form:hover {
-  animation: wideMatrixGlow 2.5s infinite ease-in-out;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(155, 108, 245, 0.35);
 }
-
-#button.Form:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(155, 108, 245, 0.6);
+#button-Form:hover::after {
+  transform: translateX(0);
+}
+#button-Form:active {
+  transform: translateY(0);
+  filter: brightness(0.98);
 }

@@ -43,7 +43,7 @@ export const LoginForm = () => {
     };
 
     return (
-        <section className='login-container'>
+       < section className='login-container'>
             <form className='login-form' onSubmit={handleSubmit}>
                 <h2 className='login-tittle'>Iniciar Sesion</h2>
 

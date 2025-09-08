@@ -44,7 +44,7 @@
   height: 740px;
 }
 
-/* Corregir media query (clase escrita correctamente) */
+/* Correcion de escala */
 @media (max-width: 900px) {
   nav {
     padding-top: 8px;

@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
+  height: 100vh;
 }
 
 .login-form {
@@ -25,7 +25,8 @@
 }
 
 .form-group input {
-  width: 600px;
+  width: 100%;
+  max-width: 600px;
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -33,7 +34,11 @@
 }
 
 .login-submit-btn {
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
+  margin-top: 15;
+  margin: 0 auto;
+  display: block;
   padding: 0.75rem;
   background: #007bff;
   color: white;
@@ -44,5 +49,5 @@
 }
 
 .login-tittle {
-    text-align: center;
+  text-align: center;
 }
