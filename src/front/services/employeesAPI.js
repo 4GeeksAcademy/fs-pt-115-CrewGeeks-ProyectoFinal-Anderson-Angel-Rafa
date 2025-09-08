@@ -96,3 +96,19 @@ export const deleteEmployee = async (id) => {
     throw error;
   }
 };
+
+//cloudinary
+// export const uploadImge = async (file) => {
+//   const formData = new FormData()
+//   formData.append("file",file)
+
+//   const response = await fetch(`${urlApi}/employees/upload-img`, {
+//     method: "POST",
+//     headers: {
+//         Authorization: `Bearer ${localStorage.getItem("token")}`,
+//       },
+//     body: formData
+//   })
+//   const data =await response.json()
+//   return data 
+// }

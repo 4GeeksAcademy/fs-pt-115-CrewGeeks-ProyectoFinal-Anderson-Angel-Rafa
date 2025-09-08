@@ -13,6 +13,8 @@ from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
 from flask import Flask
 from api.mail_config import mail
+import cloudinary 
+
 
 # from models import Person
 
@@ -81,6 +83,13 @@ app.config['MAIL_PASSWORD'] = os.getenv ('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv ('MAIL_DEFAULT_SENDER')
 mail.init_app (app)
 
+#CLOUDIMARY
+cloudinary.config( 
+    cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'), 
+    api_key = os.getenv('CLOUDINARY_API_KEY'), 
+    api_secret = os.getenv('CLOUDINARY_API_SECRET') ,
+    secure=True
+)
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

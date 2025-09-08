@@ -3,16 +3,27 @@ from api.models import db, Employee, Company, Role
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from flask_mail import Message
-# import app
+from sqlalchemy.exc import IntegrityError
 from api.mail_config import mail
+# import app
+# import cloudinary
+# import cloudinary.uploader
+# from cloudinary import CloudinaryImage
+
+from api.utils_auth.helpers_auth import (
+    get_jwt_company_id,
+    is_admin_or_hr,
+    is_ownerdb,
+    current_employee_id,
+)
 
 
-employee_bp = Blueprint('employee', __name__,
-                        url_prefix='/employees', template_folder="../template")
+employee_bp = Blueprint('employee', __name__, url_prefix='/employees', template_folder="../template")
 
 CORS(employee_bp)
 
 
+# AQUI TRAES A TODOS LOS EMPLEADOS DE TODAS LAS EMPRESAS BORRAR DESPUES DE PRUEBAS
 @employee_bp.route("/", methods=["GET"])
 @jwt_required()
 def get_employees():
@@ -25,6 +36,42 @@ def get_employees():
     return jsonify([e.serialize() for e in employees]), 200
 
 
+# AQUI
+# OWNERDB TRAE A TODOS LOS EMPLEADOS
+# ADMIN/HR TRAEN A LOS EMPLEADOS DE SU EMPRESA
+# EMPLOYEE ES 403/FORBIDDEN
+# @employee_bp.route("/", methods=["GET"])
+# @jwt_required()
+# def get_employees():
+#     if is_ownerdb():
+#         company_id_query = request.args.get("company_id")
+#         if company_id_query is not None:
+#             try:
+#                 company_id_query = int(company_id_query)
+#             except (TypeError, ValueError):
+#                 return jsonify({"error": "company_id must be an integer"}), 400
+#             employees = db.session.execute(
+#                 db.select(Employee).where(Employee.company_id == company_id_query)
+#             ).scalars().all()
+#         else:
+#             employees = db.session.execute(db.select(Employee)).scalars().all()
+#         return jsonify([e.serialize() for e in employees]), 200
+    
+#     if not is_admin_or_hr():
+#         return jsonify({"error": "Forbidden"}),403
+    
+#     company_id = get_jwt_company_id()
+#     if company_id is None:
+#         return jsonify({"error": "Unauthorized"}), 401
+    
+#     employees = db.session.execute(
+#         db.select(Employee).where(Employee.company_id == company_id)
+#     ).scalars().all()
+
+#     return jsonify([e.serialize() for e in employees]), 200
+
+
+# con autorizacion
 @employee_bp.route('/profile', methods=['GET'])
 @jwt_required()
 def get_employee():
@@ -35,7 +82,17 @@ def get_employee():
         return jsonify({"error": "Employee not found"}), 404
     return jsonify(employee.serialize()), 200
 
-# con autorizacion
+
+
+# GET EMPLOYEES PROFILE 
+# @employee_bp.route("/profile", methods=["GET"])
+# @jwt_required()
+# def get_employee_profile():
+#     employee = db.session.get(Employee, current_employee_id())
+#     if not employee:
+#         return jsonify({"error": "Employee not found"}), 404
+#     return jsonify(employee.serialize()), 200
+
 
 
 @employee_bp.route("/", methods=["POST"])
@@ -59,17 +116,17 @@ def create_employee():
     if existing_employee:
         return jsonify({"msg": "Employee with this email already exist"}), 400
 
-    # company_id requerido y valido
+    #company_id requerido y valido
     company_id = data.get("company_id")
     if not company_id or not db.session.get(Company, company_id):
         return jsonify({"error": "company_id invalid"}), 400
 
-    # role id
+    #role id
     role_id = data.get("role_id")
     if role_id and not db.session.get(Role, role_id):
         return jsonify({"error": f"Role id={role_id} does not exist"}), 400
 
-    # hash
+    #hash
 
     new_employee = Employee(
         company_id=company_id,
@@ -143,6 +200,81 @@ def create_employee():
 #     return jsonify(new_employee.serialize()), 201
 
 
+# POST EMPLOYEES 
+# OWNERDB PUEDE CREAR PARA CUALQUIER EMPRESA
+# ADMIN/HR PUEDE CREAR PARA SU PROPIA EMPRESA
+# @employee_bp.route("/", methods=["POST"])
+# @jwt_required()
+# def create_employee():
+#     data = request.get_json(silent=True)
+#     if not data:
+#         return jsonify({"error": "JSON body required"}), 400
+    
+#     email = data.get("email")
+#     password = data.get("password")
+#     if not email or not password:
+#         return jsonify({"error": "Missing required fields: email, password"}), 400
+    
+#     if db.session.execute(db.select(Employee).where(Employee.email == email)).scalar_one_or_none():
+#         return jsonify({"error": "Employee with this email already exists"}), 409
+    
+#     dni = data.get("dni")
+#     if dni:
+#         if db.session.execute(db.select(Employee).where(Employee.dni == dni)).scalar_one_or_none():
+#             return jsonify({"error": "Employee with this DNI already exists"}), 409
+        
+#     role_id = data.get("role_id")
+#     if not role_id or not db.session.get(Role, role_id):
+#         return jsonify({"error": "role_id is invalid or missing"}), 400
+    
+#     if is_ownerdb():
+#         try:
+#             company_id_body = int(data.get("company_id"))
+#         except (TypeError, ValueError):
+#             return jsonify({"error": "company_id must be an integer"})
+#         if not db.session.get(Company, company_id_body):
+#             return jsonify({"error": "company_id invalid"}), 400
+#         target_company_id = company_id_body
+#     else:
+#         if not is_admin_or_hr():
+#             return jsonify({"error": "Forbidden"}), 403
+#         target_company_id = get_jwt_company_id()
+#         if target_company_id is None:
+#             return jsonify({"error": "Unauthorized"}), 401
+        
+#     new_employee = Employee(
+#         company_id=target_company_id,
+#         first_name=data.get("first_name"),
+#         last_name=data.get("last_name"),
+#         dni=dni,
+#         address=data.get("address"),
+#         seniority=data.get("seniority"),  #habra que convertir esto a fecha en algun momento
+#         email=email,
+#         role_id=role_id,
+#         birth=data.get("birth"), # lo mismo que seniority
+#         phone=data.get("phone"),
+#     )
+#     new_employee.set_password(password)
+
+#     try:
+#         html_welcome = render_template("welcome.html", first_name=new_employee.first_name or "")
+#         msg = Message(subject="Welcome to CrewGeeks", recipients=[new_employee.email], html=html_welcome)
+#         mail.send(msg)
+#     except Exception:
+#         pass
+
+#     try:
+#         db.session.add(new_employee)
+#         db.session.commit()
+#     except IntegrityError:
+#         db.session.rollback()
+#         return jsonify({"error": "Integrity error creating employee"}), 400
+    
+#     return jsonify(new_employee.serialize())
+
+
+    
+# AQUI PUEDES EDITAR LO QUE SEA
 @employee_bp.route("/edit/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_employee(id):
@@ -159,12 +291,12 @@ def update_employee(id):
     # Validar/actualizar Foreign keys
     if "company_id" in data:
         if not db.session.get(Company, data["company_id"]):
-            return jsonify({"error": f"Company id={data["company_id"]} does not exist"}), 400
+            return jsonify({"error": f"Company id={data['company_id']} does not exist"}), 400
         employee.company_id = data["company_id"]
 
     if "role_id" in data:
         if data["role_id"] and not db.session.get(Role, data["role_id"]):
-            return jsonify({"error": f"Role id={data["role_id"]} does not exist"}), 400
+            return jsonify({"error": f"Role id={data['role_id']} does not exist"}), 400
         employee.role_id = data["role_id"]
 
     # actualizar campos
@@ -178,7 +310,49 @@ def update_employee(id):
     return jsonify(employee.serialize()), 200
 
 
-# ESTA RUTA HABRA QUE TOCARLA, CON PERMISOS QUE PUEDA BORRAR CUALQUIER EMPLOYEE, COMO EMPLEADO NORMAL, ESTA RUTA ESTARA BLOQUEADA.
+# AQUI OWNERDB EDITA CUALQUIER EMPLEADO Y ADMIN/HR SOLO A LOS DE SU EMPRESA
+# @employee_bp.route("/edit/<int:id>", methods=["PUT"])
+# @jwt_required()
+# def update_employee(id):
+#     employee = db.session.get(Employee, id)
+#     if not employee:
+#         return jsonify({"error": "Employee not found"}), 404
+    
+#     if not is_ownerdb():
+#         if not is_admin_or_hr():
+#             return jsonify({"error": "Forbidden"}), 403
+#         company_id = get_jwt_company_id()
+#         if company_id is None:
+#             return jsonify({"error": "Unauthorized"}), 401
+#         if employee.company_id != company_id:
+#             return jsonify({"error": "Employee not found"}), 404
+        
+#     data = request.get_json(silent=True)
+#     if not data:
+#         return jsonify({"error": "JSON body required"}), 400
+    
+#     # Validar/actualizar role_id
+#     if "role_id" in data:
+#         role_id_value = data["role_id"]
+#         if role_id_value and not db.session.get(Role, role_id_value):
+#             return jsonify({"error": f"Role id={role_id_value} does not exist"}), 400
+#         employee.role_id = role_id_value
+
+    
+#     for field in ["first_name", "last_name", "dni", "address", "seniority", "email", "birth", "phone"]:
+#         if field in data:
+#             setattr(employee, field, data[field])
+
+#     try:
+#         db.session.commit()
+#     except IntegrityError:
+#         db.session.rollback()
+#         return jsonify({"error": "Integrity error updating employee"}), 400
+
+#     return jsonify(employee.serialize()), 200
+
+
+# ESTA RUTA PUEDE BORRAR A CUALQUIERA
 @employee_bp.route("/delete/<int:id>", methods=["DELETE"])
 @jwt_required()  # NECESITAREMOS REQUIRED ROLE PARA GESTIONAR ESTE ENDPOINT
 def delete_employee(id):
@@ -192,6 +366,35 @@ def delete_employee(id):
     return jsonify({"message": f"Employee id={id} deleted"}), 200
 
 
+#AQUI OWNERDB PUEDE BORRAR CUALQUIER EMPLEADO Y ADMIN/HR SOLO DE SU EMPRESA
+# @employee_bp.route("/delete/<int:id>", methods=["DELETE"])
+# @jwt_required()
+# def delete_employee(id):
+#     employee = db.session.get(Employee, id)
+#     if not employee:
+#         return jsonify({"error": "Employee not found"}), 404
+
+#     if not is_ownerdb():
+#         if not is_admin_or_hr():
+#             return jsonify({"error": "Forbidden"}), 403
+#         company_id = get_jwt_company_id()
+#         if company_id is None:
+#             return jsonify({"error": "Unauthorized"}), 401
+#         if employee.company_id != company_id:
+#             return jsonify({"error": "Employee not found"}), 404
+
+#     try:
+#         db.session.delete(employee)
+#         db.session.commit()
+#     except IntegrityError:
+#         db.session.rollback()
+#         return jsonify({"error": "Integrity error deleting employee"}), 400
+
+#     return jsonify({"message": f"Employee id={id} deleted"}), 200
+
+
+
+#login sin comprobaciones
 @employee_bp.route('/login', methods=["POST"])
 def login():
     data = request.get_json()
@@ -211,3 +414,73 @@ def login():
         return jsonify({"msg": "Login successful", "token": access_token}), 200
     else:
         return jsonify({"msg": "Invalid email or password"}), 401
+
+
+      
+#nueva ruta de login con comprobaciones de administrador
+# @employee_bp.route('/login', methods= ["POST"])
+# def login():
+#     data = request.get_json(silent=True)
+#     if not data or not data.get("email") or not data.get("password"):
+#         return jsonify({"error": "JSON body required"}), 400
+    
+
+#     employee = db.session.execute(
+#         db.select(Employee).where(Employee.email == data["email"])
+#     ).scalar_one_or_none()
+
+#     if employee is None or not employee.check_password(data["password"]):
+#         return jsonify({"msg": "Invalid email or password"}), 401
+    
+#     # aqui cogemos el rol de la tabla de roles
+#     role_name = (employee.role.name if getattr(employee, "role", None) else "") or ""
+#     # quitamos espacios en blanco y convertimos a minuscula
+#     role_lower = role_name.strip().lower()
+#     # quitamos espacios intermedios y guiones
+#     role_norm = role_lower.repace("-", "").replace("_", "").replace(" ", "")
+#     if "ownerdb" in role_norm:
+#         system_role = "OWNERDB"
+#     if "admin" in role_norm:
+#         system_role = "ADMIN"
+#     elif "hr" in role_norm or "recursos" in role_norm:
+#         system_role = "HR"
+#     else:
+#         system_role = "EMPLOYEE"
+
+#     # con esto, incluimos company_id y system_role en el token para poder gestionar permisos
+#     additional_claims = {
+#         "company_id": employee.company_id,
+#         "system_role": system_role
+#     }
+#     access_token = create_access_token(identity=str(employee.id), additional_claims=additional_claims)
+#     return jsonify({"msg": "Login succesful", "token": access_token}), 200
+
+
+
+
+# CLOUDINARY
+# @employee_bp.route("/upload-img", methods=["POST"])
+# @jwt_required()
+# def upload_ing():
+#     employee_id = get_jwt_identity()
+#     file = request.files.get("file")
+#     employee = db.session.get(Employee, int(employee_id))
+#     if not file:
+#         return jsonify({"error": "No se envio el archivo "}), 400
+#     upload_result = cloudinary.uploader.upload(file)
+
+#     # Obtenemos el public_id de la imagen subida desde upload_result
+#     public_id = upload_result.get("public_id")
+
+#     image = CloudinaryImage(public_id)
+#     transformed_url = image.build_url(
+#         transformation=[
+#             {"crop": "fill", "gravity": "face", "width": 400, "height": 400}
+#         ]
+#     )
+
+#     employee.image = transformed_url
+
+#     db.session.commit()
+#     return jsonify({"msg": "ya esta en la nube", "imageUrl": upload_result["secure_url"]}), 200
+
