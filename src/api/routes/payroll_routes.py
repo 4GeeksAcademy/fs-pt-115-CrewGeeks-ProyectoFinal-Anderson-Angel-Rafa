@@ -3,7 +3,7 @@ from api.models import db, Employee, Company, Role, Salary, Payroll
 from flask_cors import CORS
 from flask_jwt_extended import get_jwt_identity, jwt_required, get_jwt
 from sqlalchemy.exc import IntegrityError
-from api.utiles.helpers_auth import (
+from api.utils_auth.helpers_auth import (
     get_jwt_company_id,
     get_system_role,
     is_admin_or_hr,
@@ -44,11 +44,10 @@ def get_all_payrolls():
 #             db.select(Payroll).where(Payroll.company_id == company_id)
 #         ).scalars().all()
 #     else:
-#         me = current_employee_id()
 #         payrolls = db.session.execute(
 #             db.select(Payroll).where(
 #                 Payroll.company_id == company_id,
-#                 Payroll.employee_id == me
+#                 Payroll.employee_id == current_employee_id()
 #             )
 #         ).scalars().all()
 
@@ -131,7 +130,7 @@ def create_payroll():
 #         return jsonify({"error": "JSON body required"}), 400
     
 #     try:
-#         employee_id = int(data.get("employee_id"))
+#         employee_id_body = int(data.get("employee_id"))
 #         period_year = int(data.get("period_year"))
 #         period_month = int(data.get("period_month"))
 #     except (TypeError, ValueError):
@@ -140,23 +139,23 @@ def create_payroll():
 #     if period_month < 1 or period_month > 12:
 #         return jsonify({"error": "period_month must be between 1 and 12"}), 400
     
-#     employee = db.session.get(Employee, employee_id)
-#     if not employee or employee.company_id != company_id:
+#     employee_target = db.session.get(Employee, employee_id_body)
+#     if not employee_target or employee_target.company_id != company_id:
 #         return jsonify({"error": "Employee not found"}), 404
     
-#     existing = db.session.execute(
+#     existing_payroll = db.session.execute(
 #         db.select(Payroll).where(
-#             Payroll.employee_id == employee_id,
+#             Payroll.employee_id == employee_id_body,
 #             Payroll.period_year == period_year,
 #             Payroll.period_month == period_month
 #         )
 #     ).scalar_one_or_none()
-#     if existing:
+#     if existing_payroll:
 #         return jsonify({"error": "Payroll already exists for this employee and period"}), 409
     
 #     payroll = Payroll(
 #         company_id=company_id,
-#         employee_id=employee_id,
+#         employee_id=employee_id_body,
 #         period_year=period_year,
 #         period_month=period_month
 #     )
@@ -231,8 +230,8 @@ def update_payroll(id):
 #     if new_period_month < 1 or new_period_month > 12:
 #         return jsonify({"error": "period_month must be between 1 and 12"}), 400
     
-#     employee = db.session.get(Employee, new_employee_id)
-#     if not employee or employee.company_id != company_id:
+#     employee_target = db.session.get(Employee, new_employee_id)
+#     if not employee_target or employee_target.company_id != company_id:
 #         return jsonify({"error": "Employee not found"}), 404
     
 #     if (new_employee_id != payroll.employee_id or
