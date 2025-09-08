@@ -13,8 +13,7 @@ body {
 }
 
 body {
-  display: flex;
-  justify-content: center;
+  
   margin: 0;
   background-color: #fffcf9;
   color: #222;
