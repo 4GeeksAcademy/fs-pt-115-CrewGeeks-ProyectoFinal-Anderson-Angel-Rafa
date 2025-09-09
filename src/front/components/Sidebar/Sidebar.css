@@ -1,34 +1,10 @@
-:root{
-  --nav-h: 72px;             
-  --sidebar-w: 280px;        
-  --radius: 18px;
-}
-
-
-.app-shell{
-  display: grid;
-  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
-  gap: 24px;
-  width: 100%;
-  min-height: calc(100vh - var(--nav-h));
-  padding: 24px;            
-}
-
-.sidebar{
-  
-  top: calc(var(--nav-h) + 12px);
-  align-self: start;
-  height: calc(100vh - var(--nav-h) - 36px);
-}
-
+/* NO pongas background/sticky aquí; ya lo hace el layout */
 .sidewrap{
-    position: sticky;
-  height: 100%;
-  border-radius: 20px;
+  /* mantenemos padding y radios para el interior */
   padding: 16px;
+  border-radius: 20px;
   color: #fff;
-  background: linear-gradient(180deg, #a476ff, #7b55d9 50%, #7046aa);
-  box-shadow: 0 8px 30px rgba(0,0,0,.15);
+  box-sizing: border-box;
 }
 
 .user-card{
@@ -40,19 +16,14 @@
   padding: 12px;
   margin-bottom: 16px;
   backdrop-filter: blur(2px);
+  background: #7046aa
 }
-
 
 .avatar{
   width: 44px; height: 44px; border-radius: 12px;
   display: grid; place-items: center;
-  background: #fff; color: #7046aa; font-weight: 700;
+  background: #7046aa; color: black; font-weight: 700;
 }
-
-
-.user-name{ font-weight: 700; line-height: 1; }
-.user-role{ opacity: .85; font-size: 12px; }
-
 
 .side-nav{ display: grid; gap: 22px; }
 .nav-section{ display: grid; gap: 8px; }
@@ -61,44 +32,25 @@
   opacity: .8; padding: 0 8px;
 }
 
-
 .nav-item{
   display: flex; align-items: center; gap: 12px;
   padding: 10px 12px; border-radius: 12px;
   color: #fff; text-decoration: none;
-  position: relative;
   transition: background .2s, transform .15s;
 }
-
-
-.nav-item .icon{ width: 22px; display: inline-grid; place-items: center; }
-.nav-item .label{ flex: 1; }
-.nav-item .badge{
-  font-size: 12px; font-weight: 700;
-  background: #33c27f; color: #0b3d2b;
-  padding: 2px 8px; border-radius: 999px;
-}
-
-
-.nav-item .badge.warn{ background: #ffc9c9; color: #7a1c1c; }
-
 .nav-item:hover{ background: rgba(255,255,255,.15); transform: translateY(-1px); }
-
-
 .nav-item.active{
   background: rgba(255,255,255,.22);
   box-shadow: inset 0 0 0 2px rgba(255,255,255,.25);
 }
+.nav-item .icon{ width: 22px; display: inline-grid; place-items: center; }
+.nav-item .label{ flex: 1; }
+.nav-item .badge{ font-size: 12px; font-weight: 700; background:#33c27f; color:#0b3d2b; padding:2px 8px; border-radius:999px; }
+.nav-item .badge.warn{ background:#ffc9c9; color:#7a1c1c; }
 
-
-.content{
-  width: 100%;
-  min-width: 0; /* clave en layouts CSS Grid */
-}
-
-
+/* Responsive */
 @media (max-width: 1024px){
-  :root{ --sidebar-w: 86px; }
+  .app-shell{ grid-template-columns: 86px 1fr; }
   .sidewrap{ padding: 12px; }
   .user-meta, .nav-section-label, .nav-item .label{ display: none; }
   .nav-item{ justify-content: center; padding: 10px; }
