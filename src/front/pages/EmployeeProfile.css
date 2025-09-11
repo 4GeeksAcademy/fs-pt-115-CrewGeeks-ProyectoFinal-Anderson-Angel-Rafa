@@ -1,35 +1,38 @@
 :root{
-  --nav-h: 72px;              /* altura del navbar */
+  --nav-h: 72px;              /* alto de tu navbar */
   --sidebar-w: 280px;         /* ancho sidebar */
   --panel-radius: 20px;
 }
 
-/* Página con fondo claro como el original (#fffcf9) */
-body, .app-page-bg {
+/* Fondo de página como el boceto */
+.app-page-bg, body {
   background: #fffcf9;
 }
 
-/* Grid: sidebar | contenido — ambas columnas comparten la MISMA altura */
+/* Grid: sidebar | contenido — comparten altura */
 .app-shell{
   display: grid;
   grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
-  align-items: stretch;          /* ← iguala alturas */
-  column-gap: 16px;              /* separación sutil (pegadas visualmente) */
+  align-items: start;            /* ← iguala alturas de columnas */
+  column-gap: 16px;                /* separación sutil (pegadas visualmente) */
   padding: 24px;
-  min-height: calc(100vh - var(--nav-h));
-  box-sizing: border-box;
+  
 }
 
-/* === Columna izquierda (panel morado a altura completa del dashboard) === */
-.app-sidebar{
-  position: relative;            /* base para el pseudo-fondo */
+/* ===== Columna izquierda (panel morado a altura completa) ===== */
+.app-sidebar {
+  background: linear-gradient(180deg, #a476ff 0%, #8b5fbf 100%);
+  border-radius: 20px;
+  padding: 0;
+  height: auto;         /* 🔑 se ajusta al contenido */
+  align-self: start;    /* 🔑 no se estira hasta el final */
 }
 
-/* Fondo morado + sombra + “grain pattern”, ocupa TODA la columna */
+/* Fondo morado + sombra (altura completa del dashboard) */
 .app-sidebar::before{
   content: "";
   position: absolute;
-  inset: 0;                      /* cubre toda la altura del dashboard */
+  inset: 0;                        /* ocupa toda la columna */
   border-radius: var(--panel-radius);
   background: linear-gradient(180deg, #a476ff 0%, #8b5fbf 100%);
   box-shadow:
@@ -38,44 +41,43 @@ body, .app-page-bg {
   z-index: 0;
 }
 
-/* “grain” sutil (como el HTML de referencia) */
+/* “grain” sutil como el HTML de referencia */
 .app-sidebar::after{
   content: "";
   position: absolute;
   inset: 0;
-  opacity: .30;
   border-radius: var(--panel-radius);
+  opacity: .30;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3Cpattern id='grain' width='100' height='100' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='25' cy='25' r='1' fill='rgba(255,255,255,0.1)'/%3E%3Ccircle cx='75' cy='75' r='1' fill='rgba(255,255,255,0.05)'/%3E%3Ccircle cx='50' cy='10' r='0.5' fill='rgba(255,255,255,0.1)'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23grain)'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
 }
 
-/* Contenido verdaderamente sticky (scrollea adentro si sobra) */
+/* Contenido realmente sticky (scrollea dentro si hace falta) */
 .app-sidebar .sidewrap{
   position: sticky;
-  top: calc(var(--nav-h) + 12px);             /* bajo el navbar */
-  height: calc(100vh - var(--nav-h) - 36px);  /* viewport disponible */
+  top: calc(var(--nav-h) + 12px);              /* debajo del navbar */
+  height: calc(100vh - var(--nav-h) - 36px);   /* alto visible */
   overflow: auto;
-  padding: 16px;
+  padding: 16px;                                /* tu Sidebar.css también define padding, no pasa nada */
   border-radius: var(--panel-radius);
-  background: transparent;                    /* el fondo lo pintan ::before/::after */
-  z-index: 1;                                 /* sobre el pseudo-fondo */
+  background: transparent;                      /* el fondo lo pintan ::before/::after */
+  z-index: 1;                                   /* sobre el pseudo-fondo */
   color: #fff;
 }
 
-/* === Columna derecha (panel blanco del dashboard) === */
+/* ===== Columna derecha (panel blanco del dashboard) ===== */
 .app-content{
   min-width: 0;
-  background: #fff;
+  background: #fffcf9;
   border-radius: 20px;
   padding: 24px;
-  /* sombra como la referencia + línea interior suave en borde izq */
   box-shadow:
-    -1px 0 0 rgba(0,0,0,0.06) inset,
+    -1px 0 0 rgba(0,0,0,0.06) inset,   /* línea sutil al borde izquierdo */
     0 20px 60px rgba(0,0,0,0.10);
 }
 
-/* Si quieres replicar exactamente la cabecera del dashboard: */
+/* (Opcional) si tu contenido usa estas clases del boceto, quedará igual: */
 .app-content .content-header{
   background: #fff;
   padding: 30px 40px 24px;
@@ -83,11 +85,12 @@ body, .app-page-bg {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
 }
+.app-content .content-body{ padding: 30px 40px; }
 
+/* Responsive */
 @media (max-width: 1024px){
   :root{ --sidebar-w: 88px; }
 }
-
 @media (max-width: 768px){
   .app-shell{
     grid-template-columns: 1fr;

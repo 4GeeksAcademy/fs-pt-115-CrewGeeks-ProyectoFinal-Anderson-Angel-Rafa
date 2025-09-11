@@ -1,57 +1,147 @@
-/* NO pongas background/sticky aquí; ya lo hace el layout */
-.sidewrap{
-  /* mantenemos padding y radios para el interior */
-  padding: 16px;
+/* ========== CONTENEDOR PRINCIPAL ========== */
+.sidewrap {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+  padding: 20px;
   border-radius: 20px;
+  position: sticky;
+  z-index: 1;
   color: #fff;
   box-sizing: border-box;
+   background: linear-gradient(180deg, #a476ff 0%, #7b55d9 50%, #7046aa 100%);
 }
 
-.user-card{
+/* ========== USER CARD ========== */
+.user-card {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(255,255,255,.12);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 14px;
-  padding: 12px;
-  margin-bottom: 16px;
+  padding: 14px;
   backdrop-filter: blur(2px);
-  background: #7046aa
 }
 
-.avatar{
-  width: 44px; height: 44px; border-radius: 12px;
-  display: grid; place-items: center;
-  background: #7046aa; color: black; font-weight: 700;
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-weight: 700;
+  font-size: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-.side-nav{ display: grid; gap: 22px; }
-.nav-section{ display: grid; gap: 8px; }
-.nav-section-label{
-  font-size: 12px; text-transform: uppercase; letter-spacing: .6px;
-  opacity: .8; padding: 0 8px;
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
 }
 
-.nav-item{
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 12px; border-radius: 12px;
-  color: #fff; text-decoration: none;
-  transition: background .2s, transform .15s;
+.user-name {
+  font-weight: 700;
+  font-size: 16px;
 }
-.nav-item:hover{ background: rgba(255,255,255,.15); transform: translateY(-1px); }
-.nav-item.active{
-  background: rgba(255,255,255,.22);
-  box-shadow: inset 0 0 0 2px rgba(255,255,255,.25);
-}
-.nav-item .icon{ width: 22px; display: inline-grid; place-items: center; }
-.nav-item .label{ flex: 1; }
-.nav-item .badge{ font-size: 12px; font-weight: 700; background:#33c27f; color:#0b3d2b; padding:2px 8px; border-radius:999px; }
-.nav-item .badge.warn{ background:#ffc9c9; color:#7a1c1c; }
 
-/* Responsive */
-@media (max-width: 1024px){
-  .app-shell{ grid-template-columns: 86px 1fr; }
-  .sidewrap{ padding: 12px; }
-  .user-meta, .nav-section-label, .nav-item .label{ display: none; }
-  .nav-item{ justify-content: center; padding: 10px; }
+.user-role {
+  opacity: 0.75;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========== NAV SECTIONS ========== */
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav-section-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+  padding: 0 6px;
+  font-weight: 600;
+}
+
+/* ========== NAV ITEMS ========== */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  transition: background 0.25s, border-left 0.25s, transform 0.15s;
+  border-left: 3px solid transparent;
+  font-size: 14px;
+}
+
+.nav-item .icon {
+  width: 22px;
+  display: inline-grid;
+  place-items: center;
+  font-size: 16px;
+}
+
+.nav-item .label {
+  flex: 1;
+}
+
+.nav-item .badge {
+  font-size: 11px;
+  font-weight: 700;
+  background: #33c27f;
+  color: #0b3d2b;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.nav-item .badge.warn {
+  background: #e74c3c;
+  color: #fff;
+}
+
+/* estados */
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-left-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+  color: #fff;
+}
+
+.nav-item.active {
+  background: rgba(255, 255, 255, 0.18);
+  border-left-color: #fff;
+  color: #fff;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+  .sidewrap {
+    padding: 12px;
+  }
+  .user-meta,
+  .nav-section-label,
+  .nav-item .label {
+    display: none;
+  }
+  .nav-item {
+    justify-content: center;
+    padding: 12px;
+  }
 }
