@@ -1,0 +1,210 @@
+.employee-holidays {
+  padding: 1.5rem;
+}
+
+.employee-holidays__title {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.2;
+  font-size: clamp(1.75rem, 2vw + 1rem, 2.5rem);
+}
+
+.employee-holidays__stats {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.employee-holidays__stat {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.employee-holidays__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.employee-holidays__icon--available {
+  background-color: #FFF8E1;
+  color: #F5A623;
+}
+
+.employee-holidays__icon--used {
+  background-color: #E8F5E9;
+  color: #4CAF50;
+}
+
+.employee-holidays__icon--pending {
+  background-color: #FFFDE7;
+  color: #FFC107;
+}
+
+.employee-holidays__icon--remaining {
+  background-color: #F3E5F5;
+  color: #7E57C2;
+}
+
+.employee-holidays__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.employee-holidays__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #333333;
+}
+
+.employee-holidays__label {
+  font-size: 0.875rem;
+  color: #666666;
+}
+
+/* Contenedor del formulario */
+.employee-holidays__form {
+  margin-top: 2rem;
+  background-color: #ffffff;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Fila del formulario con inputs */
+.employee-holidays__form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Etiquetas en inputs y textareas */
+.employee-holidays__form label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+/* Inputs y textareas */
+.employee-holidays__form input,
+.employee-holidays__form textarea {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* Días calculados */
+.employee-holidays__dias {
+  font-weight: 700;
+  margin-left: 0.25rem;
+}
+
+/* Acciones del formulario */
+.employee-holidays__form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Estilos para los contenedores de solicitudes */
+.employee-holidays__requests {
+  margin-top: 2rem;
+}
+
+.employee-holidays__requests h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* Lista de solicitudes */
+.employee-holidays__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Cada solicitud */
+.employee-holidays__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Estado de la solicitud */
+.employee-holidays__estado {
+  margin: 0 1rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+/* Colores por estado */
+.employee-holidays__estado.pendiente {
+  background-color: #FFFDE7;
+  color: #FFC107;
+}
+
+.employee-holidays__estado.aprobado {
+  background-color: #E8F5E9;
+  color: #4CAF50;
+}
+
+.employee-holidays__estado.denegado {
+  background-color: #FFEBEE;
+  color: #F44336;
+}
+
+/* Acciones de cada solicitud */
+.employee-holidays__acciones {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.employee-holidays__acciones button {
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: #ffffff;
+}
+
+/* Botones de aprobación, denegación y eliminación */
+.employee-holidays__acciones button:nth-child(1) {
+  background-color: #4CAF50;
+}
+
+.employee-holidays__acciones button:nth-child(2) {
+  background-color: #FFC107;
+}
+
+.employee-holidays__acciones button:nth-child(3) {
+  background-color: #F44336;
+}
+

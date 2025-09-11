@@ -14,6 +14,9 @@ export const Navbar = () => {
 				return {text: 'VOLVER', to: '/' };
 			case '/profile':
 				return {text: 'CERRAR SESION', to: '/login'}
+			case '/holidays':
+				return {text: 'CERRAR SESION', to: '/login'}
+
 			
 		}
 	}
