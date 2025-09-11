@@ -14,7 +14,6 @@
   display: grid;
   grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
   align-items: start;            /* ← iguala alturas de columnas */
-  column-gap: 16px;                /* separación sutil (pegadas visualmente) */
   padding: 24px;
   
 }

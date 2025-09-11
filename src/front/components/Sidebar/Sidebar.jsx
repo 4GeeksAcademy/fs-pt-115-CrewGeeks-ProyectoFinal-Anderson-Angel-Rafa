@@ -13,14 +13,14 @@ export const Sidebar = () => {
                 </div>
             </div>
 
-            <nav className="side-nav">
+            <main className="side-nav">
                 <div className="nav-section">
                     <div className="nav-section-label">Principal</div>
                     <NavLink to="/profile" className="nav-item">
-                        <span className="icon">🏠</span><span className="label">Dashboard</span>
+                        <span className="label">Dashboard</span>
                     </NavLink>
                     <NavLink to="/mi-perfil" className="nav-item">
-                        <span className="icon">👤</span><span className="label">Mi perfil</span>
+                        <span className="label">Mi perfil</span>
                     </NavLink>
                 </div>
 
@@ -34,8 +34,7 @@ export const Sidebar = () => {
                 <div className="nav-section">
                     <div className="nav-section-label">Solicitudes</div>
                     <NavLink to="/vacaciones" className="nav-item">
-                        <span className="icon">🏖️</span><span className="label">Vacaciones</span>
-                        <span className="badge">2</span>
+                        <span className="label">Vacaciones</span>
                     </NavLink>
                     <NavLink to="/bajas" className="nav-item"> Bajas medicas </NavLink>
                     <NavLink to="/permisos" className="nav-item"> Permisos </NavLink>
@@ -44,8 +43,7 @@ export const Sidebar = () => {
                 <div className="nav-section">
                     <div className="nav-section-label">Comunicación</div>
                     <NavLink to="/buzon" className="nav-item">
-                        <span className="icon">📬</span><span className="label">Buzón</span>
-                        <span className="badge warn">5</span>
+                        <span className="label">Buzón</span>
                     </NavLink>
                     <NavLink to="/sugerencias" className="nav-item"> Sugerencias </NavLink>
                     <NavLink to="/documentos" className="nav-item"> Documentos </NavLink>
@@ -53,7 +51,7 @@ export const Sidebar = () => {
 
 
 
-            </nav>
+            </main>
 
         </div>
     );
