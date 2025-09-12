@@ -10,8 +10,9 @@ import { Home } from "./pages/Home";
 import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 import { LoginPage } from "./pages/LoginPage";
-import { EmployeeProfile } from "./pages/EmployeeProfile";
+
 import { HolidaysPage } from "./pages/HolidaysPage";
+import { EmployeeDashboard } from "./pages/EmployeeDashboard";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -29,7 +30,7 @@ export const router = createBrowserRouter(
         <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
         <Route path="/demo" element={<Demo />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/profile" element={<EmployeeProfile/>}/>
+        <Route path="/dashboard" element={<EmployeeDashboard/>}/>
         <Route path="/holidays" element={<HolidaysPage/>}/>
         
       </Route>
