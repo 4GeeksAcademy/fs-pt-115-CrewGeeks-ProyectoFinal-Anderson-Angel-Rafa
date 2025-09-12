@@ -1,63 +1,131 @@
+// EmployeeHolidays.jsx
+// Versión para usuario con 22 días laborables disponibles fijos.
+// El usuario no puede aprobar, denegar ni eliminar solicitudes; solo puede crear y editar las suyas.
+
 import React, { useState, useMemo } from "react";
 import "./EmployeeHolidays.css";
 
 export const EmployeeHolidays = () => {
-  // Estado del formulario (inicio, fin y motivo)
+  // Formulario (inicio, fin, motivo)
   const [formulario, setFormulario] = useState({
     inicio: "",
     fin: "",
     motivo: "",
   });
 
-  // Lista de solicitudes registradas
+  // Identificador de la solicitud en edición (null si no se edita)
+  const [editId, setEditId] = useState(null);
+
+  // Días disponibles base fijos para el usuario: 22 laborables
+  const DIAS_DISPONIBLES_BASE = 22;
+
+  // Festivos opcionales (YYYY-MM-DD)
+  const FERIADOS = useMemo(() => new Set([]), []);
+
+  // Lista de solicitudes
   const [solicitudes, setSolicitudes] = useState([]);
 
-  // Cálculo de días solicitados (inclusive)
-  const diasSolicitados = useMemo(() => {
-    if (!formulario.inicio || !formulario.fin) return 0;
-    const fInicio = new Date(formulario.inicio);
-    const fFin = new Date(formulario.fin);
-    const dif = (fFin - fInicio) / (1000 * 60 * 60 * 24);
-    if (isNaN(dif) || dif < 0) return 0;
-    return Math.floor(dif) + 1;
-  }, [formulario.inicio, formulario.fin]);
+  // Función para contar días laborables (L-V), excluyendo festivos
+  const contarLaborables = (inicioStr, finStr) => {
+    if (!inicioStr || !finStr) return 0;
+    const inicio = new Date(inicioStr);
+    const fin = new Date(finStr);
+    if (isNaN(inicio) || isNaN(fin) || fin < inicio) return 0;
 
-  // Actualizar campos del formulario al escribir
+    let count = 0;
+    for (
+      let d = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate());
+      d <= fin;
+      d.setDate(d.getDate() + 1)
+    ) {
+      const dow = d.getDay(); // 0=Domingo, 6=Sábado
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const da = String(d.getDate()).padStart(2, "0");
+      const iso = `${y}-${m}-${da}`;
+      const esLaborable = dow >= 1 && dow <= 5 && !FERIADOS.has(iso);
+      if (esLaborable) count++;
+    }
+    return count;
+  };
+
+  // Días laborables solicitados para la solicitud actual
+  const diasSolicitados = useMemo(() => {
+    return contarLaborables(formulario.inicio, formulario.fin);
+  }, [formulario.inicio, formulario.fin, FERIADOS]);
+
+  // Días usados (solicitudes aprobadas)
+  const diasUsados = useMemo(() => {
+    return solicitudes
+      .filter((s) => s.estado === "APROBADO")
+      .reduce((acc, s) => acc + s.dias, 0);
+  }, [solicitudes]);
+
+  // Días pendientes (solicitudes pendientes)
+  const diasPendientes = useMemo(() => {
+    return solicitudes
+      .filter((s) => s.estado === "PENDIENTE")
+      .reduce((acc, s) => acc + s.dias, 0);
+  }, [solicitudes]);
+
+  // Días restantes = 22 - (usados + pendientes)
+  const diasRestantes = useMemo(() => {
+    const resto = DIAS_DISPONIBLES_BASE - diasUsados - diasPendientes;
+    return resto >= 0 ? resto : 0;
+  }, [DIAS_DISPONIBLES_BASE, diasUsados, diasPendientes]);
+
+  // Manejar cambios en el formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormulario((f) => ({ ...f, [name]: value }));
   };
 
-  // Enviar la solicitud: valida y añade a la lista
+  // Enviar nueva solicitud o actualizar una existente
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formulario.inicio || !formulario.fin || diasSolicitados <= 0) return;
 
-    const nuevaSolicitud = {
-      id: Date.now(), // identificador sencillo
-      inicio: formulario.inicio,
-      fin: formulario.fin,
-      dias: diasSolicitados,
-      motivo: formulario.motivo.trim(),
-      estado: "PENDIENTE", // estados: PENDIENTE, APROBADO, DENEGADO
-    };
+    if (editId !== null) {
+      // Actualizar solicitud existente
+      setSolicitudes((prev) =>
+        prev.map((s) =>
+          s.id === editId
+            ? {
+                ...s,
+                inicio: formulario.inicio,
+                fin: formulario.fin,
+                dias: diasSolicitados,
+                motivo: formulario.motivo.trim(),
+              }
+            : s
+        )
+      );
+      setEditId(null);
+    } else {
+      // Nueva solicitud (queda como PENDIENTE)
+      const nueva = {
+        id: Date.now(),
+        inicio: formulario.inicio,
+        fin: formulario.fin,
+        dias: diasSolicitados,
+        motivo: formulario.motivo.trim(),
+        estado: "PENDIENTE",
+      };
+      setSolicitudes((prev) => [nueva, ...prev]);
+    }
 
-    // Añadir al inicio de la lista
-    setSolicitudes((prev) => [nuevaSolicitud, ...prev]);
     // Reiniciar formulario
     setFormulario({ inicio: "", fin: "", motivo: "" });
   };
 
-  // Cambiar estado de una solicitud
-  const actualizarEstado = (id, nuevoEstado) => {
-    setSolicitudes((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, estado: nuevoEstado } : s))
-    );
-  };
-
-  // Eliminar una solicitud de la lista
-  const eliminarSolicitud = (id) => {
-    setSolicitudes((prev) => prev.filter((s) => s.id !== id));
+  // Activar modo edición para una solicitud
+  const editarSolicitud = (solicitud) => {
+    setFormulario({
+      inicio: solicitud.inicio,
+      fin: solicitud.fin,
+      motivo: solicitud.motivo,
+    });
+    setEditId(solicitud.id);
   };
 
   return (
@@ -65,41 +133,44 @@ export const EmployeeHolidays = () => {
       <h1 className="employee-holidays__title">Vacaciones</h1>
       <p>Gestiona tus días de vacaciones y solicitudes</p>
 
-      {/* Estadísticas de vacaciones */}
+      {/* Estadísticas: disponibles, usados, pendientes, restantes */}
       <div className="employee-holidays__stats">
         <div className="employee-holidays__stat">
           <div className="employee-holidays__icon employee-holidays__icon--available">
             <i className="fa-solid fa-umbrella-beach" aria-hidden="true"></i>
           </div>
           <div className="employee-holidays__content">
-            <span className="employee-holidays__value">22</span>
+            <span className="employee-holidays__value">{DIAS_DISPONIBLES_BASE}</span>
             <span className="employee-holidays__label">Días disponibles</span>
           </div>
         </div>
+
         <div className="employee-holidays__stat">
           <div className="employee-holidays__icon employee-holidays__icon--used">
             <i className="fa-solid fa-circle-check" aria-hidden="true"></i>
           </div>
           <div className="employee-holidays__content">
-            <span className="employee-holidays__value">8</span>
+            <span className="employee-holidays__value">{diasUsados}</span>
             <span className="employee-holidays__label">Días usados</span>
           </div>
         </div>
+
         <div className="employee-holidays__stat">
           <div className="employee-holidays__icon employee-holidays__icon--pending">
             <i className="fa-solid fa-hourglass-half" aria-hidden="true"></i>
           </div>
           <div className="employee-holidays__content">
-            <span className="employee-holidays__value">11</span>
+            <span className="employee-holidays__value">{diasPendientes}</span>
             <span className="employee-holidays__label">Días pendientes</span>
           </div>
         </div>
+
         <div className="employee-holidays__stat">
           <div className="employee-holidays__icon employee-holidays__icon--remaining">
             <i className="fa-solid fa-file-lines" aria-hidden="true"></i>
           </div>
           <div className="employee-holidays__content">
-            <span className="employee-holidays__value">3</span>
+            <span className="employee-holidays__value">{diasRestantes}</span>
             <span className="employee-holidays__label">Días restantes</span>
           </div>
         </div>
@@ -128,7 +199,7 @@ export const EmployeeHolidays = () => {
             />
           </label>
           <div>
-            <span>Días:</span>
+            <span>Días laborables:</span>
             <span className="employee-holidays__dias">{diasSolicitados}</span>
           </div>
         </div>
@@ -144,11 +215,14 @@ export const EmployeeHolidays = () => {
         </label>
         <div className="employee-holidays__form-actions">
           <button type="submit" disabled={diasSolicitados <= 0}>
-            Enviar solicitud
+            {editId !== null ? "Actualizar" : "Enviar solicitud"}
           </button>
           <button
             type="button"
-            onClick={() => setFormulario({ inicio: "", fin: "", motivo: "" })}
+            onClick={() => {
+              setFormulario({ inicio: "", fin: "", motivo: "" });
+              setEditId(null);
+            }}
           >
             Cancelar
           </button>
@@ -168,7 +242,7 @@ export const EmployeeHolidays = () => {
                   <strong>
                     {s.inicio} — {s.fin}
                   </strong>{" "}
-                  <span>({s.dias} días)</span>
+                  <span>({s.dias} días laborables)</span>
                   {s.motivo && <span> · {s.motivo}</span>}
                 </div>
                 <span
@@ -177,23 +251,18 @@ export const EmployeeHolidays = () => {
                   {s.estado}
                 </span>
                 <div className="employee-holidays__acciones">
+                  {/* 
+                    🔒 Vista usuario: sin permisos para aprobar, denegar ni eliminar.
+                    <button type="button" onClick={() => actualizarEstado(s.id, "APROBADO")}>Aprobar</button>
+                    <button type="button" onClick={() => actualizarEstado(s.id, "DENEGADO")}>Denegar</button>
+                    <button type="button" onClick={() => eliminarSolicitud(s.id)}>Eliminar</button>
+                  */}
                   <button
                     type="button"
-                    onClick={() => actualizarEstado(s.id, "APROBADO")}
+                    className="employee-holidays__btn-edit"
+                    onClick={() => editarSolicitud(s)}
                   >
-                    Aprobar
-                  </button>
-                    <button
-                    type="button"
-                    onClick={() => actualizarEstado(s.id, "DENEGADO")}
-                  >
-                    Denegar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => eliminarSolicitud(s.id)}
-                  >
-                    Eliminar
+                    Editar
                   </button>
                 </div>
               </li>
