@@ -196,7 +196,17 @@
 }
 
 /* Botones de aprobación, denegación y eliminación */
-.employee-holidays__acciones button:nth-child(1) {
+.employee-holidays__btn-edit {
+  background-color: #2196F3;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+/* .employee-holidays__acciones button:nth-child(1) {
   background-color: #4CAF50;
 }
 
@@ -206,5 +216,13 @@
 
 .employee-holidays__acciones button:nth-child(3) {
   background-color: #F44336;
+} */
+
+
+
+/* Opcional: efectos de hover/focus */
+.employee-holidays__btn-edit:hover,
+.employee-holidays__btn-edit:focus {
+  filter: brightness(0.95);
 }
 
