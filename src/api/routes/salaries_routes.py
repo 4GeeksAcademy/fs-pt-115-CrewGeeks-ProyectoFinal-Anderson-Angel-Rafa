@@ -17,17 +17,6 @@ salary_bp = Blueprint('salary', __name__, url_prefix = '/salaries')
 CORS(salary_bp)
 
 
-# AQUI TODOS PUEDEN HACER GETS DE SALARYS  BORRAR
-# @salary_bp.route("/", methods=["GET"])
-# @jwt_required()
-# def get_salaries():
-#     employee_id = int(get_jwt_identity())
-#     employee = db.session.get(Employee, employee_id)
-#     if not employee:
-#         return jsonify({"error": "Salary not found"}), 404
-
-#     salaries = db.session.query(Salary).all()
-#     return jsonify([s.serialize() for s in salaries]), 200
 
 
 # AQUI PUEDEN HACER GET ADMIN/HR/OWNERDB
@@ -41,20 +30,6 @@ def get_salaries():
     return jsonify([s.serialize() for s in salaries]), 200
 
 
-# AQUI PUEDEN HACER GET TODOS  BORRAR
-# @salary_bp.route("/<int:id>", methods=["GET"])
-# @jwt_required()
-# def get_salary(id):
-#     employee_id = int(get_jwt_identity())
-#     employee = db.session.get(Employee, employee_id)
-#     if not employee:
-#         return jsonify({"error": "Employee not found"}), 404
-
-
-#     salary = db.session.get(Salary, id)
-#     if not salary:
-#         return jsonify({"error": "Salary not found"}), 404
-#     return jsonify(salary.serialize()), 200
 
 
 # AQUI PUEDEN HACER GET ADMIN/HR/OWNERDB
@@ -71,33 +46,6 @@ def get_salary(id):
 
 
 
-# AQUI PUEDEN POSTEAR SALARYS TODOS  BORRAR
-# @salary_bp.route("/", methods=["POST"])
-# @jwt_required()
-# def create_salary():
-#     employee_id = int(get_jwt_identity())
-#     employee = db.session.get(Employee, employee_id)
-#     if not employee:
-#         return jsonify({"error": "Salary not found"}), 404
-    
-
-#     data = request.get_json(silent=True)
-#     if not data:
-#         return jsonify({"error": "JSON body required"}), 400
-
-#     salary_amount = data.get("amount")
-#     try:
-#         amount = int(salary_amount)
-#     except (TypeError, ValueError):
-#         return jsonify({"error": "amount debe ser un entero"}), 400
-
-#     if amount <= 0:
-#         return jsonify({"error": "amount debe ser mayor que 0"}), 400
-
-#     salary = Salary(amount=amount)
-#     db.session.add(salary)
-#     db.session.commit()
-#     return jsonify(salary.serialize()), 201
 
 
 # AQUI PUEDEN POSTEAR ADMIN/HR/OWNERDB
@@ -128,47 +76,8 @@ def create_salary():
     
     return jsonify(salary.serialize()), 201
 
-#para pruebas  BORRAR
-# @salary_bp.route("/", methods=["POST"])
-# def create_salary():
-#     data = request.get_json(silent=True)
-#     if not data:
-#         return jsonify({"error": "JSON body required"}), 400
-#     salary_amount = data.get("amount")
-#     try:
-#         amount = int(salary_amount)
-#     except (TypeError, ValueError):
-#         return jsonify({"error": "amount debe ser un entero"}), 400
-#     if amount <= 0:
-#         return jsonify({"error": "amount debe ser mayor que 0"}), 400
-#     salary = Salary(amount=amount)
-#     db.session.add(salary)
-#     db.session.commit()
-#     return jsonify(salary.serialize()), 201
 
 
-# AQUI PUEDE EDITAR CUALQUIERA
-# @salary_bp.route("/edit/<int:id>", methods=["PUT"])
-# @jwt_required()
-# def update_salary(id):
-#     employee_id = int(get_jwt_identity())
-#     employee = db.session.get(Employee, employee_id)
-#     if not employee:
-#         return jsonify({"error": "Employee not found"}), 404
-
-#     salary = db.session.get(Salary, id)
-#     if not salary:
-#         return jsonify({"error" : "Salary not found"}), 404
-    
-#     data = request.get_json(silent=True)
-#     if not data:
-#         return jsonify({"error": "JSON body required"}), 400
-    
-#     if "amount" in data:
-#         salary.amount = data["amount"]
-
-#     db.session.commit()
-#     return jsonify(salary.serialize()), 200
 
 
 # AQUI PUEDEN EDITAR ADMIN/HR/OWNERDB
@@ -205,22 +114,6 @@ def update_salary(id):
 
 
 
-# AQUI PUEDEN BORRAR TODOS   BORRAR
-# @salary_bp.route("/delete/<int:id>", methods=["DELETE"])
-# @jwt_required()
-# def delete_salary(id):
-#     employee_id = int(get_jwt_identity())
-#     employee = db.session.get(Employee, employee_id)
-#     if not employee:
-#         return jsonify({"error": "Employee not found"}), 404
-    
-#     salary = db.session.get(Salary, id)
-#     if not salary:
-#         return jsonify({"error": "Salary not found"}), 404
-    
-#     db.session.delete(salary)
-#     db.session.commit()
-#     return jsonify({"msg" : f'Salary id={id} deleted'}), 200
 
 
 # AQUI BORRAN ADMIN/HR/OWNERDB
