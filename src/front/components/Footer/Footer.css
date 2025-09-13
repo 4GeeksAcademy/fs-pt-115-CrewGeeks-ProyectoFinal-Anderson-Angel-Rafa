@@ -1,0 +1,76 @@
+.cg-foot {
+  background: #f6f9fc;
+  color: #334155;
+  padding: 48px 0 24px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.cg-foot .cg-container {
+  width: min(1120px, 92vw);
+  margin-inline: auto;
+}
+
+.cg-foot-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.cg-foot .cg-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  margin: 0 0 6px;
+}
+
+.cg-foot .cg-brand-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #7b55d9, #3b82f6);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+.cg-foot p {
+  margin: 0;
+  color: #64748b;
+}
+
+.cg-foot h4 {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.cg-foot .cg-links {
+  display: grid;
+  gap: 8px;
+}
+
+.cg-foot a {
+  color: #334155;
+  text-decoration: none;
+}
+.cg-foot a:hover {
+  color: #0f172a;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.cg-foot-hr {
+  height: 3px;
+  background: #b2b4b8;
+  border: 0;
+  margin: 20px 0 12px; 
+}
+
+.cg-foot-bottom {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+}

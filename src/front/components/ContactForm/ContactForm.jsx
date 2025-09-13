@@ -17,49 +17,79 @@ export const ContactForm = () => {
   //     return <p>Cagando....</p>
   // }
 
+  {/* {error && <p>{error}</p>}
+          {
+              data.map(e => (
+                  <p key={e.id}>{e.first_name}</p>
+              ))
+          } */}
   return (
     <>
-      <section className="contact-section">
-        {/* {error && <p>{error}</p>}
-                {
-                    data.map(e => (
-                        <p key={e.id}>{e.first_name}</p>
-                    ))
-                } */}
+      <section className="cg-contact" id="contact">
+        <div className="cg-container">
+          <h2>Contacto</h2>
+          <p className="cg-lead">Cuéntanos brevemente tu caso y te responderemos con los siguientes pasos. Los campos marcados con <span aria-hidden="true">*</span> son obligatorios.</p>
 
-        <form id="contacto" className="contact-card" noValidate>
-          <h2 className="contact-title">CONTACTA CON NOSOTROS</h2>
+          <div className="cg-contact-card">
+            <form className="cg-form" action="#" method="post">
+              <div className="cg-form-grid">
+                
+                <div className="cg-field">
+                  <label className="cg-label" htmlFor="cg-name">Nombre completo <span className="cg-required" aria-hidden="true">*</span></label>
+                  <input className="cg-input" type="text" id="cg-name" name="name" autoComplete="name" required/>
+                </div>
 
-          <div className="form-grid">
-            <div className="field">
-              <label htmlFor="firstname">Nombre</label>
-              <input id="firstname" type="text" placeholder="Tu nombre" />
-            </div>
+                
+                <div className="cg-field">
+                  <label className="cg-label" htmlFor="cg-email">Email <span className="cg-required" aria-hidden="true">*</span></label>
+                  <input className="cg-input" type="email" id="cg-email" name="email" autoComplete="email" required/>
+                </div>
 
-            <div className="field">
-              <label htmlFor="lastname">Apellido</label>
-              <input id="lastname" type="text" placeholder="Tus apellidos" />
-            </div>
+                
+                <div className="cg-field">
+                  <label className="cg-label" htmlFor="cg-company">Empresa / centro</label>
+                  <input className="cg-input" type="text" id="cg-company" name="company" autoComplete="organization"/>
+                </div>
 
-            <div className="field">
-              <label htmlFor="email">Email</label>
-              <input id="email" type="email" placeholder="tu@email.com" />
-            </div>
+                
+                <div className="cg-field">
+                  <label className="cg-label" htmlFor="cg-phone">Teléfono <span className="cg-required" aria-hidden="true">*</span></label>
+                  <input className="cg-input" type="tel" id="cg-phone" name="phone" autoComplete="tel"/>
+                </div>
 
-            <div className="field">
-              <label htmlFor="mobile">Móvil</label>
-              <input id="mobile" type="tel" placeholder="+34 600 000 000" />
-            </div>
+                
+                <div className="cg-field cg-col-span-2">
+                  <label className="cg-label" htmlFor="cg-subject">Asunto</label>
+                  <input className="cg-input" type="text" id="cg-subject" name="subject" placeholder="Ej.: Duda sobre control horario"/>
+                </div>
 
-            <div className="field field--full">
-              <label htmlFor="message">¡CUENTANOS!</label>
-              <textarea id="message" rows="5" placeholder="Escribe tu mensaje..." />
-            </div>
+              
+                <div className="cg-field cg-col-span-2">
+                  <label className="cg-label" htmlFor="cg-message">Mensaje <span className="cg-required" aria-hidden="true">*</span></label>
+                  <textarea className="cg-textarea" id="cg-message" name="message" required></textarea>
+                </div>
+
+                
+                <div className="cg-col-span-2 cg-consent">
+                  <input type="checkbox" id="cg-consent" name="consent" required/>
+                    <label htmlFor="cg-consent">He leído y acepto la política de privacidad (RGPD). <span className="cg-required" aria-hidden="true">*</span></label>
+                </div>
+
+              
+                <div className="cg-col-span-2 cg-actions">
+                  <button className="cg-btn cg-btn--primary" type="submit">Enviar mensaje</button>
+                  <a className="cg-btn cg-btn--secondary" href="mailto:contacto@tu-dominio.com">Escribir por correo</a>
+                </div>
+
+                <div className="cg-col-span-2 cg-small">
+                  Al enviar aceptas que almacenemos tu consulta para poder responderte.
+                </div>
+              </div>
+            </form>
           </div>
-
-          <button id="button-Form" type="submit">Enviar</button>
-        </form>
+        </div>
       </section>
+
 
 
 

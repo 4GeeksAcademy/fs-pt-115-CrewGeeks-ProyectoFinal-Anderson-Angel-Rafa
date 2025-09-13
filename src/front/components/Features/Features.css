@@ -1,0 +1,128 @@
+.cg-section {
+  padding: clamp(48px, 10vw, 96px) 0;
+}
+
+.cg-container {
+  width: min(1120px, 92vw);
+  margin-inline: auto;
+}
+
+.cg-section h2 {
+  text-align: center;
+  font-size: clamp(24px, 3vw, 32px);
+  margin-bottom: 10px;
+}
+
+.cg-section p.cg-lead {
+  text-align: center;
+  color: #64748b;
+  max-width: 70ch;
+  margin: 0 auto 28px;
+}
+
+
+.cg-features{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+
+.cg-feature{
+  background: #F9FAFB;
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 1px 2px rgba(16,24,40,0.06);
+  display: flex;
+  flex-direction: column; 
+  gap: 12px;                
+  align-items: flex-start;  
+  height: 100%;
+}
+
+.cg-feature:hover{
+  box-shadow: 0 10px 28px rgba(17,24,39,0.10);
+  transform: translateY(-1px);
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+
+
+.cg-feature h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #0f172a;
+    font-weight: 800;
+}
+
+.cg-feature p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.cg-icon-profile{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #DBEAFE;
+  display: grid;
+  place-items: center;
+  font-size: 22px; 
+  line-height: 1;
+}
+
+.cg-icon-calendar{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #DCFCE7;
+  display: grid;
+  place-items: center;
+  font-size: 22px; 
+  line-height: 1;
+}
+
+.cg-icon-payroll{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #F3E8FF;
+  display: grid;
+  place-items: center;
+  font-size: 22px; 
+  line-height: 1;
+}
+
+.cg-icon-holidays{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #FFEDD5;
+  display: grid;
+  place-items: center;
+  font-size: 22px; 
+  line-height: 1;
+}
+
+.cg-icon-suggestions{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #FEE2E2;
+  display: grid;
+  place-items: center;
+  font-size: 22px; 
+  line-height: 1;
+}
+
+.cg-icon-roles{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #E0E7FF;
+  display: grid;
+  place-items: center;
+  font-size: 22px; 
+  line-height: 1;
+}

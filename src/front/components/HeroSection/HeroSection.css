@@ -1,0 +1,54 @@
+.cg-hero {
+  padding: calc(clamp(48px, 10vw, 96px) + 12px) 0 clamp(48px, 10vw, 96px);
+  background-color: #F4F8FD;
+}
+
+.cg-container {
+  width: min(1120px, 92vw);
+  margin-inline: auto;
+}
+
+.cg-hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 32px;
+  align-items: center;
+}
+
+.hero-tittle {
+  margin: 12px 0 8px;
+  font-size: clamp(32px, 4.5vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.hero-tittle-color {
+    color: #3B82F6;
+}
+
+.cg-hero p {
+  color: #64748b;
+  max-width: 56ch;
+}
+
+.cg-hero-ctas {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+}
+
+.cg-trust {
+  margin-top: 14px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.cg-hero-image {
+  position: relative;
+  aspect-ratio: 4/3;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+  padding: 16px;
+}
