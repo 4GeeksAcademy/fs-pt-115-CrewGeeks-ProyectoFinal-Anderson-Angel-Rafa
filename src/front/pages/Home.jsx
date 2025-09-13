@@ -1,7 +1,10 @@
-import { InfoAbout } from "../components/AboutMe/InfoAbout.jsx";
-import { ContactForm } from "../components/ContactForm/ContactForm.jsx";
-import { Slider } from "../components/SliderLanding/Slider.jsx";
-import { CardsInfo } from "../components/CardsInfo/CardsInfo.jsx";
+import { AboutPlatform } from "../components/AboutMe/AboutPlatform"
+import { CallToAction } from "../components/CardsInfo/CallToAction";
+import { ContactForm } from "../components/ContactForm/ContactForm";
+import { Features } from "../components/Features/Features";
+import { HeroSection } from "../components/HeroSection/HeroSection";
+
+
 
 
 
@@ -10,10 +13,11 @@ export const Home = () => {
 
 	return (
 		<>
-			<Slider/>
-			<InfoAbout />
-			<CardsInfo />
+			<HeroSection />
+			<Features />
+			<AboutPlatform />
 			<ContactForm />
+			<CallToAction />
 		</>
 		
 
