@@ -10,9 +10,9 @@ import { Home } from "./pages/Home";
 import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 import { LoginPage } from "./pages/LoginPage";
-
 import { HolidaysPage } from "./pages/HolidaysPage";
 import { EmployeeDashboard } from "./pages/EmployeeDashboard";
+import { EmployeeProfilePage } from "./pages/EmployeeProfilePage";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -32,6 +32,7 @@ export const router = createBrowserRouter(
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={<EmployeeDashboard/>}/>
         <Route path="/holidays" element={<HolidaysPage/>}/>
+        <Route path="/profile" element={<EmployeeProfilePage/>}/>
         
       </Route>
     )
