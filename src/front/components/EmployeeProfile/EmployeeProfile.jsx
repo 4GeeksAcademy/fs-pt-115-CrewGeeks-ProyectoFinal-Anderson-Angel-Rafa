@@ -35,6 +35,7 @@ export const EmployeeProfile = ({
   return (
     <div className="employee-profile__page">
       <h1 className="ep-title">Mi Perfil</h1>
+      <p>Maneja tu imformacion personal y la configuracion de tu cuenta </p>
 
       <div className="employee-profile__wrapper">
         {/* Columna izquierda */}
