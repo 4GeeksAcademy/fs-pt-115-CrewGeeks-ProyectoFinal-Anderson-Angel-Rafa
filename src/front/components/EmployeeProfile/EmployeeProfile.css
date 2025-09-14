@@ -1,0 +1,113 @@
+.employee-profile__page {
+  padding: 24px;
+  width: 100%;
+}
+
+.ep-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #111827;
+}
+
+.employee-profile__wrapper {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Cajas */
+.ep-box {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding: 20px;
+}
+
+/* Columna izquierda */
+.employee-profile__left { display: flex; flex-direction: column; gap: 20px; }
+
+.ep-photo { text-align: center; }
+.ep-photo img {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #d1d5db;
+}
+.ep-photo__buttons {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.ep-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ep-btn--ghost { background: #f3f4f6; color: #111827; }
+.ep-btn--ghost:hover { background: #e5e7eb; }
+
+.ep-company h3 { margin-bottom: 10px; font-size: 1.2rem; font-weight: 600; }
+.ep-company__list p { margin: 6px 0; }
+
+.ep-company__grid {
+  display: grid;
+  gap: 12px;
+}
+.ep-company__grid label { display: grid; gap: 6px; font-size: 0.95rem; }
+.ep-company__grid input, .ep-company__grid select {
+  padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; width: 100%;
+}
+
+.ep-status {
+  margin-top: 12px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.ep-status.activo { color: #16a34a; }
+.ep-status.inactivo { color: #dc2626; }
+
+/* Columna derecha */
+.employee-profile__right { min-width: 0; }
+
+.ep-personal h2 {
+  margin-bottom: 16px;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.ep-personal__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+.ep-personal__grid p { margin: 0; font-size: 0.95rem; }
+.ep-personal__grid label { display: grid; gap: 6px; font-size: 0.95rem; }
+.ep-personal__grid input {
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.ep-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+.ep-btn--primary { background: #22c55e; color: #fff; }
+.ep-btn--primary:hover { background: #16a34a; }
+
+/* Responsive */
+@media (max-width: 960px) {
+  .employee-profile__wrapper {
+    grid-template-columns: 1fr;
+  }
+}
