@@ -10,6 +10,10 @@
   color: #111827;
 }
 
+.employee-profile__page p {
+  margin-bottom: 30px;
+}
+
 .employee-profile__wrapper {
   display: grid;
   grid-template-columns: 320px 1fr;
@@ -78,7 +82,7 @@
 .employee-profile__right { min-width: 0; }
 
 .ep-personal h2 {
-  margin-bottom: 16px;
+  margin-bottom: 40px;
   font-size: 1.3rem;
   font-weight: 600;
 }
@@ -98,11 +102,14 @@
 }
 
 .ep-actions {
-  margin-top: 20px;
+  margin-top: 50px;
   display: flex;
   gap: 10px;
+  justify-content: end;
 }
-.ep-btn--primary { background: #22c55e; color: #fff; }
+.ep-btn--primary { 
+  background: #22c55e; color: #fff; 
+}
 .ep-btn--primary:hover { background: #16a34a; }
 
 /* Responsive */
