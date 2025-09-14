@@ -1,4 +1,4 @@
-import "./EmployeeDashboard.css";
+
 import { EmployeeData } from "../components/EmployeeData/EmployeeData";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 

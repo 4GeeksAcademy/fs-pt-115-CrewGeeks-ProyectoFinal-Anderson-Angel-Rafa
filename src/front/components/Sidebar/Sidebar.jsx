@@ -36,7 +36,6 @@ export const Sidebar = () => {
                     <NavLink to="/vacaciones" className="nav-item">
                         <span className="label">Vacaciones</span>
                     </NavLink>
-                    <NavLink to="/bajas" className="nav-item"> Bajas medicas </NavLink>
                     <NavLink to="/permisos" className="nav-item"> Permisos </NavLink>
                 </div>
 
