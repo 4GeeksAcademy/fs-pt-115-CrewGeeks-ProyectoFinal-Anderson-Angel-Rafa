@@ -92,7 +92,7 @@ export const EmployeeProfile = ({
                 <p><strong>Nombre:</strong> {employee.first_name}</p>
                 <p><strong>Apellidos:</strong> {employee.last_name}</p>
                 <p><strong>DNI:</strong> {employee.dni}</p>
-                <p><strong>Fecha Nac.:</strong> {employee.birth}</p>
+                <p><strong>Fecha Nacimiento:</strong> {employee.birth}</p>
                 <p><strong>Dirección:</strong> {employee.address}</p>
                 <p><strong>Email:</strong> {employee.email}</p>
                 <p><strong>Teléfono:</strong> {employee.phone}</p>

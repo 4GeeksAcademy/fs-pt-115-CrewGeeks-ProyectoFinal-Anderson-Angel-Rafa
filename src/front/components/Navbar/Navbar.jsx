@@ -37,7 +37,7 @@ export const Navbar = () => {
 					<a href="#euteams" className="cg-nav-link">Por qué nosotros</a>
 					<a href="#contact" className="cg-nav-link">Contacto</a>
 				</nav>
-					<a href="#trial" className="cg-btn cg-btn--primary">Login</a>
+					<a href="/login" className="cg-btn cg-btn--primary">Login</a>
 				</div>
 			</div>
 		</header>
