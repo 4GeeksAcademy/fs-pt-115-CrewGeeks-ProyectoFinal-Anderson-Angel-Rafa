@@ -16,27 +16,26 @@ export const Sidebar = () => {
             <main className="side-nav">
                 <div className="nav-section">
                     <div className="nav-section-label">Principal</div>
-                    <NavLink to="/profile" className="nav-item">
+                    <NavLink to="/dashboard" className="nav-item">
                         <span className="label">Dashboard</span>
                     </NavLink>
-                    <NavLink to="/mi-perfil" className="nav-item">
+                    <NavLink to="/profile" className="nav-item">
                         <span className="label">Mi perfil</span>
                     </NavLink>
                 </div>
 
                 <div className="nav-section">
                     <div className="nav-section-label">Trabajo</div>
-                    <NavLink to="/nominas" className="nav-item"> Nominas </NavLink>
+                    <NavLink to="/payroll" className="nav-item"> Nominas </NavLink>
                     <NavLink to="/mi-horario" className="nav-item"> Mi Horario </NavLink>
                     <NavLink to="/registro-horas" className="nav-item"> Registro de horas </NavLink>
                 </div>
 
                 <div className="nav-section">
                     <div className="nav-section-label">Solicitudes</div>
-                    <NavLink to="/vacaciones" className="nav-item">
+                    <NavLink to="/holidays" className="nav-item">
                         <span className="label">Vacaciones</span>
                     </NavLink>
-                    <NavLink to="/bajas" className="nav-item"> Bajas medicas </NavLink>
                     <NavLink to="/permisos" className="nav-item"> Permisos </NavLink>
                 </div>
 

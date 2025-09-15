@@ -5,9 +5,11 @@
   gap: 20px;
   height: 100%;
   padding: 20px;
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
+  /* border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px; */
   position: sticky;
+  top: 24px;
+  width: var(--sidebar-w);
   z-index: 1;
   color: #94A3B8;
   box-sizing: border-box;
@@ -132,6 +134,8 @@
 }
 
 /* ========== RESPONSIVE ========== */
+
+
 @media (max-width: 1024px) {
   .sidewrap {
     padding: 12px;

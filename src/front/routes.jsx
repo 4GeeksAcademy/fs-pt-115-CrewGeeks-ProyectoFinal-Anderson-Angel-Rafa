@@ -6,13 +6,15 @@ import {
     Route,
 } from "react-router-dom";
 import { Layout } from "./pages/Layout";
-import { Home } from "./pages/Home";
+import { LandingPage } from "./pages/LandingPage";
 import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 import { LoginPage } from "./pages/LoginPage";
 import { HolidaysPage } from "./pages/HolidaysPage";
-import { EmployeeDashboard } from "./pages/EmployeeDashboard";
-import { EmployeeProfilePage } from "./pages/EmployeeProfilePage";
+import { ProfilePage } from "./pages/ProfilePage";
+import { PayrollPage } from "./pages/PayrollPage";
+import { DashboardPage } from "./pages/DashboardPage";
+
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -26,13 +28,15 @@ export const router = createBrowserRouter(
       <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
 
         {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
-        <Route path= "/" element={<Home />} />
+        <Route path= "/" element={<LandingPage />} />
         <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
         <Route path="/demo" element={<Demo />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/dashboard" element={<EmployeeDashboard/>}/>
+        <Route path="/dashboard" element={<DashboardPage/>}/>
         <Route path="/holidays" element={<HolidaysPage/>}/>
-        <Route path="/profile" element={<EmployeeProfilePage/>}/>
+        <Route path="/payroll" element={<PayrollPage/>}/>
+        <Route path="/profile" element={<ProfilePage/>}/>
+        
         
       </Route>
     )

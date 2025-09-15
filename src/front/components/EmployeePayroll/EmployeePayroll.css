@@ -1,0 +1,365 @@
+.payroll-container {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/*Header*/
+
+.payroll-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.payroll-header h1 {
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.payroll-header p {
+  color: #6b7280;
+}
+
+/*  Boton de descarga (opcional, puede ser retirado) */
+
+.download-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+  border: none;
+  cursor: pointer;
+}
+.download-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/*Overview Cards*/
+
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.overview-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #f3f4f6;
+}
+
+.card-icon {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.card-icon.green {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.card-icon.blue {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.card-icon.yellow {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.card-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.card-amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #111827;
+}
+
+.card-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+/* Breakdown section */
+
+.breakdown-section {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #f3f4f6;
+  margin-bottom: 2rem;
+}
+
+.breakdown-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.breakdown-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.breakdown-content {
+  padding: 1.5rem;
+}
+
+.breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+
+.section-title h3 {
+  font-weight: 600;
+  color: #111827;
+}
+
+.status-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.status-dot.green {
+  background-color: #10b981;
+}
+
+.status-dot.red {
+  background-color: #ef4444;
+}
+
+.item-list  {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.item-label {
+  color: #6b7280;
+}
+
+.item-amount {
+  font-weight: 600;
+  color: #111827;
+}
+
+.total-row {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 0.75rem;
+  margin-top: 1rem;
+}
+
+.total-earnings {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.total-deductions {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.net-pay-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.net-pay-card {
+  background-color: #eff6ff;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.net-pay-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.net-pay-label {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.net-pay-amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.history-section {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #f3f4f6;
+}
+
+.history-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.year-select {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.year-select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.payroll-table {
+  width: 100%;
+}
+
+.payroll-table thead {
+  background-color: #f9fafb;
+}
+
+.payroll-table th {
+  text-align: left;
+  padding: 1rem 1.5rem;
+  font-weight: 500;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.payroll-table td {
+  padding: 1rem 1.5rem;
+}
+
+.payroll-table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s;
+}
+
+.payroll-table tbody tr:hover {
+  background-color: #f9fafb;
+  }
+
+  .period-cell {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .period-name {
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .period-date {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .amount-cell {
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .net-pay-cell {
+    font-weight: 600;
+    color: #2563eb;
+  }
+  
+  .status-badge {
+    background-color: #dcfce7;
+    color: #166534;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .download-link {
+    color: #2563eb;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .download-link:hover {
+    color: #1d4ed8;
+  }
+
+@media (max-width: 768px) {
+  .payroll-container {
+    padding: 1rem;
+  }
+  
+  .payroll-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .overview-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .breakdown-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
