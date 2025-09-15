@@ -299,7 +299,7 @@ export const EmployeeProfile = ({
 							</div>
 						)}
 					</div>
-				</div>
+				
 
 				{/* Columna derecha */}
 				<div className="employee-profile__right">
@@ -352,7 +352,4 @@ export const EmployeeProfile = ({
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-	);
 };
