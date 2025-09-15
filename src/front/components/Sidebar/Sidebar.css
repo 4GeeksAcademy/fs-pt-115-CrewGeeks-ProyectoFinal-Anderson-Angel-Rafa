@@ -132,6 +132,8 @@
 }
 
 /* ========== RESPONSIVE ========== */
+
+
 @media (max-width: 1024px) {
   .sidewrap {
     padding: 12px;
