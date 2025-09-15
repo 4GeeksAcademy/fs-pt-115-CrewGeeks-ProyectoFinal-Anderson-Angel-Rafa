@@ -30,7 +30,7 @@ export const EmployeePayroll = () => {
         <div className="payroll-container">
             <div className="payroll-header">
                 <div>
-                    <h1>Payroll</h1>
+                    <h1>Nominas</h1>
                     <p>Ver y administrar tu informacion salarial y tus desprendibles de nomina </p>
                 </div>
                 <button className="download-btn">

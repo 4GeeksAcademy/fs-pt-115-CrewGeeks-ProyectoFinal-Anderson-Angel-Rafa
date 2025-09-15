@@ -27,16 +27,15 @@ export const Sidebar = () => {
                 <div className="nav-section">
                     <div className="nav-section-label">Trabajo</div>
                     <NavLink to="/payroll" className="nav-item"> Nominas </NavLink>
-                    <NavLink to="/mi-horario" className="nav-item"> Mi Horario </NavLink>
-                    <NavLink to="/registro-horas" className="nav-item"> Registro de horas </NavLink>
+                    <NavLink to="/shifts" className="nav-item"> Mi Horario </NavLink>
+                    <NavLink to="/TimeLog" className="nav-item"> Registro de horas </NavLink>
                 </div>
 
                 <div className="nav-section">
                     <div className="nav-section-label">Solicitudes</div>
                     <NavLink to="/holidays" className="nav-item">
                         <span className="label">Vacaciones</span>
-                    </NavLink>
-                    <NavLink to="/permisos" className="nav-item"> Permisos </NavLink>
+                    </NavLink>                    
                 </div>
 
                 <div className="nav-section">
@@ -44,8 +43,7 @@ export const Sidebar = () => {
                     <NavLink to="/buzon" className="nav-item">
                         <span className="label">Buzón</span>
                     </NavLink>
-                    <NavLink to="/sugerencias" className="nav-item"> Sugerencias </NavLink>
-                    <NavLink to="/documentos" className="nav-item"> Documentos </NavLink>
+                    <NavLink to="/sugerencias" className="nav-item"> Sugerencias </NavLink>                    
                 </div>
 
 
