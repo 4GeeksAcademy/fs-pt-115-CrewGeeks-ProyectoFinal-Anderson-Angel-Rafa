@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import './EmployeeShifts.css';
 
-function EmployeeShifts() {
+export const EmployeeShifts = () => {
   const [currentMonth, setCurrentMonth] = useState('January 2025');
 
   // Helpers para navegar meses
@@ -208,6 +208,6 @@ function EmployeeShifts() {
       </div>
     </div>
   );
-}
+};
 
-export default EmployeeShifts;
+
