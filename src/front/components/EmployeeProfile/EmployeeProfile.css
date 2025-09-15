@@ -1,6 +1,8 @@
 .employee-profile__page {
   padding: 24px;
   width: 100%;
+  background: #f5f5f5;
+  min-height: 80vh;
 }
 
 .ep-title {

@@ -25,58 +25,56 @@ export const LoginForm = () => {
         const result = await login(employeeData);
 
         if (result) {
-            
+
             console.log('Login succesfully:', result);
 
             setEmployeeData({
-                email : '',
+                email: '',
                 password: ''
             });
 
             navigate('/profile')
-            
+
 
         }
 
-        
+
 
     };
 
     return (
-       < section className='login-container'>
-            <form className='login-form' onSubmit={handleSubmit}>
-                <h2 className='login-tittle'>Iniciar Sesion</h2>
+        <section className="cg-auth">
+            <div className="cg-auth-card">
+                <div className='cg-container-title'>
+                    <h1 className="cg-auth-title">Iniciar sesión</h1>
+                    <p className="cg-auth-sub">Accede a tu portal de empleado.</p>
+                </div>
 
+                <form className="cg-form">
+                    <div className="cg-field">
+                        <label className="cg-label" htmlFor="cg-email">Email</label>
+                        <input className="cg-input" type="email" id="cg-email" name="email" autoComplete="email" required />
+                    </div>
 
-                <span className='form-group'>
-                    <label htmlFor="email">Email</label>
-                    <input
-                        type="email"
-                        id='email'
-                        name='email'
-                        value={employeeData.email}
-                        onChange={handleChange}
-                        placeholder='Ingresa tu email'
-                        required
-                    />
-                </span>
+                    <div className="cg-field">
+                        <label className="cg-label" htmlFor="cg-password">Contraseña</label>
+                        <input className="cg-input" type="password" id="cg-password" name="password" autoComplete="current-password" required />
+                    </div>
 
-                <span className='form-group'>
-                    <label htmlFor="password">Contraseña</label>
-                    <input
-                        type="password"
-                        id='password'
-                        name='password'
-                        value={employeeData.password}
-                        onChange={handleChange}
-                        placeholder='Ingresa tu contraseña' 
-                        required
-                    />
-                </span>
+                    <div className="cg-row">
+                        <label className="cg-remember">
+                            <input type="checkbox" name="remember" /> Recuérdame
+                        </label>
+                        <a className="cg-link">¿Olvidaste tu contraseña?</a>
+                    </div>
 
-                <button type='submit' className='login-submit-btn'>Iniciar Sesión</button>
-            </form>
+                    <div className="cg-actions">
+                        <button className="cg-btn cg-btn--primary" type="submit">Entrar</button>
+                    </div>
+                </form>
+            </div>
         </section>
+
     );
 
 }

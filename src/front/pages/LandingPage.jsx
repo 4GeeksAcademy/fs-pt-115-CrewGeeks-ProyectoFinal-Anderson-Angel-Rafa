@@ -2,6 +2,7 @@ import { AboutPlatform } from "../components/AboutMe/AboutPlatform"
 import { CallToAction } from "../components/CardsInfo/CallToAction";
 import { ContactForm } from "../components/ContactForm/ContactForm";
 import { Features } from "../components/Features/Features";
+import { Footer } from "../components/Footer/Footer";
 import { HeroSection } from "../components/HeroSection/HeroSection";
 
 
@@ -9,7 +10,7 @@ import { HeroSection } from "../components/HeroSection/HeroSection";
 
 
 
-export const Home = () => {
+export const LandingPage = () => {
 
 	return (
 		<>
@@ -18,6 +19,7 @@ export const Home = () => {
 			<AboutPlatform />
 			<ContactForm />
 			<CallToAction />
+			<Footer />
 		</>
 		
 
