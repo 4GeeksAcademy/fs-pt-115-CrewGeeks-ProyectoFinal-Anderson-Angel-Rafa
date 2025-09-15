@@ -6,13 +6,15 @@
 }
 
 .ep-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 20px;
-  color: #111827;
+  font-size: 28px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 5px;
 }
 
-.employee-profile__page p {
+.content-subtitle {
+  color: #6c757d;
+  font-size: 14px;
   margin-bottom: 30px;
 }
 
@@ -113,6 +115,27 @@
   background: #22c55e; color: #fff; 
 }
 .ep-btn--primary:hover { background: #16a34a; }
+
+.ep-security {
+  margin-top: 50px;
+}
+
+.ep-security h2 {
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.ep-security__item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ep-security button {
+  background: #428de4; color: #fff;
+}
+
+
 
 /* Responsive */
 @media (max-width: 960px) {

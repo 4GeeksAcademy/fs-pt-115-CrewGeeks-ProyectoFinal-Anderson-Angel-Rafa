@@ -4,6 +4,7 @@
 
 import React, { useState, useMemo } from "react";
 import "./EmployeeHolidays.css";
+import "../EmployeeData/EmployeeData.css";
 
 export const EmployeeHolidays = () => {
 	// Formulario (inicio, fin, motivo)
@@ -133,7 +134,7 @@ export const EmployeeHolidays = () => {
 		<section className="employee-holidays content-area">
 			<div className="content-header">
 				<h1 className="content-title">Vacaciones</h1>
-				<p>Gestiona tus días de vacaciones y solicitudes</p>
+				<p className="content-subtitle">Gestiona tus días de vacaciones y solicitudes</p>
 			</div>
 			{/* Estadísticas: disponibles, usados, pendientes, restantes */}
 			<div className="content-body">
