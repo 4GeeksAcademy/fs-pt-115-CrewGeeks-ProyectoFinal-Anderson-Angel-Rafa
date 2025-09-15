@@ -94,7 +94,7 @@ export const EmployeePayroll = () => {
                             </div>
                         </div>
 
-                        <div> 
+                        <div>
                             <div className="section-title">
                                 <div className="status-dot red"></div>
                                 <h3>Deducciones</h3>
