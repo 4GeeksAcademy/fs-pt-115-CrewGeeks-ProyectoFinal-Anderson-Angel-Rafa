@@ -17,6 +17,7 @@ import { ShiftsPage } from "./pages/ShiftsPage";
 import { TimeLogPage } from "./pages/TimeLogPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { SuggestionsPage } from "./pages/SuggestionsPage";
+import { InboxPage } from "./pages/Inboxpage";
 
 
 
@@ -42,9 +43,9 @@ export const router = createBrowserRouter(
         <Route path="/shifts" element={<ShiftsPage/>}/>
         <Route path="/TimeLog" element={<TimeLogPage/>}/>
         <Route path="/profile" element={<ProfilePage/>}/>
-
+        <Route path="/inbox" element={<InboxPage/>}/>
         <Route path="/suggestions" element={<SuggestionsPage/>}/>
-
+       
 
 
         
