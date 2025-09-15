@@ -3,7 +3,7 @@ import { EmployeeData } from "../components/EmployeeData/EmployeeData";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 
 
-export const EmployeeDashboard = () => {
+export const DashboardPage = () => {
   return (
     <div className="app-shell">
         <Sidebar />
