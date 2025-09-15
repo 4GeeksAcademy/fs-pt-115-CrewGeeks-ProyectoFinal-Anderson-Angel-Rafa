@@ -6,8 +6,10 @@ import { Sidebar } from "../components/Sidebar/Sidebar";
 export const HolidaysPage = () => {
   return (
     <div className="app-shell">
-            <Sidebar />
-            <EmployeeHolidays/>
-        </div>
+      <Sidebar />
+      <main className="app-main">
+        <EmployeeHolidays />
+      </main>
+    </div>
   );
 };

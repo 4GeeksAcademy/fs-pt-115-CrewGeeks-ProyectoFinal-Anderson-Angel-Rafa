@@ -2,6 +2,7 @@
   padding: 0;
   background: whitesmoke;
   overflow-y: auto;
+  min-height: 80vh;
 }
 
 .content-header {

@@ -10,7 +10,7 @@ import { HeroSection } from "../components/HeroSection/HeroSection";
 
 
 
-export const Home = () => {
+export const LandingPage = () => {
 
 	return (
 		<>

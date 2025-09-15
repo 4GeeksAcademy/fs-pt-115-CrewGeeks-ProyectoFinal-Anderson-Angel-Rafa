@@ -131,145 +131,148 @@ export const EmployeeHolidays = () => {
 	return (
 
 		<section className="employee-holidays content-area">
-			<h1 className="employee-holidays__title">Vacaciones</h1>
-			<p>Gestiona tus días de vacaciones y solicitudes</p>
-
-			{/* Estadísticas: disponibles, usados, pendientes, restantes */}
-			<div className="employee-holidays__stats">
-				<div className="employee-holidays__stat">
-					<div className="employee-holidays__icon employee-holidays__icon--available">
-						<i className="fa-solid fa-umbrella-beach" aria-hidden="true"></i>
-					</div>
-					<div className="employee-holidays__content">
-						<span className="employee-holidays__value">{DIAS_DISPONIBLES_BASE}</span>
-						<span className="employee-holidays__label">Días disponibles</span>
-					</div>
-				</div>
-
-				<div className="employee-holidays__stat">
-					<div className="employee-holidays__icon employee-holidays__icon--used">
-						<i className="fa-solid fa-circle-check" aria-hidden="true"></i>
-					</div>
-					<div className="employee-holidays__content">
-						<span className="employee-holidays__value">{diasUsados}</span>
-						<span className="employee-holidays__label">Días usados</span>
-					</div>
-				</div>
-
-				<div className="employee-holidays__stat">
-					<div className="employee-holidays__icon employee-holidays__icon--pending">
-						<i className="fa-solid fa-hourglass-half" aria-hidden="true"></i>
-					</div>
-					<div className="employee-holidays__content">
-						<span className="employee-holidays__value">{diasPendientes}</span>
-						<span className="employee-holidays__label">Días pendientes</span>
-					</div>
-				</div>
-
-				<div className="employee-holidays__stat">
-					<div className="employee-holidays__icon employee-holidays__icon--remaining">
-						<i className="fa-solid fa-file-lines" aria-hidden="true"></i>
-					</div>
-					<div className="employee-holidays__content">
-						<span className="employee-holidays__value">{diasRestantes}</span>
-						<span className="employee-holidays__label">Días restantes</span>
-					</div>
-				</div>
+			<div className="content-header">
+				<h1 className="content-title">Vacaciones</h1>
+				<p>Gestiona tus días de vacaciones y solicitudes</p>
 			</div>
+			{/* Estadísticas: disponibles, usados, pendientes, restantes */}
+			<div className="content-body">
+				<div className="employee-holidays__stats">
+					<div className="employee-holidays__stat">
+						<div className="employee-holidays__icon employee-holidays__icon--available">
+							<i className="fa-solid fa-umbrella-beach" aria-hidden="true"></i>
+						</div>
+						<div className="employee-holidays__content">
+							<span className="employee-holidays__value">{DIAS_DISPONIBLES_BASE}</span>
+							<span className="employee-holidays__label">Días disponibles</span>
+						</div>
+					</div>
 
-			{/* Formulario para solicitar vacaciones */}
-			<form className="employee-holidays__form" onSubmit={handleSubmit}>
-				<div className="employee-holidays__form-row">
-					<label>
-						Inicio:
-						<input
-							type="date"
-							name="inicio"
-							value={formulario.inicio}
-							onChange={handleChange}
-						/>
-					</label>
-					<label>
-						Fin:
-						<input
-							type="date"
-							name="fin"
-							value={formulario.fin}
-							onChange={handleChange}
-							min={formulario.inicio || undefined}
-						/>
-					</label>
-					<div>
-						<span>Días laborables:</span>
-						<span className="employee-holidays__dias">{diasSolicitados}</span>
+					<div className="employee-holidays__stat">
+						<div className="employee-holidays__icon employee-holidays__icon--used">
+							<i className="fa-solid fa-circle-check" aria-hidden="true"></i>
+						</div>
+						<div className="employee-holidays__content">
+							<span className="employee-holidays__value">{diasUsados}</span>
+							<span className="employee-holidays__label">Días usados</span>
+						</div>
+					</div>
+
+					<div className="employee-holidays__stat">
+						<div className="employee-holidays__icon employee-holidays__icon--pending">
+							<i className="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+						</div>
+						<div className="employee-holidays__content">
+							<span className="employee-holidays__value">{diasPendientes}</span>
+							<span className="employee-holidays__label">Días pendientes</span>
+						</div>
+					</div>
+
+					<div className="employee-holidays__stat">
+						<div className="employee-holidays__icon employee-holidays__icon--remaining">
+							<i className="fa-solid fa-file-lines" aria-hidden="true"></i>
+						</div>
+						<div className="employee-holidays__content">
+							<span className="employee-holidays__value">{diasRestantes}</span>
+							<span className="employee-holidays__label">Días restantes</span>
+						</div>
 					</div>
 				</div>
-				<label>
-					Motivo (opcional):
-					<textarea
-						name="motivo"
-						rows="2"
-						value={formulario.motivo}
-						onChange={handleChange}
-						placeholder="Vacaciones familiares..."
-					/>
-				</label>
-				<div className="employee-holidays__form-actions">
-					<button type="submit" disabled={diasSolicitados <= 0}>
-						{editId !== null ? "Actualizar" : "Enviar solicitud"}
-					</button>
-					<button
-						type="button"
-						onClick={() => {
-							setFormulario({ inicio: "", fin: "", motivo: "" });
-							setEditId(null);
-						}}
-					>
-						Cancelar
-					</button>
-				</div>
-			</form>
 
-			{/* Listado de solicitudes */}
-			<div className="employee-holidays__requests">
-				<h2>Solicitudes</h2>
-				{solicitudes.length === 0 ? (
-					<p>No hay solicitudes.</p>
-				) : (
-					<ul className="employee-holidays__list">
-						{solicitudes.map((s) => (
-							<li key={s.id} className="employee-holidays__item">
-								<div>
-									<strong>
-										{s.inicio} — {s.fin}
-									</strong>{" "}
-									<span>({s.dias} días laborables)</span>
-									{s.motivo && <span> · {s.motivo}</span>}
-								</div>
-								<span
-									className={`employee-holidays__estado ${s.estado.toLowerCase()}`}
-								>
-									{s.estado}
-								</span>
-								<div className="employee-holidays__acciones">
-									{/* 
+				{/* Formulario para solicitar vacaciones */}
+				<form className="employee-holidays__form" onSubmit={handleSubmit}>
+					<div className="employee-holidays__form-row">
+						<label>
+							Inicio:
+							<input
+								type="date"
+								name="inicio"
+								value={formulario.inicio}
+								onChange={handleChange}
+							/>
+						</label>
+						<label>
+							Fin:
+							<input
+								type="date"
+								name="fin"
+								value={formulario.fin}
+								onChange={handleChange}
+								min={formulario.inicio || undefined}
+							/>
+						</label>
+						<div>
+							<span>Días laborables:</span>
+							<span className="employee-holidays__dias">{diasSolicitados}</span>
+						</div>
+					</div>
+					<label>
+						Motivo (opcional):
+						<textarea
+							name="motivo"
+							rows="2"
+							value={formulario.motivo}
+							onChange={handleChange}
+							placeholder="Vacaciones familiares..."
+						/>
+					</label>
+					<div className="employee-holidays__form-actions">
+						<button type="submit" disabled={diasSolicitados <= 0}>
+							{editId !== null ? "Actualizar" : "Enviar solicitud"}
+						</button>
+						<button
+							type="button"
+							onClick={() => {
+								setFormulario({ inicio: "", fin: "", motivo: "" });
+								setEditId(null);
+							}}
+						>
+							Cancelar
+						</button>
+					</div>
+				</form>
+
+				{/* Listado de solicitudes */}
+				<div className="employee-holidays__requests">
+					<h2>Solicitudes</h2>
+					{solicitudes.length === 0 ? (
+						<p>No hay solicitudes.</p>
+					) : (
+						<ul className="employee-holidays__list">
+							{solicitudes.map((s) => (
+								<li key={s.id} className="employee-holidays__item">
+									<div>
+										<strong>
+											{s.inicio} — {s.fin}
+										</strong>{" "}
+										<span>({s.dias} días laborables)</span>
+										{s.motivo && <span> · {s.motivo}</span>}
+									</div>
+									<span
+										className={`employee-holidays__estado ${s.estado.toLowerCase()}`}
+									>
+										{s.estado}
+									</span>
+									<div className="employee-holidays__acciones">
+										{/* 
                     🔒 Vista usuario: sin permisos para aprobar, denegar ni eliminar.
                     <button type="button" onClick={() => actualizarEstado(s.id, "APROBADO")}>Aprobar</button>
                     <button type="button" onClick={() => actualizarEstado(s.id, "DENEGADO")}>Denegar</button>
                     <button type="button" onClick={() => eliminarSolicitud(s.id)}>Eliminar</button>
                   */}
-									<button
-										type="button"
-										className="employee-holidays__btn-edit"
-										onClick={() => editarSolicitud(s)}
-									>
-										Editar
-									</button>
-								</div>
-							</li>
-						))}
-					</ul>
-				)}
+										<button
+											type="button"
+											className="employee-holidays__btn-edit"
+											onClick={() => editarSolicitud(s)}
+										>
+											Editar
+										</button>
+									</div>
+								</li>
+							))}
+						</ul>
+					)}
+				</div>
 			</div>
 		</section>
 	);
