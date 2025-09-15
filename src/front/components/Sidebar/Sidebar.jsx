@@ -40,10 +40,10 @@ export const Sidebar = () => {
 
                 <div className="nav-section">
                     <div className="nav-section-label">Comunicación</div>
-                    <NavLink to="/buzon" className="nav-item">
+                    <NavLink to="/inbox" className="nav-item">
                         <span className="label">Buzón</span>
                     </NavLink>
-                    <NavLink to="/sugerencias" className="nav-item"> Sugerencias </NavLink>                    
+                    <NavLink to="/suggestions" className="nav-item"> Sugerencias </NavLink>                    
                 </div>
 
 
