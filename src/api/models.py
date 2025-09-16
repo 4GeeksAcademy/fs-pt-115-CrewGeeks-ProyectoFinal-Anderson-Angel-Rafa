@@ -149,6 +149,7 @@ class Employee(db.Model):
         return {
             "id": self.id,
             "company_id": self.company_id,
+            "company" : self.company.name,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "dni": self.dni,

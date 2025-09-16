@@ -73,6 +73,25 @@ def get_employee_profile():
     return jsonify(employee.serialize()), 200
 
 
+# @employee_bp.route("/<int:employee_id>", methods=["GET"])
+# @jwt_required()
+# def get_employee_by_id(employee_id):
+#     employee = db.session.get(Employee, employee_id)
+#     if not employee:
+#         return jsonify({"error": "Employee not found"}), 404
+    
+#     if is_ownerdb():
+#         return jsonify(employee.serialize()), 200
+    
+#     company_id = get_jwt_company_id()
+#     if company_id is None or employee.company_id != company_id:
+#         return jsonify({"error": "Employee not found"}), 404
+    
+#     if is_admin_or_hr or current_employee_id == employee_id:
+#         return jsonify(employee.serialize()), 200
+    
+#     return jsonify({"error": "Employee not found"}), 404
+
 
 # POST EMPLOYEES 
 # OWNERDB PUEDE CREAR PARA CUALQUIER EMPRESA
@@ -276,7 +295,7 @@ def login():
         "system_role": system_role
     }
     access_token = create_access_token(identity=str(employee.id), additional_claims=additional_claims)
-    return jsonify({"msg": "Login succesful", "token": access_token}), 200
+    return jsonify({"msg": "Login succesful", "token": access_token, "user": employee.serialize()}), 200
 
 
 

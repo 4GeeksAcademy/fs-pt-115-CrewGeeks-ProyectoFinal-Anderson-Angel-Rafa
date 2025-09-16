@@ -1,15 +1,23 @@
 import { NavLink } from "react-router-dom";
 import './Sidebar.css'
+import { useAuth } from "../../hooks/useAuth";
 
 
 export const Sidebar = () => {
+    const {user, loading} = useAuth()
+
+    if (loading || !user) {
+        return <p>cargando...</p>
+    }
+
+    
     return (
         <div className="sidewrap">
             <div className="user-card">
                 <div className="avatar">AS</div>
                 <div className="user-meta">
-                    <div className="user-name">Angel Sastre</div>
-                    <div className="user-role">Empleado</div>
+                    <div className="user-name">{user.first_name} {user.last_name}</div>
+                    <div className="user-role">{user.company}</div>
                 </div>
             </div>
 
