@@ -114,6 +114,13 @@
   border-radius: 12px;
   background: #f9fafb;
 }
+
+/* CAMBIO: permitir que los ítems con varias líneas no se descuadren */
+.es-item {                               /* CAMBIO */
+  grid-template-columns: auto minmax(0, 1fr) auto;  /* CAMBIO: evita overflow del texto */
+  align-items: start;                    /* CAMBIO: alinea checkbox y borrar arriba para varias líneas */
+}
+
 .es-item--done .es-text {
   text-decoration: line-through;
   color: #6b7280;
@@ -150,8 +157,16 @@
   box-shadow: inset 0 0 0 3px #ffffff;
 }
 
+/* CAMBIO: hacer que el texto largo salte de línea y no invada otros elementos */
 .es-text {
   font-size: 0.95rem;
+  display: inline-block;      /* CAMBIO */
+  max-width: 100%;            /* CAMBIO */
+  min-width: 0;               /* CAMBIO: necesario con grid + minmax para que pueda romper */
+  white-space: normal;        /* CAMBIO */
+  overflow-wrap: anywhere;    /* CAMBIO: corta palabras muy largas */
+  word-break: break-word;     /* CAMBIO: compat extra */
+  line-height: 1.35;          /* CAMBIO: mejora legibilidad en varias líneas */
 }
 
 /* Botón eliminar */
