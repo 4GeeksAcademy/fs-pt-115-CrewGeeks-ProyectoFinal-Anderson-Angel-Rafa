@@ -1,12 +1,15 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
+
 export const AuthProvider = ({ children }) => {
 
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
     const [token, setToken] = useState(localStorage.getItem("token") || null)
+
 
     const urlApi = import.meta.env.VITE_BACKEND_URL + '/api';
 
@@ -67,6 +70,20 @@ export const AuthProvider = ({ children }) => {
         setUser(null)
     }
 
+    // const checkTokenExpiration = () => {
+    //     const token = localStorage.getItem('token');
+    //     if (token) {
+    //         try {
+    //             const payload = JSON.parse(atob(token.split('.')[1]));
+    //             if (payload.exp * 1000 < Date.now()) {
+    //                 logout();
+    //             }
+    //         } catch {
+    //             logout();
+    //         }
+    //     }
+    // };
+
     const getEmployeeData = async () => {
         setLoading(true)
         try {
@@ -85,11 +102,19 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    useEffect(()=>{
-        if(token){
+
+    useEffect(() => {
+        if (token) {
             getEmployeeData()
         }
-    },[token])
+    }, [token])
+
+
+    // useEffect(() => {
+    //     checkTokenExpiration();
+    //     const interval = setInterval(checkTokenExpiration, 1000);
+    //     return () => clearInterval(interval);
+    // }, []);
 
     return (
         <AuthContext.Provider value={{ user, token, loading, error, createEmployee, login, logout }}>{children}</AuthContext.Provider>
