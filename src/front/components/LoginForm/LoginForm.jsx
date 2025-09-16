@@ -1,46 +1,37 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../hooks/useAuth';
 import './LoginForm.css'
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../../services/authAPI';
+
 
 export const LoginForm = () => {
 
+    const {login, error, loading, token, user} = useAuth()
+    const [userData, setUserData] = useState({})
     const navigate = useNavigate()
 
-    const [employeeData, setEmployeeData] = useState({
-        email: '',
-        password: ''
-    });
+
 
     const handleChange = (e) => {
-        setEmployeeData({
-            ...employeeData,
-            [e.target.name]: e.target.value
-        })
+        setUserData({...userData, [e.target.name]: e.target.value});
     }
 
-    const handleSubmit = async (e) => {
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-
-        const result = await login(employeeData);
-
-        if (result) {
-
-            console.log('Login succesfully:', result);
-
-            setEmployeeData({
-                email: '',
-                password: ''
-            });
-
-            navigate('/profile')
-
-
+        login(userData)
+       
+    }
+    
+    useEffect(() => {
+        if(token) {
+            navigate("/dashboard")
         }
+    }, [token])
+    
 
+    
 
-
-    };
 
     return (
         <section className="cg-auth">
@@ -49,16 +40,16 @@ export const LoginForm = () => {
                     <h1 className="cg-auth-title">Iniciar sesión</h1>
                     <p className="cg-auth-sub">Accede a tu portal de empleado.</p>
                 </div>
-
-                <form className="cg-form">
+                {error && <p>{error}</p>}
+                <form className="cg-form" onSubmit={handleSubmit}>
                     <div className="cg-field">
                         <label className="cg-label" htmlFor="cg-email">Email</label>
-                        <input className="cg-input" type="email" id="cg-email" name="email" autoComplete="email" required />
+                        <input className="cg-input" type="email" id="cg-email" name="email" autoComplete="email" onChange={handleChange} required />
                     </div>
 
                     <div className="cg-field">
                         <label className="cg-label" htmlFor="cg-password">Contraseña</label>
-                        <input className="cg-input" type="password" id="cg-password" name="password" autoComplete="current-password" required />
+                        <input className="cg-input" type="password" id="cg-password" name="password" autoComplete="current-password" onChange={handleChange} required />
                     </div>
 
                     <div className="cg-row">
@@ -69,7 +60,7 @@ export const LoginForm = () => {
                     </div>
 
                     <div className="cg-actions">
-                        <button className="cg-btn cg-btn--primary" type="submit">Entrar</button>
+                        <button className="cg-btn cg-btn--primary" type="submit">{loading ? "cargando..." : "Entrar"}</button>
                     </div>
                 </form>
             </div>
