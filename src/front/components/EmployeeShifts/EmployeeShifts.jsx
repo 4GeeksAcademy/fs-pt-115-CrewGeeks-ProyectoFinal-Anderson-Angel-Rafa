@@ -9,41 +9,53 @@ import './EmployeeShifts.css';
 export const EmployeeShifts = () => {
   const [currentMonth, setCurrentMonth] = useState('January 2025');
 
-  // Helpers para navegar meses
-  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const MONTHS_ES = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+
   const moveMonth = (delta) => {
-    const [name, yearStr] = currentMonth.split(' ');
-    const idx = MONTHS.indexOf(name);
+    const raw = String(currentMonth || '').trim().replace(/\s+de\s+/i, ' ');
+    const [rawName, yearStr] = raw.split(/\s+/);
+    const name = (rawName || '').toLowerCase();
+
+
+    let idx = MONTHS_ES.findIndex(m => m.toLowerCase() === name);
+    if (idx === -1) idx = MONTHS_EN.findIndex(m => m.toLowerCase() === name);
     if (idx === -1) return;
-    let y = parseInt(yearStr, 10), m = idx + delta;
+
+    let y = parseInt(yearStr, 10) || new Date().getFullYear();
+    let m = idx + delta;
     if (m < 0) { m = 11; y -= 1; }
-    if (m > 11) { m = 0;  y += 1; }
-    setCurrentMonth(`${MONTHS[m]} ${y}`);
+    if (m > 11) { m = 0; y += 1; }
+
+    setCurrentMonth(`${MONTHS_ES[m]} ${y}`);
   };
 
-  // Top stats (tarjetas pequeñas)
-  const stats = [
-    { icon: Clock,    value: '168h', label: 'Total Hours',     color: 'blue'   },
-    { icon: Clock,    value: '142h', label: 'Worked Hours',    color: 'green'  },
-    { icon: Clock,    value: '26h',  label: 'Remaining Hours', color: 'yellow' },
-    { icon: AlertCircle, value: '4h', label: 'Overtime Hours', color: 'orange' }
-  ];
+  //  Top stats (tarjetas pequeñas)
+  // const stats = [
+  //   { icon: Clock,    value: '168h', label: 'Total Hours',     color: 'blue'   },
+  //   { icon: Clock,    value: '142h', label: 'Worked Hours',    color: 'green'  },
+  //   { icon: Clock,    value: '26h',  label: 'Remaining Hours', color: 'yellow' },
+  //   { icon: AlertCircle, value: '4h', label: 'Overtime Hours', color: 'orange' }
+  // ];
 
   const upcomingShifts = [
-    { title: 'Today - Regular Shift',   time: '9:00 AM - 5:00 PM',  hours: '8 Hours', status: 'confirmed' },
-    { title: 'Tomorrow - Evening Shift',time: '2:00 PM - 10:00 PM', hours: '8 Hours', status: 'scheduled' },
-    { title: 'Jan 7 - Regular Shift',   time: '9:00 AM - 5:00 PM',  hours: '8 Hours', status: 'scheduled' },
-    { title: 'Jan 14 - Morning Shift',  time: '6:00 AM - 2:00 PM',  hours: '8 Hours', status: 'scheduled' },
+    { title: 'Hoy - Turno ordinario', time: '09:00 - 17:00', hours: '8 horas', status: 'confirmed' },
+    { title: 'Mañana - Turno de tarde', time: '14:00 - 22:00', hours: '8 horas', status: 'scheduled' },
+    { title: '7 ene - Turno ordinario', time: '09:00 - 17:00', hours: '8 horas', status: 'scheduled' },
+    { title: '14 ene - Turno de mañana', time: '06:00 - 14:00', hours: '8 horas', status: 'scheduled' },
   ];
+
 
   const notifications = [
-    { type: 'notice',     title: 'Schedule Change Notice', time: 'Today',       description: 'Your shift on January 15 has been rescheduled to 1:00 PM due to operational needs.' },
-    { type: 'holiday',    title: 'Holiday Schedule',       time: 'Yesterday',   description: 'All regular shifts are cancelled for Monday. Check your schedule for updates.' },
-    { type: 'meeting',    title: 'Team Meeting',           time: '2 days ago',  description: 'Mandatory team meeting on January 15 at 10:00 AM. Please reach out if you cannot attend.' },
-    { type: 'opportunity',title: 'Overtime Opportunity',   time: '3 days ago',  description: 'Extra shifts available for the weekend. Contact HR if interested.' },
+    { type: 'notice', title: 'Aviso de cambio de horario', time: 'Hoy', description: 'Tu turno del 15 de enero se ha reprogramado a las 13:00 por necesidades operativas.' },
+    { type: 'holiday', title: 'Horario en festivo', time: 'Ayer', description: 'Se cancelan todos los turnos ordinarios del lunes. Revisa tu horario para ver las actualizaciones.' },
+    { type: 'meeting', title: 'Reunión de equipo', time: 'Hace 2 días', description: 'Reunión de equipo obligatoria el 15 de enero a las 10:00. Si no puedes asistir, avisa.' },
+    { type: 'opportunity', title: 'Oportunidad de horas extra', time: 'Hace 3 días', description: 'Hay turnos extra disponibles para el fin de semana. Contacta con RR. HH. si te interesa.' },
   ];
 
-  const calendarDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const calendarDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 
   // Calendario de ejemplo (no ligado al día real)
   const generateCalendarDays = () => {
@@ -53,7 +65,7 @@ export const EmployeeShifts = () => {
       if (i % 3 === 0) shifts.push({ type: 'regular', text: '9:00-17:00' });
       if (i % 5 === 0) shifts.push({ type: 'morning', text: '6:00-14:00' });
       if (i % 7 === 0) shifts.push({ type: 'evening', text: '14:00-22:00' });
-      if (i === 20)  shifts.push({ type: 'holiday', text: 'Holiday' });
+      if (i === 20) shifts.push({ type: 'holiday', text: 'Holiday' });
       days.push({ day: i, shifts });
     }
     return days;
@@ -61,9 +73,9 @@ export const EmployeeShifts = () => {
   const calendarData = generateCalendarDays();
 
   const monthlyStats = [
-    { icon: Calendar,   value: '21', label: 'Working Days', color: 'blue' },
-    { icon: Users,      value: '8',  label: 'Weekend Days', color: 'gray' },
-    { icon: AlertCircle,value: '2',  label: 'Holiday Days', color: 'red'  },
+    { icon: Calendar, value: '21', label: 'Working Days', color: 'blue' },
+    { icon: Users, value: '8', label: 'Weekend Days', color: 'gray' },
+    { icon: AlertCircle, value: '2', label: 'Holiday Days', color: 'red' },
   ];
 
   return (
@@ -71,8 +83,8 @@ export const EmployeeShifts = () => {
       {/* Header */}
       <div className="shifts-header">
         <div className="shifts-title">
-          <h1>My Schedule</h1>
-          <p>View your work schedule for the current month.</p>
+          <div className='content-title'>Mis Horarios</div>           {/* clase importada de content title data.css */}
+          <p>Consulta tus horarios de trabajo el mes actual.</p>
         </div>
         <div className="month-selector">
           <button className="nav-btn" onClick={() => moveMonth(-1)}>
@@ -85,10 +97,10 @@ export const EmployeeShifts = () => {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats
       <div className="stats-grid">
         {stats.map((s, i) => (
-          <div className="stat-card" key={i}>
+          <div className="stat-card" key={i}>          
             <div className={`stat-icon ${s.color}`}><s.icon size={20} /></div>
             <div className="stat-content">
               <h3>{s.value}</h3>
@@ -96,13 +108,13 @@ export const EmployeeShifts = () => {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Calendar */}
       <div className="calendar-section">
         <div className="calendar-header">
           <Calendar size={20} />
-          <h2>Schedule Calendar</h2>
+          <h2>Calendario programado</h2>
         </div>
 
         <div className="calendar-grid">
@@ -121,10 +133,10 @@ export const EmployeeShifts = () => {
         </div>
 
         <div className="calendar-legend">
-          <div className="legend-item"><div className="legend-dot regular"></div><span>Regular Shift</span></div>
-          <div className="legend-item"><div className="legend-dot morning"></div><span>Morning Shift</span></div>
-          <div className="legend-item"><div className="legend-dot evening"></div><span>Evening Shift</span></div>
-          <div className="legend-item"><div className="legend-dot holiday"></div><span>Holiday</span></div>
+          <div className="legend-item"><div className="legend-dot regular"></div><span>Turno ordinario</span></div>
+          <div className="legend-item"><div className="legend-dot morning"></div><span>Turno de mañana</span></div>
+          <div className="legend-item"><div className="legend-dot evening"></div><span>Turno de tarde</span></div>
+          <div className="legend-item"><div className="legend-dot holiday"></div><span>Festivo</span></div>
         </div>
       </div>
 
@@ -133,7 +145,7 @@ export const EmployeeShifts = () => {
         <div className="upcoming-shifts">
           <div className="section-header">
             <Clock size={20} />
-            <h3>Upcoming Shifts</h3>
+            <h3>Proximos turnos</h3>
           </div>
           <div className="shifts-list">
             {upcomingShifts.map((s, i) => (
@@ -143,7 +155,7 @@ export const EmployeeShifts = () => {
                   <p>{s.time} • {s.hours}</p>
                 </div>
                 <span className={`shift-status ${s.status}`}>
-                  {s.status === 'confirmed' ? 'Confirmed' : 'Scheduled'}
+                  {s.status === 'confirmed' ? 'Confirmado' : 'Programado'}
                 </span>
               </div>
             ))}
@@ -153,7 +165,7 @@ export const EmployeeShifts = () => {
         <div className="notes-reminders">
           <div className="section-header">
             <FileText size={20} />
-            <h3>Schedule Notes & Reminders</h3>
+            <h3>Notas y recordatorios del horario</h3>
           </div>
           <div className="notes-list">
             {notifications.map((n, i) => (
@@ -176,19 +188,19 @@ export const EmployeeShifts = () => {
         <div className="changes-header">
           <div className="changes-title">
             <MessageSquare size={20} />
-            Need to Make Changes?
+            ¿Necesitas hacer cambios?
           </div>
           <div className="changes-actions">
-            <button className="ask-btn">Ask Question</button>
-            <button className="request-btn">Request Change</button>
+            <button className="ask-btn">Preguntar</button>
+            <button className="request-btn">Solicitar cambio</button>
           </div>
         </div>
         <div className="changes-description">
-          Request schedule changes, report issues, or ask questions about your shifts.
+          Solicita cambios de horario, comunica incidencias o haz preguntas sobre tus turnos.
         </div>
       </div>
 
-      {/* Monthly Summary */}
+      {/* Monthly Summary
       <div className="monthly-summary">
         <div className="section-header">
           <Building size={20} />
@@ -205,7 +217,7 @@ export const EmployeeShifts = () => {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
