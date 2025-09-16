@@ -1,10 +1,11 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import './Sidebar.css'
 import { useAuth } from "../../hooks/useAuth";
 
 
 export const Sidebar = () => {
-    const {user, loading} = useAuth()
+    const {user, loading, logout} = useAuth()
+    const navigate = useNavigate()
 
     if (loading || !user) {
         return <p>cargando...</p>
@@ -52,7 +53,10 @@ export const Sidebar = () => {
                         <span className="label">Buzón</span>
                     </NavLink>
                     <NavLink to="/suggestions" className="nav-item"> Sugerencias </NavLink>                    
+                  
                 </div>
+
+                <NavLink className="nav-item" onClick={() => {logout(), navigate("/login")}}>Logout</NavLink>
 
 
 

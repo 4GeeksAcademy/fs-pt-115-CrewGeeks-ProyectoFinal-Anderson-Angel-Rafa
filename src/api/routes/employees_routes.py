@@ -5,6 +5,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 from flask_mail import Message
 from sqlalchemy.exc import IntegrityError
 from api.mail_config import mail
+from datetime import timedelta
 # import app
 # import cloudinary
 # import cloudinary.uploader
@@ -294,7 +295,7 @@ def login():
         "company_id": employee.company_id,
         "system_role": system_role
     }
-    access_token = create_access_token(identity=str(employee.id), additional_claims=additional_claims)
+    access_token = create_access_token(identity=str(employee.id), additional_claims=additional_claims, expires_delta=timedelta(minutes=30))
     return jsonify({"msg": "Login succesful", "token": access_token, "user": employee.serialize()}), 200
 
 
