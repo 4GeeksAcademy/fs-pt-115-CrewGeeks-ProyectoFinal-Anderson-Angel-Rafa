@@ -79,25 +79,29 @@ export const EmployeeShifts = () => {
   ];
 
   return (
-    <div className="shifts-container">
-      {/* Header */}
-      <div className="shifts-header">
-        <div className="shifts-title">
-          <div className='content-title'>Mis Horarios</div>           {/* clase importada de content title data.css */}
-          <p>Consulta tus horarios de trabajo el mes actual.</p>
-        </div>
-        <div className="month-selector">
-          <button className="nav-btn" onClick={() => moveMonth(-1)}>
-            <ChevronLeft size={16} />
-          </button>
-          <span>{currentMonth}</span>
-          <button className="nav-btn" onClick={() => moveMonth(1)}>
-            <ChevronRight size={16} />
-          </button>
-        </div>
+    <section className='content-area'>
+      <div className='content-header'>
+        <div className='content-title'>Mis Horarios</div>
+        <div className='content-subtitle'>Consulta tus horarios de trabajo el mes actual</div>
       </div>
+      {/* Header */}
+      <div className="shifts-container">
+        <div className="shifts-header">
+          <div className="shifts-title">
+            {/* clase importada de content title data.css */}
+          </div>
+          <div className="month-selector">
+            <button className="nav-btn" onClick={() => moveMonth(-1)}>
+              <ChevronLeft size={16} />
+            </button>
+            <span>{currentMonth}</span>
+            <button className="nav-btn" onClick={() => moveMonth(1)}>
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
 
-      {/* Stats
+        {/* Stats
       <div className="stats-grid">
         {stats.map((s, i) => (
           <div className="stat-card" key={i}>          
@@ -110,97 +114,99 @@ export const EmployeeShifts = () => {
         ))}
       </div> */}
 
-      {/* Calendar */}
-      <div className="calendar-section">
-        <div className="calendar-header">
-          <Calendar size={20} />
-          <h2>Calendario programado</h2>
-        </div>
+        {/* Calendar */}
+        <div className="calendar-section">
+          <div className="section-header">
+             <div className='section-title'>Calendario programado</div>
+            <div className="calendar-header">
+              <Calendar size={20} />             
+            </div>
+          </div>
 
-        <div className="calendar-grid">
-          {calendarDays.map((d) => (
-            <div className="calendar-day-header" key={d}>{d}</div>
-          ))}
+          <div className="calendar-grid">
+            {calendarDays.map((d) => (
+              <div className="calendar-day-header" key={d}>{d}</div>
+            ))}
 
-          {calendarData.map((d) => (
-            <div className="calendar-day" key={d.day}>
-              <div className="day-number">{d.day}</div>
-              {d.shifts.map((sh, idx) => (
-                <div className={`shift-block ${sh.type}`} key={idx}>{sh.text}</div>
+            {calendarData.map((d) => (
+              <div className="calendar-day" key={d.day}>
+                <div className="day-number">{d.day}</div>
+                {d.shifts.map((sh, idx) => (
+                  <div className={`shift-block ${sh.type}`} key={idx}>{sh.text}</div>
+                ))}
+              </div>
+            ))}
+          </div>
+          </div>
+          <div className="calendar-legend">
+            <div className="legend-item"><div className="legend-dot regular"></div><span>Turno ordinario</span></div>
+            <div className="legend-item"><div className="legend-dot morning"></div><span>Turno de mañana</span></div>
+            <div className="legend-item"><div className="legend-dot evening"></div><span>Turno de tarde</span></div>
+            <div className="legend-item"><div className="legend-dot holiday"></div><span>Festivo</span></div>
+          </div>
+        
+
+        {/* Bottom: Upcoming + Notes */}
+        <div className="bottom-section">
+          <div className="upcoming-shifts">
+            <div className="section-header">
+              <Clock size={20} />
+              <h3>Proximos turnos</h3>
+            </div>
+            <div className="shifts-list">
+              {upcomingShifts.map((s, i) => (
+                <div className="shift-item" key={i}>
+                  <div className="shift-info">
+                    <h4>{s.title}</h4>
+                    <p>{s.time} • {s.hours}</p>
+                  </div>
+                  <span className={`shift-status ${s.status}`}>
+                    {s.status === 'confirmed' ? 'Confirmado' : 'Programado'}
+                  </span>
+                </div>
               ))}
             </div>
-          ))}
-        </div>
-
-        <div className="calendar-legend">
-          <div className="legend-item"><div className="legend-dot regular"></div><span>Turno ordinario</span></div>
-          <div className="legend-item"><div className="legend-dot morning"></div><span>Turno de mañana</span></div>
-          <div className="legend-item"><div className="legend-dot evening"></div><span>Turno de tarde</span></div>
-          <div className="legend-item"><div className="legend-dot holiday"></div><span>Festivo</span></div>
-        </div>
-      </div>
-
-      {/* Bottom: Upcoming + Notes */}
-      <div className="bottom-section">
-        <div className="upcoming-shifts">
-          <div className="section-header">
-            <Clock size={20} />
-            <h3>Proximos turnos</h3>
           </div>
-          <div className="shifts-list">
-            {upcomingShifts.map((s, i) => (
-              <div className="shift-item" key={i}>
-                <div className="shift-info">
-                  <h4>{s.title}</h4>
-                  <p>{s.time} • {s.hours}</p>
-                </div>
-                <span className={`shift-status ${s.status}`}>
-                  {s.status === 'confirmed' ? 'Confirmado' : 'Programado'}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        <div className="notes-reminders">
-          <div className="section-header">
-            <FileText size={20} />
-            <h3>Notas y recordatorios del horario</h3>
-          </div>
-          <div className="notes-list">
-            {notifications.map((n, i) => (
-              <div className={`note-item ${n.type}`} key={i}>
-                <div className="note-header">
-                  <div>
-                    <div className="note-title">{n.title}</div>
-                    <div className="note-time">{n.time}</div>
+          <div className="notes-reminders">
+            <div className="section-header">
+              <FileText size={20} />
+              <h3>Notas y recordatorios del horario</h3>
+            </div>
+            <div className="notes-list">
+              {notifications.map((n, i) => (
+                <div className={`note-item ${n.type}`} key={i}>
+                  <div className="note-header">
+                    <div>
+                      <div className="note-title">{n.title}</div>
+                      <div className="note-time">{n.time}</div>
+                    </div>
                   </div>
+                  <div className="note-description">{n.description}</div>
                 </div>
-                <div className="note-description">{n.description}</div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Need to make changes */}
-      <div className="changes-section">
-        <div className="changes-header">
-          <div className="changes-title">
-            <MessageSquare size={20} />
-            ¿Necesitas hacer cambios?
+        {/* Need to make changes */}
+        <div className="changes-section">
+          <div className="changes-header">
+            <div className="changes-title">
+              <MessageSquare size={20} />
+              ¿Necesitas hacer cambios?
+            </div>
+            <div className="changes-actions">
+              <button className="ask-btn">Preguntar</button>
+              <button className="request-btn">Solicitar cambio</button>
+            </div>
           </div>
-          <div className="changes-actions">
-            <button className="ask-btn">Preguntar</button>
-            <button className="request-btn">Solicitar cambio</button>
+          <div className="changes-description">
+            Solicita cambios de horario, comunica incidencias o haz preguntas sobre tus turnos.
           </div>
         </div>
-        <div className="changes-description">
-          Solicita cambios de horario, comunica incidencias o haz preguntas sobre tus turnos.
-        </div>
-      </div>
 
-      {/* Monthly Summary
+        {/* Monthly Summary
       <div className="monthly-summary">
         <div className="section-header">
           <Building size={20} />
@@ -218,7 +224,8 @@ export const EmployeeShifts = () => {
           </div>
         </div>
       </div> */}
-    </div>
+      </div>
+    </section>
   );
 };
 

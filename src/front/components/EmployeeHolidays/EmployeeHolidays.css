@@ -13,7 +13,7 @@
 .employee-holidays__stat {
   display: flex;
   align-items: center;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 1rem;
   padding: 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -71,10 +71,11 @@
 /* Contenedor del formulario */
 .employee-holidays__form {
   margin-top: 2rem;
-  background-color: #ffffff;
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  border-radius: 16px;
+  border: 1px solid #e7edf6;
+  padding: 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
 }
 
 /* Fila del formulario con inputs */
