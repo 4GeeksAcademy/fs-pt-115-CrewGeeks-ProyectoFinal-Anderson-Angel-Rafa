@@ -22,14 +22,20 @@ export const EmployeeSuggestions = () => {
     setTasks((prev) => prev.filter((t) => t.id !== id));
 
   return (
-    <div className="content-area content-header">
-      <h1 className="content-title">Sugerencias</h1>
-      <p className="content-subtitle">Comparte ideas para mejorar la empresa.</p>
+    <section className='content-area'>
+      <div className='content-header'>
+        <div className="content-title">Sugerencias
+
+        </div>
+        <div className="content-subtitle">Comparte ideas para mejorar la empresa.
+        </div>
+      </div>
+
       <div className="employee-suggestions">
         {/* Descripción de la tarea */}
         <section className="es-card es-left">
           <h2 className="es-title">Haz tu comentario</h2>
-          
+
 
           <textarea
             className="es-textarea"
@@ -85,6 +91,6 @@ export const EmployeeSuggestions = () => {
           </ul>
         </section>
       </div>
-    </div>
+    </section>
   );
 };

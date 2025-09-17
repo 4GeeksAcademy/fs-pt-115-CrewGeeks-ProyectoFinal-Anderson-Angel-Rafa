@@ -191,13 +191,14 @@ export const EmployeeInbox = () => {
     };
 
     return (
-        <div className="inbox-container">
+        <div className="content-area">
             {/* Header */}
             <div className='content-header'>
-                <h1>Buzon</h1>
-                <p>Manten todas tus notificaciones y mennsajes importantes actualizadas.</p>   
+                 <div className='content-title'>Buzon</div>
+                 
+                <div className='content-subtitle'>Manten todas tus notificaciones y mennsajes importantes actualizadas.</div>   
                     
-                    
+                <div className='content-body'>    
                 <div className="header-actions">
                     <button className="mark-read-btn">
                         <Check size={16} />
@@ -258,6 +259,7 @@ export const EmployeeInbox = () => {
                         <p>There are no messages in this category.</p>
                     </div>
                 )}
+            </div>
             </div>
         </div>
     );

@@ -44,6 +44,7 @@
   object-fit: cover;
   border-radius: 10px;
   border: 2px solid #d1d5db;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 .ep-photo__buttons {
   margin-top: 10px;
@@ -61,7 +62,7 @@
 .ep-btn--ghost { background: #f3f4f6; color: #111827; }
 .ep-btn--ghost:hover { background: #e5e7eb; }
 
-.ep-company h3 { margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem ; font-size: 18px;  color: #2c3e50}
+.ep-company h3 { margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem ; font-size: 18px;  color: #2c3e50; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);}
 .ep-company__list p { margin: 6px 0; color: #2c3e50; margin-bottom: 3px; }
 
 .ep-company__grid {
@@ -94,7 +95,9 @@
   align-items: 
   center; 
   gap: 0.5rem ;
-  color: #2c3e50
+  color: #2c3e50;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  
 }
 
 

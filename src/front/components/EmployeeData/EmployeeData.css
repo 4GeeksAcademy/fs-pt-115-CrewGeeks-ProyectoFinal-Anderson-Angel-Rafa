@@ -120,7 +120,7 @@
   background: #fff;
   border: 1px solid #e7edf6;
   border-radius: 16px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   padding: 20px;
   display: grid;
   gap: 14px;
