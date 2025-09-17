@@ -301,9 +301,9 @@
 }
 
 /* Unread indicator */
-.message-item.unread {
+/* .message-item.unread {
   border-left: 4px solid ;
-}
+} */
 
 .message-item.unread .message-title {
   font-weight: 700;
@@ -354,7 +354,7 @@
   
   .inbox-tabs {
     overflow-x: auto;
-    padding-bottom: 0.5rem;
+    padding-bottom: 1rem;
   }
   
   .message-header {

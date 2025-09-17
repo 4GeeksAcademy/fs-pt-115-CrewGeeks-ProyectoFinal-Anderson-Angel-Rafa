@@ -75,7 +75,8 @@
   border-radius: 16px;
   border: 1px solid #e7edf6;
   padding: 25px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  
 }
 
 /* Fila del formulario con inputs */
