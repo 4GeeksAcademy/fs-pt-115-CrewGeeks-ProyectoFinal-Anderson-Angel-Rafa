@@ -81,3 +81,54 @@
   display: block;
 }
 
+/*responsive*/
+
+/* --- ABOUT PLATFORM • BREAKPOINTS (añadir al final de AboutPlatform.css) --- */
+
+/* ≥1536px — desktop grande */
+@media (min-width: 1536px){
+  .cg-container{ width: min(1360px, 90vw); }
+  .cg-eu-grid{ grid-template-columns: 1.2fr 0.8fr; gap: 40px; }
+  .cg-eu h2{ font-size: clamp(40px, 3.6vw, 56px); }
+}
+
+/* ≥1280px — desktop común */
+@media (min-width: 1280px){
+  .cg-container{ width: min(1280px, 92vw); }
+  .cg-eu-grid{ grid-template-columns: 1.15fr 0.85fr; gap: 36px; }
+}
+
+/* ≤1024px — tablet paisaje / laptop chica: 1 columna */
+@media (max-width: 1024px){
+  .cg-eu{ padding: clamp(56px, 8vw, 96px) 0; }
+  .cg-eu-grid{ grid-template-columns: 1fr; gap: 24px; align-items: start; }
+  .cg-eu-photo{ margin-top: 8px; }
+}
+
+/* ≤768px — tablet chica / phablet: tipografía y bloques */
+@media (max-width: 768px){
+  .cg-container{ width: min(1120px, 94vw); }
+  .cg-eu h2{ font-size: clamp(24px, 5.2vw, 32px); }
+  .cg-eu .cg-lead{ font-size: 15px; max-width: 65ch; }
+  .cg-eu-rows{ gap: 12px; }
+  .cg-eu-row{ gap: 10px; }
+  .cg-eu-icon{ width: 20px; height: 20px; font-size: 14px; }
+  .cg-eu-photo{ aspect-ratio: 16/11; border-radius: 14px; }
+}
+
+/* ≤640px — móvil: legibilidad y radios */
+@media (max-width: 640px){
+  .cg-eu .cg-lead{ max-width: none; }
+  .cg-eu-photo{ border-radius: 12px; }
+}
+
+/* ≤266px — prueba ultra-angosta (evitar overflow) */
+@media (max-width: 266px){
+  .cg-container{ width: 100vw; padding-inline: 10px; }
+  .cg-eu{ padding: 28px 0 36px; }
+  .cg-eu h2{ font-size: clamp(20px, 7vw, 24px); }
+  .cg-eu .cg-lead{ font-size: 0.92rem; }
+  .cg-eu-row{ gap: 8px; }
+  .cg-eu-icon{ width: 18px; height: 18px; font-size: 12px; }
+  .cg-eu-photo{ border-radius: 10px; aspect-ratio: 16/12; }
+}

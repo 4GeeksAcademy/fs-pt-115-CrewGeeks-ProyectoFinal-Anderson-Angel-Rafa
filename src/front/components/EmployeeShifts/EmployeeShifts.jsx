@@ -237,7 +237,4 @@ export const EmployeeShifts = () => {
 		</div>
 	);
 };
-
-
-
  

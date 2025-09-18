@@ -74,3 +74,23 @@
   background: linear-gradient(90deg, #7b55d9 0%, #3b82f6 100%);
   box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
 }
+
+/*responsive*/
+
+@media (max-width: 768px) {
+  .cg-nav-links {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .cg-brand-name {
+    display: none;
+  }
+  .cg-logo {
+    height: 65px;
+    width: 65px;
+  }
+  .cg-btn{
+    width: 120px;
+  }
+}

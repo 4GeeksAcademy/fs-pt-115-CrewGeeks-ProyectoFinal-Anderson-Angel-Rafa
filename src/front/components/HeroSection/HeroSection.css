@@ -52,3 +52,59 @@
   box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
   padding: 16px;
 }
+
+
+/*responsive*/
+
+/* --- HEROSECTION • BREAKPOINTS (añadir al final de HeroSection.css) --- */
+
+/* ≥1536px — desktop grande */
+@media (min-width: 1536px){
+  .cg-container{ width: min(1360px, 90vw); }
+  .cg-hero-grid{ gap: 40px; }
+  .hero-tittle{ font-size: clamp(40px, 3.6vw, 56px); }
+}
+
+/* ≥1280px — desktop común */
+@media (min-width: 1280px){
+  .cg-container{ width: min(1280px, 92vw); }
+  .cg-hero-grid{ grid-template-columns: 1.1fr 0.9fr; gap: 36px; }
+}
+
+/* ≤1024px — tablet paisaje / laptop chica: 1 columna */
+@media (max-width: 1024px){
+  .cg-hero{ padding: clamp(40px, 8vw, 72px) 0 clamp(40px, 8vw, 72px); }
+  .cg-hero-grid{ grid-template-columns: 1fr; gap: 24px; }
+  .cg-hero-image{ margin-top: 8px; }
+}
+
+/* ≤768px — tablet chica / phablet: tipografía y medios */
+@media (max-width: 768px){
+  .cg-container{ width: min(1120px, 94vw); }              /* un poco más de respiro lateral */
+  .hero-tittle{ font-size: clamp(28px, 5.5vw, 36px); }
+  .cg-hero p{ max-width: 65ch; }
+  .cg-hero-ctas{ gap: 10px; }
+  .cg-hero-image{
+    aspect-ratio: 16/10;
+    border-radius: 16px;
+    padding: 12px;
+  }
+}
+
+/* ≤640px — móvil: CTAs en columna, texto legible */
+@media (max-width: 640px){
+  .cg-hero-ctas{ flex-direction: column; align-items: stretch; }
+  .cg-hero .cg-btn{ width: 100%; text-align: center; }
+  .cg-hero p{ font-size: 0.98rem; }
+  .cg-trust{ font-size: 12px; }
+}
+
+/* ~266px (max 280px) — prueba ultra-angosta: sin overflow */
+@media (max-width: 280px){
+  .cg-hero{ padding: 28px 0 36px; }
+  .cg-container{ width: 100vw; padding-inline: 10px; }    /* gutters mínimos seguros */
+  .hero-tittle{ font-size: clamp(22px, 7vw, 26px); }
+  .cg-hero p{ font-size: 0.92rem; }
+  .cg-hero-ctas{ gap: 8px; }
+  .cg-hero-image{ padding: 10px; border-radius: 12px; }
+}
