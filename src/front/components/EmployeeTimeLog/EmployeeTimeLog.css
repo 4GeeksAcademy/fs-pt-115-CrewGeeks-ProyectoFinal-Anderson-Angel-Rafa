@@ -464,6 +464,18 @@
   color: #6b7280;
 }
 
+.timeline-list.scrollable {
+  max-height: 220px; /* ajusta al gusto: 180–260px */
+  overflow-y: auto;
+}
+
+/* opcional: mejora el scroll en paneles con fondo claro */
+.timeline-list.scrollable::-webkit-scrollbar {
+  width: 8px;
+}
+.timeline-list.scrollable::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+}
 @media (max-width: 1024px) {
   .current-session {
     grid-template-columns: 1fr;

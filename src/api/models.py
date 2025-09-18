@@ -1,7 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Date, Integer, ForeignKey, Text
+from sqlalchemy import String, Date, Integer, ForeignKey, Text, DateTime, Enum, Index, Time, UniqueConstraint, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from flask_bcrypt import generate_password_hash, check_password_hash
+import enum
+from datetime import datetime, timezone
+
 #from typing import Optional
 
 db = SQLAlchemy()
@@ -26,6 +29,11 @@ class Company(db.Model):
         "Shifts",
         back_populates="company",
         cascade="all, delete-orphan",
+    )
+    shift_types: Mapped[list["ShiftType"]] = relationship(
+        "ShiftType",
+        back_populates="company",
+        cascade="all, delete-orphan"
     )
     suggestions: Mapped[list["Suggestions"]] = relationship(
         "Suggestions",
@@ -138,6 +146,12 @@ class Employee(db.Model):
         back_populates="employee",
         cascade="all, delete-orphan",
     )
+    
+    time_punches: Mapped[list["TimePunch"]] = relationship(
+        "TimePunch",
+        back_populates="employee",
+        cascade="all, delete-orphan"
+    )
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password).decode('utf-8')
@@ -239,18 +253,159 @@ class Shifts(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     company_id: Mapped[int] = mapped_column(ForeignKey("company.id"), nullable=False)
     employee_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=False)
-    shift_type: Mapped[str] = mapped_column(String(50), nullable=False)
+
+    # NUEVO: fecha y horas del turno
+    date: Mapped[Date] = mapped_column(Date, nullable=False)           # día local del turno
+    start_time: Mapped[Time] = mapped_column(Time, nullable=False)     # HH:MM
+    end_time: Mapped[Time] = mapped_column(Time, nullable=False)       # HH:MM
+
+    # NUEVO: referencia a tipo
+    type_id: Mapped[int] = mapped_column(ForeignKey("shift_type.id"), nullable=False)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="planned")  # planned|published|cancelled
 
     company: Mapped["Company"] = relationship("Company", back_populates="shifts")
     employee: Mapped["Employee"] = relationship("Employee", back_populates="shifts")
+    type: Mapped["ShiftType"] = relationship("ShiftType", back_populates="shifts")
+
+    __table_args__ = (
+        Index("ix_shift_company_emp_date", "company_id", "employee_id", "date"),
+    )
 
     def serialize(self):
         return {
             "id": self.id,
             "company_id": self.company_id,
             "employee_id": self.employee_id,
-            "shift_type": self.shift_type,
+            "date": self.date.isoformat(),
+            "start_time": self.start_time.strftime("%H:%M"),
+            "end_time": self.end_time.strftime("%H:%M"),
+            "type": self.type.serialize() if self.type else None,
+            "notes": self.notes,
+            "status": self.status,
         }
+    
+
+
+# --------------------
+# ShiftType (catálogo de tipos/colores)
+# --------------------
+class ShiftType(db.Model):
+    __tablename__ = "shift_type"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    # Si company_id es None => tipo GLOBAL (válido para todas las empresas)
+    company_id: Mapped[int | None] = mapped_column(ForeignKey("company.id"), nullable=True)
+    code: Mapped[str] = mapped_column(String(50), nullable=False)      # REGULAR|MORNING|EVENING|HOLIDAY...
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    color_hex: Mapped[str] = mapped_column(String(7), nullable=False)  # "#3b82f6"
+
+    company: Mapped["Company"] = relationship("Company", back_populates="shift_types")
+    shifts: Mapped[list["Shifts"]] = relationship("Shifts", back_populates="type")
+
+    __table_args__ = (
+        UniqueConstraint("company_id", "code", name="uq_shift_type_company_code"),
+    )
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "company_id": self.company_id,
+            "code": self.code,
+            "name": self.name,
+            "color_hex": self.color_hex,
+        }
+    
+
+# --------------------
+# ShiftSeries (reglas recurrentes)
+# --------------------
+class ShiftSeries(db.Model):
+    __tablename__ = "shift_series"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    company_id: Mapped[int] = mapped_column(ForeignKey("company.id"), nullable=False)
+    employee_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=False)
+    type_id: Mapped[int] = mapped_column(ForeignKey("shift_type.id"), nullable=False)
+
+    start_date: Mapped[Date] = mapped_column(Date, nullable=False)
+    end_date: Mapped[Date | None] = mapped_column(Date, nullable=True)  # null = sin fin
+    start_time: Mapped[Time] = mapped_column(Time, nullable=False)
+    end_time: Mapped[Time] = mapped_column(Time, nullable=False)
+
+    weekdays_mask: Mapped[int] = mapped_column(Integer, nullable=False)  # bits Lun..Dom (bit0=Lun)
+    interval_weeks: Mapped[int] = mapped_column(Integer, nullable=False, default=1)  # cada N semanas
+    tz_name: Mapped[str] = mapped_column(String(64), nullable=False, default="Europe/Madrid")
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    company: Mapped["Company"] = relationship("Company")
+    employee: Mapped["Employee"] = relationship("Employee")
+    type: Mapped["ShiftType"] = relationship("ShiftType")
+    exceptions: Mapped[list["ShiftException"]] = relationship(
+        "ShiftException", back_populates="series", cascade="all, delete-orphan"
+    )
+
+    __table_args__ = (
+        Index("ix_shift_series_company_emp", "company_id", "employee_id"),
+    )
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "company_id": self.company_id,
+            "employee_id": self.employee_id,
+            "type": self.type.serialize() if self.type else None,
+            "start_date": self.start_date.isoformat(),
+            "end_date": (self.end_date.isoformat() if self.end_date else None),
+            "start_time": self.start_time.strftime("%H:%M"),
+            "end_time": self.end_time.strftime("%H:%M"),
+            "weekdays_mask": self.weekdays_mask,
+            "interval_weeks": self.interval_weeks,
+            "tz_name": self.tz_name,
+            "active": self.active,
+            "notes": self.notes,
+        }
+
+
+
+# --------------------
+# ShiftException (cancelar/modificar un día de una serie)
+# --------------------
+class ShiftException(db.Model):
+    __tablename__ = "shift_exception"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    series_id: Mapped[int] = mapped_column(ForeignKey("shift_series.id"), nullable=False)
+    date: Mapped[Date] = mapped_column(Date, nullable=False)
+
+    # action: 'cancel' o 'modify'
+    action: Mapped[str] = mapped_column(String(10), nullable=False)  # 'cancel' | 'modify'
+    new_start_time: Mapped[Time | None] = mapped_column(Time, nullable=True)
+    new_end_time: Mapped[Time | None] = mapped_column(Time, nullable=True)
+    new_type_id: Mapped[int | None] = mapped_column(ForeignKey("shift_type.id"), nullable=True)
+    note: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    series: Mapped["ShiftSeries"] = relationship("ShiftSeries", back_populates="exceptions")
+    new_type: Mapped["ShiftType"] = relationship("ShiftType")
+
+    __table_args__ = (
+        UniqueConstraint("series_id", "date", name="uq_shift_exception_series_date"),
+        Index("ix_shift_exception_series_date", "series_id", "date"),
+    )
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "series_id": self.series_id,
+            "date": self.date.isoformat(),
+            "action": self.action,
+            "new_start_time": (self.new_start_time.strftime("%H:%M") if self.new_start_time else None),
+            "new_end_time": (self.new_end_time.strftime("%H:%M") if self.new_end_time else None),
+            "new_type_id": self.new_type_id,
+            "note": self.note,
+        }
+
 
 
 # --------------------
@@ -278,6 +433,46 @@ class Suggestions(db.Model):
 
 
 
-    
+class PunchType(enum.Enum):
+    IN = "IN"
+    BREAK_START = "BREAK_START"
+    BREAK_END = "BREAK_END"
+    OUT = "OUT"
+
+
+class TimePunch(db.Model):
+    __tablename__ = "time_punch"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    employee_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=False)
+
+    punch_type: Mapped[PunchType] = mapped_column(
+        Enum(PunchType, name="punch_type", native_enum=False, validate_strings=True),
+        nullable=False
+    )
+    punched_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc)
+    )
+    note: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    employee: Mapped["Employee"] = relationship(
+    "Employee",
+    back_populates="time_punches"
+    )
+
+    __table_args__ = (
+        Index("ix_time_punch_employee_time", "employee_id", "punched_at"),
+    )
+
+    def serialize(self) -> dict:
+        return {
+            "id": self.id,
+            "employee_id": self.employee_id,
+            "punch_type": self.punch_type.value,
+            "punched_at": self.punched_at.isoformat(),
+            "note": self.note,
+        }
 
   
