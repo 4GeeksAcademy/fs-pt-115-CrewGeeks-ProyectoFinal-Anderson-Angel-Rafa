@@ -31,30 +31,27 @@ export const Sidebar = () => {
 
     return (
         <>
-
             <div
                 className={`sidewrap-backdrop ${isOpen ? "is-visible" : ""}`}
                 onClick={() => setIsOpen(false)}
                 aria-hidden="true"
             />
-
-
             <div
                 id="sidebar"
                 className={`sidewrap ${isOpen ? "is-open" : ""}`}
                 role="complementary"
                 aria-label="Menú lateral"
             >
-
+                
                 <button
                     type="button"
                     className="sidewrap__close"
                     aria-label="Cerrar menú lateral"
-                    onClick={() => setIsOpen(false)}
+                     onClick={() => setIsOpen(false)}
                 >
-                    ✕
+                    X
                 </button>
-
+                
                 <div className="user-card">
                     <div className="avatar">AS</div>
                     <div className="user-meta">
