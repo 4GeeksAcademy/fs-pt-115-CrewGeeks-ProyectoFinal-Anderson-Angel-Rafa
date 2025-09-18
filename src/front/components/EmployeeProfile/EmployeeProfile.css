@@ -151,8 +151,69 @@
 
 
 /* Responsive */
-@media (max-width: 960px) {
+@media (max-width: 1025px) {
+  
   .employee-profile__wrapper {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 769px) {
+
+  .content-header {
+    display: grid;
+    place-items: center;
+  }
+  
+  .ep-company h3 {
+    display: grid;
+    place-items: center;
+  }
+
+  .ep-personal h2 {
+    display: grid;
+    place-items: center;
+  }
+
+  .ep-actions {
+    justify-content: center;
+  }
+
+  .ep-security h2 {
+    display: grid;
+    place-items: center;
+  }
+}
+
+@media (max-width: 426px){
+  
+  .ep-company {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .ep-personal__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ep-security__item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  @media (max-width: 320px) {
+    
+    .ep-security h2 {
+    text-align: center;
+  }
+}
+
+
+
+  
+
+
+   
+  
+}
+
