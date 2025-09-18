@@ -102,9 +102,9 @@
 /* ====== CALENDAR ====== */
 .calendar-section {
   background: #fff;
-  border: 1px solid #f3f4f6;
-  border-radius: .75rem;
-  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   margin-bottom: 2rem;
 }
 
@@ -191,7 +191,7 @@
   background: #fff;
   border: 1px solid #f3f4f6;
   border-radius: .75rem;
-  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   padding: 1rem;
 }
 
@@ -247,7 +247,7 @@
   background: #fff;
   border: 1px solid #f3f4f6;
   border-radius: .75rem;
-  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   padding: 1rem;
 }
 

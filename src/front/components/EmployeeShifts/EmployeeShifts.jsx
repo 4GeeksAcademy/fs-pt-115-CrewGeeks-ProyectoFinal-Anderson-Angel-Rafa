@@ -11,6 +11,7 @@ import {
 import "./EmployeeShifts.css";
 
 export const EmployeeShifts = () => {
+
 	const { token } = useAuth();
 
 	// --- estado base ---
@@ -259,6 +260,5 @@ export const EmployeeShifts = () => {
 			</div>
 		</div>
 	);
-};
 
-
+ 
