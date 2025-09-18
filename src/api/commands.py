@@ -106,10 +106,10 @@ def seed_defaults(email: Optional[str] = None, password: Optional[str] = None):
     TYPES_SCOPE = os.getenv("SEED_TYPES_SCOPE", "global")  # "global" o "company"
     types_company_id = None if TYPES_SCOPE.lower() == "global" else company.id
 
-    _ensure_shift_type("REGULAR", "Regular Shift", "#3b82f6", company_id=types_company_id)
-    _ensure_shift_type("MORNING", "Morning Shift", "#22c55e", company_id=types_company_id)
-    _ensure_shift_type("EVENING", "Evening Shift", "#f59e0b", company_id=types_company_id)
-    _ensure_shift_type("HOLIDAY", "Holiday", "#ef4444", company_id=types_company_id)
+    _ensure_shift_type("REGULAR", "Turno con Nocturnidad", "#3b82f6", company_id=types_company_id)
+    _ensure_shift_type("MORNING", "Turno de Mañana", "#22c55e", company_id=types_company_id)
+    _ensure_shift_type("EVENING", "Turno de Tarde", "#f59e0b", company_id=types_company_id)
+    _ensure_shift_type("HOLIDAY", "Descanso", "#ef4444", company_id=types_company_id)
 
     salary = db.session.execute(
         db.select(Salary).where(Salary.amount == salary_amount)

@@ -1,54 +1,36 @@
 import React, { useState } from "react";
 import "./EmployeeProfile.css";
+import { useAuth } from "../../hooks/useAuth";
 
-export const EmployeeProfile = ({
+export const EmployeeProfile = () => {
 
-  employee: initialEmployee = {
-    id: 1,
-    company_id: 101,
-    first_name: "Ángel",
-    last_name: "Sastre",
-    dni: "12345678X",
-    birth: "1992-03-15",
-    address: "Calle Mayor 123, 28001 Madrid, Spain",
-    email: "angel.sastre@company.com",
-    seniority: "5 años",
-    phone: "+34 612 345 678",
-    role_id: "Frontend Developer",
-    status: "Activo",
-  },
-  onUpdate,
-  // NUEVOS PROPS PARA SEGURIDAD
-  lastPasswordChangeText = "hace 3 meses",
-  twoFAEnabled = false,
-  onChangePassword = () => { },
-  onToggle2FA = () => { },
+  const { user, token, loading } = useAuth()
 
-}) => {
+  console.log(user);
+  
+
   const [isEditing, setIsEditing] = useState(false);
-  const [employee, setEmployee] = useState(initialEmployee);
+
 
   const toggleEdit = () => {
-    if (isEditing && typeof onUpdate === "function") {
-      onUpdate(employee);
-    }
-    setIsEditing(!isEditing);
+
+    setIsEditing((prev) => !prev);
   };
 
-  const handleChange = (field) => (e) => {
-    setEmployee((prev) => ({ ...prev, [field]: e.target.value }));
-  };
+  // const handleChange = (field) => (e) => {
+  //   setEmployee((prev) => ({ ...prev, [field]: e.target.value }));
+  // };
 
   return (
     <section className='content-area'>
-      <div className='content-header'>        
-          <div className='content-title'>Mi perfil</div>
-          <div className='content-subtitle'>
-            Gestiona tu información personal y la configuración de tu cuenta
-          </div>
+      <div className='content-header'>
+        <div className='content-title'>Mi perfil</div>
+        <div className='content-subtitle'>
+          Gestiona tu información personal y la configuración de tu cuenta
         </div>
+      </div>
 
-        <div className='content-body'>
+      <div className='content-body'>
         <div className="employee-profile__wrapper">
           {/* Columna izquierda */}
           <div className="employee-profile__left">
@@ -62,62 +44,22 @@ export const EmployeeProfile = ({
             </div>
 
             {/* Datos laborales */}
-            
+
             <div className="ep-box ep-company">
               <h3>Datos Laborales</h3>
-              {!isEditing ? (
-                <div className="ep-company__list">
-                  <p>
-                    <strong>Empresa (ID):</strong> {employee.company_id}
-                  </p>
-                  <p>
-                    <strong>Cargo/Rol:</strong> {employee.role_id}
-                  </p>
-                  <p>
-                    <strong>Antigüedad:</strong> {employee.seniority}
-                  </p>
-                  <p
-                    className={`ep-status ${employee.status === "Activo" ? "activo" : "inactivo"
-                      }`}
-                  >
-                    {employee.status}
-                  </p>
-                </div>
-              ) : (
-                <div className="ep-company__grid">
-                  <label>
-                    Empresa (ID)
-                    <input
-                      value={employee.company_id}
-                      onChange={handleChange("company_id")}
-                    />
-                  </label>
-                  <label>
-                    Cargo/Rol
-                    <input
-                      value={employee.role_id}
-                      onChange={handleChange("role_id")}
-                    />
-                  </label>
-                  <label>
-                    Antigüedad
-                    <input
-                      value={employee.seniority}
-                      onChange={handleChange("seniority")}
-                    />
-                  </label>
-                  <label>
-                    Estado
-                    <select
-                      value={employee.status}
-                      onChange={handleChange("status")}
-                    >
-                      <option>Activo</option>
-                      <option>Inactivo</option>
-                    </select>
-                  </label>
-                </div>
-              )}
+
+              <div className="ep-company__list">
+                <p>
+                  <strong>Empresa:</strong> {user.company}
+                </p>
+                <p>
+                  <strong>Cargo/Rol:</strong> {user.role_id}
+                </p>
+                <p>
+                  <strong>Antigüedad:</strong> {user.seniority}
+                </p>
+              </div>
+
             </div>
           </div>
 
@@ -129,89 +71,89 @@ export const EmployeeProfile = ({
               {!isEditing ? (
                 <div className="ep-personal__grid">
                   <p>
-                    <strong>Nombre:</strong> {employee.first_name}
+                    <strong>Nombre:</strong> {user.first_name}
                   </p>
                   <p>
-                    <strong>Apellidos:</strong> {employee.last_name}
+                    <strong>Apellidos:</strong> {user.last_name}
                   </p>
                   <p>
-                    <strong>DNI:</strong> {employee.dni}
+                    <strong>DNI:</strong> {user.dni}
                   </p>
                   <p>
-                    <strong>Año de nacimiento:</strong> {employee.birth}
+                    <strong>Año de nacimiento:</strong> {user.birth}
                   </p>
                   <p>
-                    <strong>Dirección:</strong> {employee.address}
+                    <strong>Dirección:</strong> {user.address}
                   </p>
                   <p>
-                    <strong>Email:</strong> {employee.email}
+                    <strong>Email:</strong> {user.email}
                   </p>
                   <p>
-                    <strong>Teléfono:</strong> {employee.phone}
+                    <strong>Teléfono:</strong> {user.phone}
                   </p>
                   <p>
-                    <strong>ID empleado:</strong> {employee.id}
+                    <strong>ID empleado:</strong> {user.id}
                   </p>
                 </div>
               ) : (
                 <form
                   className="ep-personal__grid"
-                  onSubmit={(e) => e.preventDefault()}
+                  // onSubmit={(e) => e.preventDefault()}
                 >
                   <label>
                     Nombre
                     <input
-                      value={employee.first_name}
-                      onChange={handleChange("first_name")}
+                      value={user.first_name}
+                      // onChange={handleChange("first_name")}
                     />
                   </label>
                   <label>
                     Apellidos
                     <input
-                      value={employee.last_name}
-                      onChange={handleChange("last_name")}
+                      value={user.last_name}
+                      // onChange={handleChange("last_name")}
                     />
                   </label>
                   <label>
                     DNI
                     <input
-                      value={employee.dni}
-                      onChange={handleChange("dni")}
+                      value={user.dni}
+                      // onChange={handleChange("dni")}
                     />
                   </label>
                   <label>
                     Fecha Nac.
                     <input
                       type="date"
-                      value={employee.birth}
-                      onChange={handleChange("birth")}
+                      value={user.birth}
+                      // onChange={handleChange("birth")}
                     />
                   </label>
                   <label>
                     Dirección
                     <input
-                      value={employee.address}
-                      onChange={handleChange("address")}
+                      value={user.address}
+                      // onChange={handleChange("address")}
                     />
                   </label>
                   <label>
                     Email
                     <input
                       type="email"
-                      value={employee.email}
-                      onChange={handleChange("email")}
+                      value={user.email}
+                      // onChange={handleChange("email")}
                     />
                   </label>
                   <label>
                     Teléfono
                     <input
-                      value={employee.phone}
-                      onChange={handleChange("phone")}
+                      value={user.phone}
+                      // onChange={handleChange("phone")}
                     />
                   </label>
                   <label>
                     ID empleado
-                    <input value={employee.id} onChange={handleChange("id")} />
+                    <input value={user.id}/>
                   </label>
                 </form>
               )}
@@ -229,15 +171,12 @@ export const EmployeeProfile = ({
               <div className="ep-security__item">
                 <div>
                   <p className="ep-security__label">Contraseña</p>
-                  <p className="ep-security__sub">
-                    Último cambio: {lastPasswordChangeText}
-                  </p>
                 </div>
                 <div>
                   <button
                     type="button"
                     className="ep-btn ep-btn--link"
-                    onClick={onChangePassword}
+                    // onClick={onChangePassword}
                   >
                     Cambiar contraseña
                   </button>
@@ -247,8 +186,8 @@ export const EmployeeProfile = ({
           </div>
 
           {/* fin ajustes seguridad */}
-        </div>      
-    </div>
+        </div>
+      </div>
     </section>
   );
 };
