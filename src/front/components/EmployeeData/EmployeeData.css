@@ -251,5 +251,41 @@
   font-size: 12px;
 }
 
+@media (max-width: 1024px) {
+  
+  .cg-kpis-grid {
+    grid-template-columns: repeat(2, 1fr)
+  }
+}
+
+@media (max-width: 425px){
+  
+  .cg-actions-grid {
+    grid-template-columns: repeat(2, 1fr)
+  }
+
+  .cg-kpis-grid {
+    grid-template-columns: repeat(1, 1fr)
+  }
+  
+  .cg-kpi {
+    display: grid;
+    place-items: center;
+  }
+  
+  .content-header {
+    display: grid;
+    place-items: center;
+  }
+  
+  .section-header {
+    flex-direction: column;
+  }
+
+  .activity-item {
+    flex-direction: column;
+  }
+}
+
 
 
