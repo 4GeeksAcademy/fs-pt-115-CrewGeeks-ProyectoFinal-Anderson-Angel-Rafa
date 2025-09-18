@@ -30,7 +30,7 @@ export const EmployeeShifts = () => {
 	const fmtYearMonth = (d) => `${MONTHS_ES[d.getMonth()]} ${d.getFullYear()}`;
 	const mondayIndex = (jsDay) => (jsDay + 6) % 7; // JS: 0=Dom..6=Sáb -> 0=Lun..6=Dom
 
-	// ⚠️ Fix de parsing/format para no "correr" días:
+	//  Fix de parsing/format para no "correr" días:
 	const parseISODateUTC = (iso) => {
 		const [y, m, d] = iso.split("-").map(Number);
 		return new Date(Date.UTC(y, m - 1, d)); // ancla a 00:00 UTC
