@@ -2,7 +2,7 @@ import os
 from typing import Optional
 from datetime import date
 import click
-from api.models import db, Employee, Role, Salary, Company 
+from api.models import db, Employee, Role, Salary, Company, ShiftType
 
 """
 In this file, you can add as many commands as you want using the @app.cli.command decorator
@@ -52,6 +52,29 @@ def setup_commands(app):
             if with_seed:
                 seed_defaults()
             click.echo(" Base de datos reiniciada" + (" + seed" if with_seed else ""))
+
+
+def _ensure_shift_type(code: str, name: str, color_hex: str, company_id: int | None = None):
+    """Crea o actualiza un ShiftType (unique por code+company_id)."""
+    t = db.session.execute(
+        db.select(ShiftType).where(
+            ShiftType.code == code,
+            ShiftType.company_id == company_id
+        )
+    ).scalar_one_or_none()
+
+    if not t:
+        t = ShiftType(code=code, name=name, color_hex=color_hex, company_id=company_id)
+        db.session.add(t)
+    else:
+        # por si quieres actualizar nombre/color en futuras semillas
+        t.name = name
+        t.color_hex = color_hex
+
+    db.session.commit()
+    return t
+
+
 def seed_defaults(email: Optional[str] = None, password: Optional[str] = None):
     company_name = os.getenv("SEED_COMPANY_NAME")
     company_cif  = os.getenv("SEED_COMPANY_CIF")
@@ -79,6 +102,15 @@ def seed_defaults(email: Optional[str] = None, password: Optional[str] = None):
         company = Company(name=company_name, cif=company_cif)
         db.session.add(company)
         db.session.commit()
+
+    TYPES_SCOPE = os.getenv("SEED_TYPES_SCOPE", "global")  # "global" o "company"
+    types_company_id = None if TYPES_SCOPE.lower() == "global" else company.id
+
+    _ensure_shift_type("REGULAR", "Regular Shift", "#3b82f6", company_id=types_company_id)
+    _ensure_shift_type("MORNING", "Morning Shift", "#22c55e", company_id=types_company_id)
+    _ensure_shift_type("EVENING", "Evening Shift", "#f59e0b", company_id=types_company_id)
+    _ensure_shift_type("HOLIDAY", "Holiday", "#ef4444", company_id=types_company_id)
+
     salary = db.session.execute(
         db.select(Salary).where(Salary.amount == salary_amount)
     ).scalar_one_or_none()

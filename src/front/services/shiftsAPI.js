@@ -1,103 +1,144 @@
-export const urlApi = import.meta.env.VITE_BACKEND_URL + "/api";
+const API_BASE = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
+// -------------------- helpers --------------------
+const authHeaders = (token) => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${token}`,
+});
 
-export const getAllShifts = async () => {
-    try {
-        const response = await fetch(`${urlApi}/shifts`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`
-            }
-        });
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.error || data.msg || "Error al traer todos los turnos")
-        }
-        return data;
-    } catch (error) {
-        console.error("getAllShifts failed:", error);
-        throw error;
-    }
-}
-
-
-export const getShift = async (id) => {
-    try {
-        const response = await fetch(`${urlApi}/shifts/${id}`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`
-            }
-        });
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.error || data.msg || "Error al traer el turno")
-        }
-        return data;
-    } catch (error) {
-        console.error("getShift failed:", error);
-        throw error
-    }
-}
-
-
-export const createShift = async (payload) => {
+const handle = async (res) => {
+  let data = null;
   try {
-    const response = await fetch(`${urlApi}/shifts`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(payload),
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error || data.msg || "Error al crear el turno");
-    }
-    return data;
-  } catch (error) {
-    console.error("createShift failed:", error);
-    throw error;
+    data = await res.json();
+  } catch (_) {
+    // sin body
   }
+  if (!res.ok) {
+    const msg = data?.error || data?.msg || res.statusText || "Error de red";
+    const err = new Error(msg);
+    err.status = res.status;
+    err.data = data;
+    throw err;
+  }
+  return data;
 };
 
-
-export const editShift = async (id, payload) => {
-  try {
-    const response = await fetch(`${urlApi}/shifts/edit/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(payload),
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(
-        data.error || data.msg || "Error al actualizar el turno"
-      );
-    }
-    return data;
-  } catch (error) {
-    console.error("editShift failed:", error);
-    throw error;
-  }
+// Sugerencia: límites del mes (útil para el calendario)
+export const monthRange = (d = new Date()) => {
+  const first = new Date(d.getFullYear(), d.getMonth(), 1);
+  const last = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+  const pad = (n) => String(n).padStart(2, "0");
+  const iso = (x) =>
+    `${x.getFullYear()}-${pad(x.getMonth() + 1)}-${pad(x.getDate())}`;
+  return { from: iso(first), to: iso(last) };
 };
 
+// -------------------- Shift Types --------------------
+export const getShiftTypes = async (token) => {
+  const res = await fetch(`${API_BASE}/shifts/types`, {
+    headers: authHeaders(token),
+  });
+  return handle(res);
+};
 
-export const deleteShift = async (id) => {
-  try {
-    const response = await fetch(`${urlApi}/shifts/delete/${id}`, {
+// -------------------- Shifts (expresos + generados en GET) --------------------
+export const listShifts = async ({ from, to, employeeId, token }) => {
+  const params = new URLSearchParams({ from, to });
+  if (employeeId != null) params.set("employee_id", String(employeeId));
+  const res = await fetch(`${API_BASE}/shifts?${params.toString()}`, {
+    headers: authHeaders(token),
+  });
+  return handle(res);
+};
+
+export const createShift = async (body, token) => {
+  const res = await fetch(`${API_BASE}/shifts`, {
+    method: "POST",
+    headers: authHeaders(token),
+    body: JSON.stringify(body),
+  });
+  return handle(res);
+};
+
+export const updateShift = async (shiftId, body, token) => {
+  const res = await fetch(`${API_BASE}/shifts/${shiftId}`, {
+    method: "PUT",
+    headers: authHeaders(token),
+    body: JSON.stringify(body),
+  });
+  return handle(res);
+};
+
+export const deleteShift = async (shiftId, token) => {
+  const res = await fetch(`${API_BASE}/shifts/${shiftId}`, {
+    method: "DELETE",
+    headers: authHeaders(token),
+  });
+  return handle(res);
+};
+
+// -------------------- Series --------------------
+export const createSeries = async (body, token) => {
+  const res = await fetch(`${API_BASE}/shifts/series`, {
+    method: "POST",
+    headers: authHeaders(token),
+    body: JSON.stringify(body),
+  });
+  return handle(res);
+};
+
+export const listSeries = async ({ employeeId, token }) => {
+  const params = new URLSearchParams();
+  if (employeeId != null) params.set("employee_id", String(employeeId));
+  const res = await fetch(`${API_BASE}/shifts/series?${params.toString()}`, {
+    headers: authHeaders(token),
+  });
+  return handle(res);
+};
+
+export const updateSeries = async (seriesId, body, token) => {
+  const res = await fetch(`${API_BASE}/shifts/series/${seriesId}`, {
+    method: "PUT",
+    headers: authHeaders(token),
+    body: JSON.stringify(body),
+  });
+  return handle(res);
+};
+
+export const deleteSeries = async (seriesId, token) => {
+  const res = await fetch(`${API_BASE}/shifts/series/${seriesId}`, {
+    method: "DELETE",
+    headers: authHeaders(token),
+  });
+  return handle(res);
+};
+
+// -------------------- Excepciones de Serie --------------------
+export const upsertSeriesException = async (seriesId, body, token) => {
+  const res = await fetch(`${API_BASE}/shifts/series/${seriesId}/exceptions`, {
+    method: "POST",
+    headers: authHeaders(token),
+    body: JSON.stringify(body),
+  });
+  return handle(res);
+};
+
+export const deleteSeriesExceptionByDate = async (seriesId, dateISO, token) => {
+  const params = new URLSearchParams({ date: dateISO });
+  const res = await fetch(
+    `${API_BASE}/shifts/series/${seriesId}/exceptions?${params.toString()}`,
+    {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error || data.msg || "Error al borrar el turno");
+      headers: authHeaders(token),
     }
-    return data;
-  } catch (error) {
-    console.error("deleteShift failed:", error);
-    throw error;
-  }
+  );
+  return handle(res);
+};
+
+export const deleteExceptionById = async (exceptionId, token) => {
+  const res = await fetch(`${API_BASE}/shifts/exceptions/${exceptionId}`, {
+    method: "DELETE",
+    headers: authHeaders(token),
+  });
+  return handle(res);
 };

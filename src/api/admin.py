@@ -32,7 +32,7 @@ def setup_admin(app):
         form_columns = ["id", "company_id", "employee_id", "start_date", "end_date", "status", "approved_user_id", "remaining_days"]
 
     class ShiftsAdmin(ModelView):
-        form_columns = ["id", "company_id", "employee_id", "shift_type"]
+        form_columns = ["id", "company_id", "employee_id"]
 
     class PayrollAdmin(ModelView):
         form_columns = ["id", "company_id", "employee_id", "period_year", "period_month"]
