@@ -133,13 +133,13 @@ export const EmployeeHolidays = () => {
 
 		<section className="employee-holidays content-area">
 			<div className="content-header">
-				<h1 className="content-title">Vacaciones</h1>
-				<p className="content-subtitle">Gestiona tus días de vacaciones y solicitudes</p>
+				<div className='content-title'>Vacaciones</div>				
+				<div className="content-subtitle">Gestiona tus días de vacaciones y solicitudes</div>
 			</div>
 			{/* Estadísticas: disponibles, usados, pendientes, restantes */}
 			<div className="content-body">
 				<div className="employee-holidays__stats">
-					<div className="employee-holidays__stat">
+					<div className="cg-kpi">
 						<div className="employee-holidays__icon employee-holidays__icon--available">
 							<i className="fa-solid fa-umbrella-beach" aria-hidden="true"></i>
 						</div>
@@ -149,7 +149,7 @@ export const EmployeeHolidays = () => {
 						</div>
 					</div>
 
-					<div className="employee-holidays__stat">
+					<div className="cg-kpi">
 						<div className="employee-holidays__icon employee-holidays__icon--used">
 							<i className="fa-solid fa-circle-check" aria-hidden="true"></i>
 						</div>
@@ -159,7 +159,7 @@ export const EmployeeHolidays = () => {
 						</div>
 					</div>
 
-					<div className="employee-holidays__stat">
+					<div className="cg-kpi">
 						<div className="employee-holidays__icon employee-holidays__icon--pending">
 							<i className="fa-solid fa-hourglass-half" aria-hidden="true"></i>
 						</div>
@@ -169,7 +169,7 @@ export const EmployeeHolidays = () => {
 						</div>
 					</div>
 
-					<div className="employee-holidays__stat">
+					<div className="cg-kpi">
 						<div className="employee-holidays__icon employee-holidays__icon--remaining">
 							<i className="fa-solid fa-file-lines" aria-hidden="true"></i>
 						</div>
@@ -218,10 +218,10 @@ export const EmployeeHolidays = () => {
 						/>
 					</label>
 					<div className="employee-holidays__form-actions">
-						<button type="submit" disabled={diasSolicitados <= 0}>
+						<button className="request-btn" type="submit" disabled={diasSolicitados <= 0}>
 							{editId !== null ? "Actualizar" : "Enviar solicitud"}
 						</button>
-						<button
+						<button className="request-btn"
 							type="button"
 							onClick={() => {
 								setFormulario({ inicio: "", fin: "", motivo: "" });
@@ -234,10 +234,11 @@ export const EmployeeHolidays = () => {
 				</form>
 
 				{/* Listado de solicitudes */}
-				<div className="employee-holidays__requests">
-					<h2>Solicitudes</h2>
+				
+				<div className="ep-box ep-security">					
+					<div className='section-title'>Solicitudes</div>
 					{solicitudes.length === 0 ? (
-						<p>No hay solicitudes.</p>
+						<p>No hay solicitudes</p>
 					) : (
 						<ul className="employee-holidays__list">
 							{solicitudes.map((s) => (
