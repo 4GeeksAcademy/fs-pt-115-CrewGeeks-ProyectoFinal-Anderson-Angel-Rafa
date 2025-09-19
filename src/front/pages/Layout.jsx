@@ -11,16 +11,7 @@ export const Layout = () => {
 	return (
 		<ScrollToTop>
 			<Navbar />
-
-
-			{
-				loading ? <div className="loading-wave" >
-					<div className="loading-bar"></div>
-					<div className="loading-bar"></div>
-					<div className="loading-bar"></div>
-					<div className="loading-bar"></div>
-				</div > : <Outlet />}
-
+			<Outlet />
 		</ScrollToTop>
 	);
 };

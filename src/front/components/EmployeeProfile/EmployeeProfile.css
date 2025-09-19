@@ -39,10 +39,10 @@
 
 .ep-photo { text-align: center; }
 .ep-photo img {
-  width: 140px;
-  height: 140px;
+  width: 200px;
+  height: 200px;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 50%;
   border: 2px solid #d1d5db;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
@@ -207,13 +207,5 @@
     text-align: center;
   }
 }
-
-
-
-  
-
-
-   
-  
 }
 

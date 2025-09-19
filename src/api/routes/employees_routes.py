@@ -6,10 +6,10 @@ from flask_mail import Message
 from sqlalchemy.exc import IntegrityError
 from api.mail_config import mail
 from datetime import timedelta
-# import app
-# import cloudinary
-# import cloudinary.uploader
-# from cloudinary import CloudinaryImage
+#import app
+import cloudinary
+import cloudinary.uploader
+from cloudinary import CloudinaryImage
 
 from api.utils_auth.helpers_auth import (
     get_jwt_company_id,
@@ -303,28 +303,51 @@ def login():
 
 
 # CLOUDINARY
-# @employee_bp.route("/upload-img", methods=["POST"])
-# @jwt_required()
-# def upload_ing():
-#     employee_id = get_jwt_identity()
-#     file = request.files.get("file")
-#     employee = db.session.get(Employee, int(employee_id))
-#     if not file:
-#         return jsonify({"error": "No se envio el archivo "}), 400
-#     upload_result = cloudinary.uploader.upload(file)
+@employee_bp.route("/upload-img", methods=["POST"])
+@jwt_required()
+def upload_ing():
+    employee_id = get_jwt_identity()
+    file = request.files.get("file")
+    employee = db.session.get(Employee, int(employee_id))
+    if not file:
+        return jsonify({"error": "No se envio el archivo "}), 400
+    upload_result = cloudinary.uploader.upload(file)
 
-#     # Obtenemos el public_id de la imagen subida desde upload_result
-#     public_id = upload_result.get("public_id")
+    # Obtenemos el public_id de la imagen subida desde upload_result
+    public_id = upload_result.get("public_id")
 
-#     image = CloudinaryImage(public_id)
-#     transformed_url = image.build_url(
-#         transformation=[
-#             {"crop": "fill", "gravity": "face", "width": 400, "height": 400}
-#         ]
-#     )
+    image = CloudinaryImage(public_id)
+    transformed_url = image.build_url(
+        transformation=[
+            {"crop": "fill", "gravity": "face", "width": 400, "height": 400}
+        ]
+    )
 
-#     employee.image = transformed_url
+    employee.image = transformed_url
 
-#     db.session.commit()
-#     return jsonify({"msg": "ya esta en la nube", "imageUrl": upload_result["secure_url"]}), 200
+    db.session.commit()
+    return jsonify({"msg": "ya esta en la nube", "imageUrl": upload_result["secure_url"]}), 200
+
+@employee_bp.route("/delete-img", methods=["DELETE"])
+@jwt_required()
+def delete_img():
+    employee_id = get_jwt_identity()
+    employee = db.session.get(Employee, int(employee_id))
+
+    if not employee:
+        return jsonify({"error": "Empleado no encontrado"}), 404
+
+    if not employee.image:
+        return jsonify({"msg": "No hay imagen para eliminar"}), 400
+
+    try:
+        # Si guardas el public_id en vez de la URL, podrías llamar:
+        # cloudinary.uploader.destroy(public_id)
+        # Aquí solo quitamos la referencia de la BD
+        employee.image = None
+        db.session.commit()
+        return jsonify({"msg": "Imagen eliminada correctamente"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 

@@ -1,25 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./EmployeeProfile.css";
 import { useAuth } from "../../hooks/useAuth";
 
 export const EmployeeProfile = () => {
 
-  const { user, token, loading } = useAuth()
+  const { user, token, loading, uploadProfileImage, deleteProfileImage } = useAuth(); // ← añadimos uploadProfileImage del hook
 
   console.log(user);
-  
 
   const [isEditing, setIsEditing] = useState(false);
-
+  const fileInputRef = useRef(null); // ← ref para el input oculto
 
   const toggleEdit = () => {
-
     setIsEditing((prev) => !prev);
   };
 
-  // const handleChange = (field) => (e) => {
-  //   setEmployee((prev) => ({ ...prev, [field]: e.target.value }));
-  // };
+  // Handler para abrir el selector de archivos
+  const handleOpenFileDialog = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Handler para subir la imagen al seleccionar archivo
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      await uploadProfileImage(file); // ← sube y refresca el perfil
+    } catch (err) {
+      // opcional: manejar error (toast/alerta)
+      console.error(err);
+    } finally {
+      // limpiar el input para poder volver a elegir el mismo archivo si se desea
+      e.target.value = "";
+    }
+  };
+
+  const handleDeleteImage = async () => {
+    try {
+      await deleteProfileImage();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
 
   return (
     <section className='content-area'>
@@ -36,15 +59,37 @@ export const EmployeeProfile = () => {
           <div className="employee-profile__left">
             {/* Foto */}
             <div className="ep-box ep-photo">
-              <img src="foto.jpg" alt="Foto empleado" />
+              <img src={user?.image} alt="Foto empleado" />
               <div className="ep-photo__buttons">
-                <button className="ep-btn ep-btn--ghost">Subir</button>
-                <button className="ep-btn ep-btn--ghost">Eliminar</button>
+                <button
+                  className="ep-btn ep-btn--ghost"
+                  type="button"
+                  onClick={handleOpenFileDialog}
+                  disabled={loading}
+                >
+                  {loading ? "Subiendo..." : "Subir"}
+                </button>
+                <button
+                  className="ep-btn ep-btn--ghost"
+                  type="button"
+                  onClick={handleDeleteImage}
+                  disabled={loading}
+                >
+                  {loading ? "Eliminando..." : "Eliminar"}
+                </button>
+
+                {/* Input de archivo oculto */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                />
               </div>
             </div>
 
             {/* Datos laborales */}
-
             <div className="ep-box ep-company">
               <h3>Datos Laborales</h3>
 
@@ -98,27 +143,27 @@ export const EmployeeProfile = () => {
               ) : (
                 <form
                   className="ep-personal__grid"
-                  // onSubmit={(e) => e.preventDefault()}
+                // onSubmit={(e) => e.preventDefault()}
                 >
                   <label>
                     Nombre
                     <input
                       value={user.first_name}
-                      // onChange={handleChange("first_name")}
+                    // onChange={handleChange("first_name")}
                     />
                   </label>
                   <label>
                     Apellidos
                     <input
                       value={user.last_name}
-                      // onChange={handleChange("last_name")}
+                    // onChange={handleChange("last_name")}
                     />
                   </label>
                   <label>
                     DNI
                     <input
                       value={user.dni}
-                      // onChange={handleChange("dni")}
+                    // onChange={handleChange("dni")}
                     />
                   </label>
                   <label>
@@ -126,14 +171,14 @@ export const EmployeeProfile = () => {
                     <input
                       type="date"
                       value={user.birth}
-                      // onChange={handleChange("birth")}
+                    // onChange={handleChange("birth")}
                     />
                   </label>
                   <label>
                     Dirección
                     <input
                       value={user.address}
-                      // onChange={handleChange("address")}
+                    // onChange={handleChange("address")}
                     />
                   </label>
                   <label>
@@ -141,19 +186,19 @@ export const EmployeeProfile = () => {
                     <input
                       type="email"
                       value={user.email}
-                      // onChange={handleChange("email")}
+                    // onChange={handleChange("email")}
                     />
                   </label>
                   <label>
                     Teléfono
                     <input
                       value={user.phone}
-                      // onChange={handleChange("phone")}
+                    // onChange={handleChange("phone")}
                     />
                   </label>
                   <label>
                     ID empleado
-                    <input value={user.id}/>
+                    <input value={user.id} />
                   </label>
                 </form>
               )}
@@ -176,7 +221,7 @@ export const EmployeeProfile = () => {
                   <button
                     type="button"
                     className="ep-btn ep-btn--link"
-                    // onClick={onChangePassword}
+                  // onClick={onChangePassword}
                   >
                     Cambiar contraseña
                   </button>
