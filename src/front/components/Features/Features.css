@@ -132,6 +132,7 @@
 /* --- PATCH RESPONSIVE (añadir al final de Features.css) --- */
 
 /* ≤1024px: pasa a 2 columnas */
+/* ≤1024px — pasa a 2 columnas */
 @media (max-width: 1024px) {
   .cg-features {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -139,50 +140,68 @@
   }
 }
 
-/* ≤768px: ajustes tipográficos y separación */
+/* ≤768px — ajustes tipográficos y separación */
 @media (max-width: 768px) {
   .cg-section h2 { font-size: clamp(22px, 4vw, 28px); }
   .cg-section p.cg-lead { margin-bottom: 22px; }
   .cg-feature { gap: 10px; }
 }
 
-/* ≤640px: 1 columna (móvil común) */
+/* ≤640px — 1 columna (móvil común) */
 @media (max-width: 640px) {
   .cg-features { grid-template-columns: 1fr; }
   .cg-container { width: min(1120px, 94vw); } /* un pelín más de respiro lateral */
   .cg-feature { padding: 18px; }
 }
 
-/* ≥1280px: ensancha levemente el contenedor (desktop) */
-@media (min-width: 1280px) {
-  .cg-container { width: min(1280px, 92vw); }
-  .cg-features { gap: 24px; }
+
+/* ≤425px — lead justificado+centrado; contenidos de cards SOLO centrados; iconos centrados */
+@media (max-width: 425px){
+  /* Lead: “Optimice sus procesos …” */
+  #features .cg-lead{
+    text-align: justify;
+    text-align-last: center;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    margin-inline: auto;
+    max-width: 65ch;
+  }
+
+  /* Contenido de cada card: SOLO centrado (título y párrafo) */
+  #features .cg-feature h3,
+  #features .cg-feature p{
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  /* Íconos centrados dentro de cada card */
+  #features .cg-feature [class^="cg-icon-"]{
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    font-size: 26px;
+    line-height: 1;
+    margin: 0 auto 10px;
+  }
 }
 
-/* ≥1536px: desktop grande (no estirar de más) */
-@media (min-width: 1536px) {
-  .cg-container { width: min(1360px, 90vw); } /* mantiene líneas de texto legibles */
-  .cg-features { gap: 28px; }
+/* ≤375px — íconos un paso más compactos */
+@media (max-width: 375px){
+  #features .cg-feature [class^="cg-icon-"]{
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+    margin-bottom: 9px;
+  }
 }
 
-/* ~266px: modo prueba “ultra angosto” (force 1 col + gutters mínimos) */
-@media (max-width: 280px) {
-  .cg-section { padding: clamp(32px, 8vw, 48px) 0; }
-  .cg-container { width: 100vw; }
-  .cg-features { grid-template-columns: 1fr; gap: 12px; }
-  .cg-feature { padding: 14px; border-radius: 16px; }
-  .cg-feature h3 { font-size: 15px; }
-  .cg-feature p { font-size: 13px; }
-  .cg-icon-profile,
-  .cg-icon-calendar,
-  .cg-icon-payroll,
-  .cg-icon-holidays,
-  .cg-icon-suggestions,
-  .cg-icon-roles { width: 40px; height: 40px; font-size: 20px; }
+/* ≤320px — íconos mínimo cómodo */
+@media (max-width: 320px){
+  #features .cg-feature [class^="cg-icon-"]{
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
 }
-
-/* (opcional debug rápido) cambia el borde por breakpoint:
-@media (max-width:1024px){ .cg-container{ outline:2px dashed #99f; } }
-@media (max-width:640px){ .cg-container{ outline:2px dashed #f99; } }
-@media (max-width:280px){ .cg-container{ outline:2px dashed #9f9; } }
-*/

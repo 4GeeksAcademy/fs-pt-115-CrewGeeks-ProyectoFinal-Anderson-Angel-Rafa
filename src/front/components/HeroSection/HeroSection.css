@@ -56,55 +56,130 @@
 
 /*responsive*/
 
-/* --- HEROSECTION • BREAKPOINTS (añadir al final de HeroSection.css) --- */
+/* === HERO • BREAKPOINTS (añadir al final de HeroSection.css) === */
 
-/* ≥1536px — desktop grande */
-@media (min-width: 1536px){
-  .cg-container{ width: min(1360px, 90vw); }
+/* ≥1440px — contenedor ancho cómodo + más aire en el grid */
+@media (min-width: 1440px){
+  .cg-hero .cg-container{ width: min(1360px, 90vw); }
   .cg-hero-grid{ gap: 40px; }
-  .hero-tittle{ font-size: clamp(40px, 3.6vw, 56px); }
 }
 
-/* ≥1280px — desktop común */
-@media (min-width: 1280px){
-  .cg-container{ width: min(1280px, 92vw); }
-  .cg-hero-grid{ grid-template-columns: 1.1fr 0.9fr; gap: 36px; }
-}
-
-/* ≤1024px — tablet paisaje / laptop chica: 1 columna */
+/* ≤1024px — 1 columna y el bloque de texto centrado */
 @media (max-width: 1024px){
-  .cg-hero{ padding: clamp(40px, 8vw, 72px) 0 clamp(40px, 8vw, 72px); }
-  .cg-hero-grid{ grid-template-columns: 1fr; gap: 24px; }
+  .cg-hero-grid{
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .cg-hero-grid > :first-child{
+    text-align: center;         /* centra “Simplifica tu gestión…” */
+    margin-inline: auto;
+  }
+  .cg-hero p{ margin-inline: auto; }
   .cg-hero-image{ margin-top: 8px; }
-}
 
-/* ≤768px — tablet chica / phablet: tipografía y medios */
-@media (max-width: 768px){
-  .cg-container{ width: min(1120px, 94vw); }              /* un poco más de respiro lateral */
-  .hero-tittle{ font-size: clamp(28px, 5.5vw, 36px); }
-  .cg-hero p{ max-width: 65ch; }
-  .cg-hero-ctas{ gap: 10px; }
-  .cg-hero-image{
-    aspect-ratio: 16/10;
-    border-radius: 16px;
-    padding: 12px;
+  .cg-hero-ctas{
+    display: flex;              /* ya lo tienes, se reafirma sin problema */
+    justify-content: center;    /* centra contenido dentro de la fila */
+    width: 100%;                /* clave para que realmente pueda centrarse */
+    gap: 12px;                  /* conserva tu separación */
   }
 }
 
-/* ≤640px — móvil: CTAs en columna, texto legible */
-@media (max-width: 640px){
-  .cg-hero-ctas{ flex-direction: column; align-items: stretch; }
-  .cg-hero .cg-btn{ width: 100%; text-align: center; }
-  .cg-hero p{ font-size: 0.98rem; }
-  .cg-trust{ font-size: 12px; }
+/* ≤768px — centra párrafos, CTA y “Cumple con el RGPD” */
+@media (max-width: 768px){
+  .cg-hero p{ max-width: 65ch; }
+  .cg-trust{ text-align: center; }
+
+  /* 🔧 FIX: CTA centrado (el contenedor ocupa el ancho de la columna) */
+  .cg-hero-ctas{
+    display: flex;              /* ya lo tienes, se reafirma sin problema */
+    justify-content: center;    /* centra contenido dentro de la fila */
+    width: 100%;                /* clave para que realmente pueda centrarse */
+    gap: 12px;                  /* conserva tu separación */
+  }
+  /* por si hubiese un único botón, garantizamos centrado del hijo */
+  .cg-hero-ctas > *{ margin-inline: 0; }
 }
 
-/* ~266px (max 280px) — prueba ultra-angosta: sin overflow */
-@media (max-width: 280px){
-  .cg-hero{ padding: 28px 0 36px; }
-  .cg-container{ width: 100vw; padding-inline: 10px; }    /* gutters mínimos seguros */
-  .hero-tittle{ font-size: clamp(22px, 7vw, 26px); }
-  .cg-hero p{ font-size: 0.92rem; }
-  .cg-hero-ctas{ gap: 8px; }
-  .cg-hero-image{ padding: 10px; border-radius: 12px; }
+/* ≤425px — botón más alargado y menos alto */
+/* ≤425px — párrafo justificado + CTA centrado y más “alargado” + detalles */
+@media (max-width: 425px){
+  /* Justificar el párrafo principal (“Plataforma integral…”) */
+  .cg-hero p:not(.cg-trust){
+    text-align: justify;
+    text-align-last: center;     /* última línea centrada: más prolijo */
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    max-width: 65ch;
+    margin-inline: auto;
+  }
+
+  /* Título un toque más compacto */
+  .hero-tittle{ font-size: clamp(28px, 6vw, 34px); }
+
+  /* CTA centrado de verdad (el contenedor ocupa todo el ancho) */
+  .cg-hero-ctas{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+  }
+
+  /* Botón más “alargado” (menos alto) */
+  .cg-hero-ctas .cg-btn{
+    padding-block: 10px;
+    padding-inline: 18px;
+    min-width: 220px;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    border-radius: 12px;
+  }
+
+  /* Imagen un poco más compacta en móvil mediano */
+  .cg-hero-image{
+    aspect-ratio: 16/11;
+    border-radius: 16px;
+    padding: 12px;
+  }
+
+  /* Sello RGPD centrado */
+  .cg-trust{ text-align: center; }
+}
+
+/* ≤375px — afina tipografía y CTA */
+@media (max-width: 375px){
+  .hero-tittle{ font-size: clamp(26px, 6.5vw, 32px); }
+  .cg-hero p:not(.cg-trust){ font-size: 0.98rem; }
+
+  .cg-hero-ctas .cg-btn{
+    padding-block: 10px;
+    padding-inline: 16px;
+    min-width: 200px;
+    font-size: 0.94rem;
+  }
+}
+
+/* ≤320px — gutters mínimos y jerarquía nítida */
+@media (max-width: 320px){
+  .cg-hero .cg-container{
+    width: 100vw;
+    padding-inline: 10px;
+  }
+  .cg-hero{ padding: 40px 0; }
+  .hero-tittle{ font-size: clamp(24px, 7vw, 28px); }
+
+  /* CTA sigue centrado */
+  .cg-hero-ctas{
+    justify-content: center;
+    width: 100%;
+  }
+  .cg-hero-ctas .cg-btn{
+    padding-block: 9px;
+    padding-inline: 14px;
+    min-width: 180px;
+    font-size: 0.92rem;
+  }
+
+  .cg-trust{ text-align: center; }
 }
