@@ -70,6 +70,76 @@ export const AuthProvider = ({ children }) => {
         setUser(null)
     }
 
+    // ➜ En tu AuthProvider, añade esta función dentro del componente (junto a login/createEmployee)
+const uploadProfileImage = async (file) => {
+  if (!file) return;
+  setLoading(true);
+  setError(null);
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file); // ← debe llamarse "file" como en el backend
+
+    const response = await fetch(`${urlApi}/employees/upload-img`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        // NO pongas Content-Type aquí; fetch lo pone solo con FormData
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || data.msg || "Error al subir la imagen");
+    }
+
+    // El backend guarda la URL transformada en BD; refrescamos el perfil:
+    await getEmployeeData();
+
+    // Si quieres feedback rápido sin esperar al GET, podrías hacer:
+    // setUser((prev) => prev ? { ...prev, image: data.imageUrl } : prev);
+
+    return data; // { msg, imageUrl }
+  } catch (err) {
+    setError(err.message);
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
+
+const deleteProfileImage = async () => {
+  setLoading(true);
+  setError(null);
+
+  try {
+    const response = await fetch(`${urlApi}/employees/delete-img`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || data.msg || "Error al eliminar la imagen");
+    }
+
+    // Refrescamos los datos del empleado
+    await getEmployeeData();
+
+    return data; // { msg: "Imagen eliminada correctamente" }
+  } catch (err) {
+    setError(err.message);
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
     // const checkTokenExpiration = () => {
     //     const token = localStorage.getItem('token');
     //     if (token) {
@@ -117,7 +187,7 @@ export const AuthProvider = ({ children }) => {
     // }, []);
 
     return (
-        <AuthContext.Provider value={{ user, token, loading, error, createEmployee, login, logout }}>{children}</AuthContext.Provider>
+        <AuthContext.Provider value={{ user, token, loading, error, createEmployee, login, logout, uploadProfileImage, deleteProfileImage }}>{children}</AuthContext.Provider>
     )
 
 }

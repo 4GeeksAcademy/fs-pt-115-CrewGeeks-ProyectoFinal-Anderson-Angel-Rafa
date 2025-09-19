@@ -1,4 +1,4 @@
-* {
+/* * {
   box-sizing: border-box;
 }
 
@@ -6,7 +6,7 @@
   --nav-h: 72px;             
   --sidebar-w: 280px;       
   --panel-radius: 20px;
-}
+} */
 
 html,
 body,
@@ -35,7 +35,7 @@ a {
 .app-content { min-width: 0; }
 
 /* Móvil: sidebar no ocupa columna (contenido a 100%) */
-@media (max-width: 1023px) {
+@media (max-width: 1024px) {
   :root { --sidebar-w: 0px; }
   .app-shell { grid-template-columns: 1fr; }
 }
