@@ -7,9 +7,9 @@ export const HolidaysPage = () => {
   return (
     <div className="app-shell">
       <Sidebar />
-      <main className="app-main">
+      
         <EmployeeHolidays />
-      </main>
+      
     </div>
   );
 };

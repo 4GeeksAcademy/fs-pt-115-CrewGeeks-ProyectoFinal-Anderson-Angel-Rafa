@@ -7,9 +7,7 @@ export const SuggestionsPage = () => {
   return (
     <div className="app-shell">
       <Sidebar />
-      <main className="app-main">
-        <EmployeeSuggestions />
-      </main>
-    </div>
+          <EmployeeSuggestions />
+      </div>
   );
 };
