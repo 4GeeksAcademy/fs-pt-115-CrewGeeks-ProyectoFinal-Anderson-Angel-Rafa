@@ -1,5 +1,5 @@
 .cg-contact {
-  padding: 72px 0;
+  padding: 40px 0;
   background: #ffffff;
 }
 
@@ -143,4 +143,12 @@
 .cg-small {
   color: #94a3b8;
   font-size: 13px;
+}
+
+
+@media (max-width: 425px){
+  .cg-form-grid{
+    grid-template-columns: 1fr; 
+    gap: 14px;                  
+  }
 }
