@@ -9,7 +9,7 @@
   border-bottom-left-radius: 20px; */
   position: sticky;
   top: 24px;
-  width: var(--sidebar-w);
+  width: 280px;
   z-index: 1;
   color: #94a3b8;
   box-sizing: border-box;

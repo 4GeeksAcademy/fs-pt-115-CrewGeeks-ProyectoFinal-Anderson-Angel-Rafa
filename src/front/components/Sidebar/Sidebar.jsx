@@ -31,6 +31,7 @@ export const Sidebar = () => {
 
     return (
         <>
+        <main className="sidebar-container">
             <div
                 className={`sidewrap-backdrop ${isOpen ? "is-visible" : ""}`}
                 onClick={() => setIsOpen(false)}
@@ -105,7 +106,8 @@ export const Sidebar = () => {
                 className={`side-edge ${isOpen ? "is-hidden" : ""}`}
                 aria-label="Abrir menú lateral"
                 onClick={() => setIsOpen(true)}
-            />
+                />
+                </main>
         </>
     );
 };

@@ -28,9 +28,8 @@ a {
 
 /* Layout base */
 .app-shell {
-  display: grid;
-  grid-template-columns: var(--sidebar-w, 280px) minmax(0, 1fr);
-  min-height: 100dvh;
+  display: flex;
+  min-height: 100vh;
 }
 .app-content { min-width: 0; }
 
