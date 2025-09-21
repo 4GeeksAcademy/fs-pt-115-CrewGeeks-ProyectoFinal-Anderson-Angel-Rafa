@@ -344,69 +344,55 @@ export const EmployeeTimeLog = () => {
         const monthLabel = monthLabelES(currentMonthDate);
 
         return (
-                <div className="timelog-container">
+                <section className='content-area'>
                         {/* Header */}
-                        <div className="timelog-header">
-                                <div className="header-left">
-                                        <h1>Registro de Horarios</h1>
-                                        <p>Controla y registra tus horas de trabajo diarias.</p>
-                                </div>
-                                <div className="header-right">
-                                        <span className="month-selector">{monthLabel}</span>
-                                        <button
-                                                className="clock-in-btn"
-                                                onClick={handleStart}
-                                                disabled={loadingAction !== null || status.open}
-                                                aria-busy={loadingAction === "start"}
-                                                title={status.open ? "Ya hay un turno abierto" : "Fichar entrada"}
-                                        >
-                                                <Clock size={16} />
-                                                {loadingAction === "start" ? "Fichando..." : "Fichar Entrada"}
-                                        </button>
-                                </div>
+                        <div className='content-header'>
+                                <div className="content-title">Registro de Horarios</div>
+                                <div className='content-subtitle'>Controla y registra tus horas de trabajo diarias.</div>
                         </div>
 
                         {/* Quick Actions */}
-                        <div className="quick-actions">
-                                <div className="action-card" onClick={handleStart} aria-disabled={status.open || loadingAction !== null}>
-                                        <div className="action-icon green">
+                        <div className='content-body'>
+                        <div className="cg-actions-grid">
+                                <button className="cg-action" type="button" onClick={handleStart} aria-disabled={status.open || loadingAction !== null}>
+                                        <span className="cg-aicon cg-aicon--start" aria-hidden="true">
                                                 <LogIn size={20} />
-                                        </div>
-                                        <div className="action-content">
+                                        </span>
+                                        <span className="cg-action__label">
                                                 <h3>Fichar Entrada</h3>
                                                 <p>Registra tu hora de entrada</p>
-                                        </div>
-                                </div>
+                                        </span>
+                                </button>
 
-                                <div className="action-card" onClick={handleEnd} aria-disabled={!status.open || loadingAction !== null}>
-                                        <div className="action-icon red">
+                                <button className="cg-action" type="button" onClick={handleEnd} aria-disabled={!status.open || loadingAction !== null}>
+                                        <span className="cg-aicon cg-aicon--stop" aria-hidden="true">
                                                 <LogOut size={20} />
-                                        </div>
-                                        <div className="action-content">
+                                        </span>
+                                        <span className="cg-action__label">
                                                 <h3>Fichar Salida</h3>
                                                 <p>Registra tu hora de salida</p>
-                                        </div>
-                                </div>
+                                        </span>
+                                </button>
 
-                                <div className="action-card" onClick={handlePauseToggle} aria-disabled={!status.open || loadingAction !== null}>
-                                        <div className="action-icon yellow">
+                                <button className="cg-action" type="button" onClick={handlePauseToggle} aria-disabled={!status.open || loadingAction !== null}>
+                                        <span className="cg-aicon cg-aicon--pause">
                                                 <Coffee size={20} />
-                                        </div>
-                                        <div className="action-content">
+                                        </span>
+                                        <span className="cg-action__label">
                                                 <h3>{status.paused ? "Reanudar" : "Iniciar Pausa"}</h3>
                                                 <p>{status.paused ? "Continuar turno" : "Pausa para descanso"}</p>
-                                        </div>
-                                </div>
+                                        </span>
+                                </button>
 
-                                <div className="action-card" aria-disabled>
-                                        <div className="action-icon blue">
+                                <button className="cg-action" type="button" aria-disabled>
+                                        <span className="cg-aicon--edit">
                                                 <Edit size={20} />
-                                        </div>
+                                        </span>
                                         <div className="action-content">
                                                 <h3>Entrada Manual</h3>
                                                 <p>Próximamente</p>
                                         </div>
-                                </div>
+                                </button>
                         </div>
 
                         {/* Current Session */}
@@ -544,6 +530,7 @@ export const EmployeeTimeLog = () => {
                                         {error}
                                 </div>
                         )}
-                </div>
+                        </div>
+                </section>
         );
 };
