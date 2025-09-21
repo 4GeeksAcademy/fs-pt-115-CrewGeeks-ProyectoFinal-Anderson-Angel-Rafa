@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import "./EmployeeProfile.css";
 import { useAuth } from "../../hooks/useAuth";
+import { Loader } from "../Loader/Loader";
 
 export const EmployeeProfile = () => {
 
@@ -59,35 +60,40 @@ export const EmployeeProfile = () => {
           <div className="employee-profile__left">
             {/* Foto */}
             <div className="ep-box ep-photo">
-              <img src={user?.image} alt="Foto empleado" />
-              <div className="ep-photo__buttons">
-                <button
-                  className="ep-btn ep-btn--ghost"
-                  type="button"
-                  onClick={handleOpenFileDialog}
-                  disabled={loading}
-                >
-                  {loading ? "Subiendo..." : "Subir"}
-                </button>
-                <button
-                  className="ep-btn ep-btn--ghost"
-                  type="button"
-                  onClick={handleDeleteImage}
-                  disabled={loading}
-                >
-                  {loading ? "Eliminando..." : "Eliminar"}
-                </button>
+              <img src={user?.image || 'rigo-baby.jpg'} alt="Foto empleado" />
+              {loading ? <Loader /> :
+                <div className="ep-photo__buttons">
+                  <button
+                    className="ep-btn ep-btn--ghost"
+                    type="button"
+                    onClick={handleOpenFileDialog}
+                    disabled={loading}
+                  >
+                    Subir
+                  </button>
+                  <button
+                    className="ep-btn ep-btn--ghost"
+                    type="button"
+                    onClick={handleDeleteImage}
+                    disabled={loading}
+                  >
+                    Eliminar
+                  </button>
+                  {/* Input de archivo oculto */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                  />
+                </div>
 
-                {/* Input de archivo oculto */}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  style={{ display: "none" }}
-                />
-              </div>
+              }
             </div>
+
+
+
 
             {/* Datos laborales */}
             <div className="ep-box ep-company">
