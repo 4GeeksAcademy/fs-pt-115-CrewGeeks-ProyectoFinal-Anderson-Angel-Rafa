@@ -131,7 +131,7 @@ export const EmployeeHolidays = () => {
 
 	return (
 
-		<section className="employee-holidays content-area">
+		<section className="content-area">
 			<div className="content-header">
 				<div className='content-title'>Vacaciones</div>				
 				<div className="content-subtitle">Gestiona tus días de vacaciones y solicitudes</div>
@@ -145,7 +145,7 @@ export const EmployeeHolidays = () => {
 						</div>
 						<div className="employee-holidays__content">
 							<span className="employee-holidays__value">{DIAS_DISPONIBLES_BASE}</span>
-							<span className="employee-holidays__label">Días disponibles</span>
+							<span className="cg-action__label">Días disponibles</span>
 						</div>
 					</div>
 
@@ -155,7 +155,7 @@ export const EmployeeHolidays = () => {
 						</div>
 						<div className="employee-holidays__content">
 							<span className="employee-holidays__value">{diasUsados}</span>
-							<span className="employee-holidays__label">Días usados</span>
+							<span className="cg-action__label">Días usados</span>
 						</div>
 					</div>
 
@@ -165,7 +165,7 @@ export const EmployeeHolidays = () => {
 						</div>
 						<div className="employee-holidays__content">
 							<span className="employee-holidays__value">{diasPendientes}</span>
-							<span className="employee-holidays__label">Días pendientes</span>
+							<span className="cg-action__label">Días pendientes</span>
 						</div>
 					</div>
 
@@ -175,7 +175,7 @@ export const EmployeeHolidays = () => {
 						</div>
 						<div className="employee-holidays__content">
 							<span className="employee-holidays__value">{diasRestantes}</span>
-							<span className="employee-holidays__label">Días restantes</span>
+							<span className="cg-action__label">Días restantes</span>
 						</div>
 					</div>
 				</div>

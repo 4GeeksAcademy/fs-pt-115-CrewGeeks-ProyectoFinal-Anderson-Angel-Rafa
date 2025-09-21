@@ -1,34 +1,3 @@
-.content-area {
-  padding: 0;
-  background: whitesmoke;
-  overflow-y: auto;
-  min-height: 100vh;
-  width: 100%
-}
-
-.content-header {
-  background: #121A2D;
-  padding: 30px 40px;
-  border-bottom: 1px solid #e9ecef;
-  align-items: flex-start;
-}
-
-.content-title {
-  font-size: 28px;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 5px;
-}
-
-.content-subtitle {
-  color: #6c757d;
-  font-size: 14px;
-}
-
-.content-body {
-  padding: 30px 40px;
-}
-
 .quick-actions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
