@@ -347,24 +347,8 @@ export const EmployeeTimeLog = () => {
                 <section className='content-area'>
                         {/* Header */}
                         <div className='content-header'>
-                                <div className="header-left">
-                                        <h1>Registro de Horarios</h1>
-                                        <div className='content-subtitle'>Controla y registra tus horas de trabajo diarias.</div>
-
-                                </div>
-                                {/* <div className="header-right">
-                                        <span className="month-selector">{monthLabel}</span>
-                                        <button
-                                                className="clock-in-btn"
-                                                onClick={handleStart}
-                                                disabled={loadingAction !== null || status.open}
-                                                aria-busy={loadingAction === "start"}
-                                                title={status.open ? "Ya hay un turno abierto" : "Fichar entrada"}
-                                        >
-                                                <Clock size={16} />
-                                                {loadingAction === "start" ? "Fichando..." : "Fichar Entrada"}
-                                        </button>
-                                </div> */}
+                                <div className="content-title">Registro de Horarios</div>
+                                <div className='content-subtitle'>Controla y registra tus horas de trabajo diarias.</div>
                         </div>
 
                         {/* Quick Actions */}

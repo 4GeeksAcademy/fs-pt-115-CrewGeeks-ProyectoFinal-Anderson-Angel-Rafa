@@ -13,24 +13,6 @@
   margin-bottom: 2rem;
 }
 
-.header-left h1 {
-  font-size: 1.875rem;
-  font-weight: bold;
-  color: #111827;
-  margin-bottom: 0.5rem;
-}
-
-.header-left p {
-  color: #6b7280;
-  font-size: 0.875rem;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
 .month-selector {
   color: #6b7280;
   font-size: 0.875rem;
@@ -54,46 +36,6 @@
   background-color: #059669;
 }
 
-/* Wave Chart
-.wave-chart {
-  background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
-  border-radius: 1rem;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  position: relative;
-  overflow: hidden;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-}
-
-.wave-point {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: white;
-}
-
-.wave-time {
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin-bottom: 0.25rem;
-}
-
-.wave-label {
-  font-size: 0.75rem;
-  opacity: 0.8;
-}
-
-.wave-svg {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.3;
-} */
 
 /* Quick Actions */
 .quick-actions {
@@ -519,3 +461,11 @@
     padding: 0.75rem;
   }
 }
+
+@media (max-width: 425px) {
+  .cg-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+

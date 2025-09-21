@@ -1,23 +1,9 @@
-.content-subtitle {
-  color: #6c757d;
-  font-size: 14px;
-} 
-
 .employee-holidays__stats {
   margin-top: 1.5rem;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
-
-/* .employee-holidays__stat {
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}  */
 
 .employee-holidays__icon {
   width: 40px;
@@ -26,7 +12,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 1rem;
+  margin: auto;
   font-size: 1.25rem;
   flex-shrink: 0;
 }
@@ -61,11 +47,7 @@
   font-weight: 700;
   margin-bottom: 0.25rem;
   color: #333333;
-}
-
-.employee-holidays__label {
-  font-size: 0.875rem;
-  color: #666666;
+  text-align: center;
 }
 
 /* Contenedor del formulario */
@@ -233,14 +215,6 @@
   
   .employee-holidays__stats {
     grid-template-columns: repeat(1 ,1fr);
-  }
-
-  .cg-kpi {
-    text-align: center;
-  }
-
-  .employee-holidays__icon {
-    margin: auto;
   }
 }
 
