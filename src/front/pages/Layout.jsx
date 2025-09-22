@@ -7,7 +7,7 @@ import { useAuth } from "../hooks/useAuth";
 
 
 export const Layout = () => {
-	const { loading } = useAuth(false)
+	// const { loading } = useAuth(false)
 	return (
 		<ScrollToTop>
 			<Navbar />
