@@ -16,7 +16,7 @@ export const Sidebar = () => {
 
     const [isOpen, setIsOpen] = useState(false);
 
-    if (loading || !user) return null;
+    // if (loading || !user) return null;
 
     const handleLogout = () => {
         logout();
