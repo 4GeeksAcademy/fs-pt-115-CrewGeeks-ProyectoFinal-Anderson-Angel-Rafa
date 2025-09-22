@@ -1,56 +1,138 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./EmployeeProfile.css";
 import { useAuth } from "../../hooks/useAuth";
 import { Loader } from "../Loader/Loader";
+import { editEmployee } from "../../services/employeesAPI";
 
 export const EmployeeProfile = () => {
+  const { user, token, uploadProfileImage, deleteProfileImage } = useAuth();
 
-  const { user, token, loading, uploadProfileImage, deleteProfileImage } = useAuth();
-
-  console.log(user);
+  // Estado del perfil que se muestra siempre (se inicializa con user)
+  const [profile, setProfile] = useState(user || {});
+  useEffect(() => {
+    setProfile(user || {});
+  }, [user]);
 
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef(null);
 
-  const toggleEdit = () => {
-    setIsEditing((prev) => !prev);
+  // ====== Helper: YYYY-MM-DD -> DD/MM/YYYY ======
+  const formatDateDisplay = (isoDate) => {
+    if (!isoDate || typeof isoDate !== "string") return "";
+    const parts = isoDate.split("-");
+    if (parts.length !== 3) return isoDate;
+    const [y, m, d] = parts;
+    return `${d}/${m}/${y}`;
   };
 
-  // Handler para abrir el selector de archivos
-  const handleOpenFileDialog = () => {
-    fileInputRef.current?.click();
+  // Evita caché de imágenes antiguas
+  const bustCache = (url) => {
+    if (!url) return url;
+    const sep = url.includes("?") ? "&" : "?";
+    return `${url}${sep}t=${Date.now()}`;
   };
 
-  // Handler para subir la imagen al seleccionar archivo
+  // ====== Estado del formulario de edición ======
+  const [form, setForm] = useState({
+    id: user?.id || "",
+    first_name: user?.first_name || "",
+    last_name: user?.last_name || "",
+    dni: user?.dni || "",
+    birth: user?.birth || "", // YYYY-MM-DD
+    address: user?.address || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+  });
+
+  useEffect(() => {
+    if (isEditing) {
+      setForm({
+        id: profile?.id || "",
+        first_name: profile?.first_name || "",
+        last_name: profile?.last_name || "",
+        dni: profile?.dni || "",
+        birth: profile?.birth || "",
+        address: profile?.address || "",
+        email: profile?.email || "",
+        phone: profile?.phone || "",
+      });
+    }
+  }, [isEditing, profile]);
+
+  const handleChange = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
+  const toggleEdit = () => setIsEditing((prev) => !prev);
+
+  // ====== IMAGEN: preview + subida + refresco ======
+  const [avatarPreview, setAvatarPreview] = useState(null); // object URL local
+  const [imgUploading, setImgUploading] = useState(false);
+
+  const handleOpenFileDialog = () => fileInputRef.current?.click();
+
+  const refreshProfileFromAPI = async () => {
+    // Ajusta el endpoint si tu API usa /employees/me
+    const baseUrl = import.meta.env.VITE_BACKEND_URL + "/api";
+    const resp = await fetch(`${baseUrl}/employees/${profile.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (resp.ok) {
+      const fresh = await resp.json();
+      setProfile(fresh);
+      return fresh;
+    }
+    // Si no devuelve 200, mantenemos el perfil actual
+    return null;
+  };
+
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Preview instantáneo
+    const objectUrl = URL.createObjectURL(file);
+    setAvatarPreview(objectUrl);
+
     try {
+      setImgUploading(true);
+      // Sube al backend (asegúrate de que uploadProfileImage usa FormData correctamente)
       await uploadProfileImage(file);
+      // Refresca datos desde el backend (nueva image URL)
+      await refreshProfileFromAPI();
+      // Ya no necesitamos el preview si el backend da URL real
+      setAvatarPreview(null);
     } catch (err) {
-
-      console.error(err);
+      console.error("Error subiendo imagen:", err);
+      // Conserva el preview para que el usuario vea algo, aunque la subida fallara
     } finally {
-
+      setImgUploading(false);
+      // Limpia el input y el object URL
       e.target.value = "";
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
     }
   };
 
   const handleDeleteImage = async () => {
     try {
+      setImgUploading(true);
       await deleteProfileImage();
+      await refreshProfileFromAPI();
+      setAvatarPreview(null);
     } catch (err) {
-      console.error(err);
+      console.error("Error eliminando imagen:", err);
+    } finally {
+      setImgUploading(false);
     }
   };
 
+  // ====== MODALES ======
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successText, setSuccessText] = useState("");
+
+  // ====== CAMBIAR CONTRASEÑA ======
   const [showPwdModal, setShowPwdModal] = useState(false);
   const [oldPwd, setOldPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
   const [pwdLoading, setPwdLoading] = useState(false);
   const [pwdError, setPwdError] = useState("");
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const resetPwdForm = () => {
     setOldPwd("");
@@ -69,7 +151,6 @@ export const EmployeeProfile = () => {
     e?.preventDefault?.();
     setPwdError("");
 
-    // Validaciones simples
     if (!oldPwd || !newPwd || !confirmPwd) {
       setPwdError("Por favor, completa todos los campos.");
       return;
@@ -92,10 +173,7 @@ export const EmployeeProfile = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          old_password: oldPwd,
-          new_password: newPwd,
-        }),
+        body: JSON.stringify({ old_password: oldPwd, new_password: newPwd }),
       });
 
       const data = await resp.json();
@@ -104,8 +182,8 @@ export const EmployeeProfile = () => {
         return;
       }
 
-      // Éxito
       closePwdModal();
+      setSuccessText("✅ La contraseña se actualizó correctamente.");
       setShowSuccessModal(true);
     } catch (err) {
       console.error(err);
@@ -115,30 +193,98 @@ export const EmployeeProfile = () => {
     }
   };
 
+  // ====== GUARDAR PERFIL ======
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  const handleSave = async () => {
+    try {
+      setSavingProfile(true);
+
+      const payload = {
+        first_name: form.first_name,
+        last_name: form.last_name,
+        dni: form.dni,
+        birth: form.birth, // YYYY-MM-DD
+        address: form.address,
+        email: form.email,
+        phone: form.phone,
+      };
+
+      // Intento con tu service
+      let updated = null;
+      try {
+        updated = await editEmployee(form.id, payload);
+      } catch {
+        // Fallback: PUT directo con token (ajusta a PATCH o /me si procede)
+        const baseUrl = import.meta.env.VITE_BACKEND_URL + "/api";
+        const resp = await fetch(`${baseUrl}/employees/${form.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+        if (!resp.ok) {
+          const errData = await resp.json().catch(() => ({}));
+          throw new Error(errData?.error || "Error al actualizar el perfil.");
+        }
+        updated = await resp.json().catch(() => ({}));
+      }
+
+      const nextProfile =
+        updated && typeof updated === "object" && Object.keys(updated).length
+          ? updated
+          : { ...profile, ...payload };
+
+      setProfile(nextProfile);
+      setIsEditing(false);
+      setSuccessText("✅ Perfil actualizado correctamente.");
+      setShowSuccessModal(true);
+    } catch (err) {
+      console.error(err);
+      setSuccessText("❌ Error al actualizar el perfil.");
+      setShowSuccessModal(true);
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
   return (
-    <section className='content-area'>
-      <div className='content-header'>
-        <div className='content-title'>Mi perfil</div>
-        <div className='content-subtitle'>
+    <section className="content-area">
+      <div className="content-header">
+        <div className="content-title">Mi perfil</div>
+        <div className="content-subtitle">
           Gestiona tu información personal y la configuración de tu cuenta
         </div>
       </div>
 
-      <div className='content-body'>
+      <div className="content-body">
         <div className="employee-profile__wrapper">
-
+          {/* Columna izquierda */}
           <div className="employee-profile__left">
-
+            {/* Foto */}
             <div className="ep-box ep-photo">
-
-              {loading ? <Loader /> : <img src={user?.image || 'rigo-baby.jpg'} alt="Foto empleado" />}
-
+              {imgUploading ? (
+                <Loader />
+              ) : (
+                <img
+                  src={
+                    avatarPreview
+                      ? avatarPreview
+                      : profile?.image
+                      ? bustCache(profile.image)
+                      : "rigo-baby.jpg"
+                  }
+                  alt="Foto empleado"
+                />
+              )}
               <div className="ep-photo__buttons">
                 <button
                   className="ep-btn ep-btn--ghost"
                   type="button"
                   onClick={handleOpenFileDialog}
-                  disabled={loading}
+                  disabled={imgUploading}
                 >
                   Subir
                 </button>
@@ -146,7 +292,7 @@ export const EmployeeProfile = () => {
                   className="ep-btn ep-btn--ghost"
                   type="button"
                   onClick={handleDeleteImage}
-                  disabled={loading}
+                  disabled={imgUploading}
                 >
                   Eliminar
                 </button>
@@ -161,126 +307,118 @@ export const EmployeeProfile = () => {
               </div>
             </div>
 
-
-
-
             {/* Datos laborales */}
-
             <div className="ep-box ep-company">
               <h3>Datos Laborales</h3>
-
               <div className="ep-company__list">
                 <p>
-                  <strong>Empresa:</strong> {user.company}
+                  <strong>Empresa:</strong> {profile.company}
                 </p>
                 <p>
-                  <strong>Cargo/Rol:</strong> {user.role_id}
+                  <strong>Cargo/Rol:</strong> {profile.role_id}
                 </p>
                 <p>
-                  <strong>Antigüedad:</strong> {user.seniority}
+                  <strong>Antigüedad:</strong> {formatDateDisplay(profile.seniority)}
                 </p>
               </div>
-
             </div>
           </div>
 
-
+          {/* Columna derecha */}
           <div className="employee-profile__right">
-
+            {/* Datos personales */}
             <div className="ep-box ep-personal">
               <h2>Datos Personales</h2>
+
               {!isEditing ? (
                 <div className="ep-personal__grid">
                   <p>
-                    <strong>Nombre:</strong> {user.first_name}
+                    <strong>Nombre:</strong> {profile.first_name}
                   </p>
                   <p>
-                    <strong>Apellidos:</strong> {user.last_name}
+                    <strong>Apellidos:</strong> {profile.last_name}
                   </p>
                   <p>
-                    <strong>DNI:</strong> {user.dni}
+                    <strong>DNI:</strong> {profile.dni}
                   </p>
                   <p>
-                    <strong>Año de nacimiento:</strong> {user.birth}
+                    <strong>Año de nacimiento:</strong> {formatDateDisplay(profile.birth)}
                   </p>
                   <p>
-                    <strong>Dirección:</strong> {user.address}
+                    <strong>Dirección:</strong> {profile.address}
                   </p>
                   <p>
-                    <strong>Email:</strong> {user.email}
+                    <strong>Email:</strong> {profile.email}
                   </p>
                   <p>
-                    <strong>Teléfono:</strong> {user.phone}
+                    <strong>Teléfono:</strong> {profile.phone}
                   </p>
                   <p>
-                    <strong>ID empleado:</strong> {user.id}
+                    <strong>ID empleado:</strong> {profile.id}
                   </p>
                 </div>
               ) : (
-                <form
-                  className="ep-personal__grid"
-                >
+                <form className="ep-personal__grid" onSubmit={(e) => e.preventDefault()}>
                   <label>
                     Nombre
-                    <input
-                      value={user.first_name}
-                    />
+                    <input value={form.first_name} onChange={handleChange("first_name")} />
                   </label>
                   <label>
                     Apellidos
-                    <input
-                      value={user.last_name}
-                    />
+                    <input value={form.last_name} onChange={handleChange("last_name")} />
                   </label>
                   <label>
                     DNI
-                    <input
-                      value={user.dni}
-                    />
+                    <input value={form.dni} onChange={handleChange("dni")} />
                   </label>
                   <label>
                     Fecha Nac.
-                    <input
-                      type="date"
-                      value={user.birth}
-                    />
+                    <input type="date" value={form.birth} onChange={handleChange("birth")} />
                   </label>
                   <label>
                     Dirección
-                    <input
-                      value={user.address}
-                    />
+                    <input value={form.address} onChange={handleChange("address")} />
                   </label>
                   <label>
                     Email
-                    <input
-                      type="email"
-                      value={user.email}
-                    />
+                    <input type="email" value={form.email} onChange={handleChange("email")} />
                   </label>
                   <label>
                     Teléfono
-                    <input
-                      value={user.phone}
-                    />
+                    <input value={form.phone} onChange={handleChange("phone")} />
                   </label>
                   <label>
                     ID empleado
-                    <input value={user.id} />
+                    <input value={form.id} readOnly />
                   </label>
                 </form>
               )}
 
               <div className="ep-actions">
-                <button className="ep-btn ep-btn--primary" onClick={toggleEdit}>
-                  {isEditing ? "Actualizar" : "Editar"}
+                <button
+                  className="ep-btn ep-btn--primary"
+                  type="button"
+                  onClick={isEditing ? handleSave : () => setIsEditing(true)}
+                  disabled={savingProfile}
+                >
+                  {isEditing ? (savingProfile ? "Guardando..." : "Actualizar") : "Editar"}
                 </button>
+                {isEditing && (
+                  <button
+                    className="ep-btn ep-btn--ghost"
+                    type="button"
+                    onClick={toggleEdit}
+                    disabled={savingProfile}
+                    style={{ marginLeft: 8 }}
+                  >
+                    Cancelar
+                  </button>
+                )}
               </div>
             </div>
 
             <div className="ep-box ep-security">
               <h2>Ajustes de seguridad</h2>
-
               <div className="ep-security__item">
                 <div>
                   <p className="ep-security__label">Contraseña</p>
@@ -297,8 +435,11 @@ export const EmployeeProfile = () => {
               </div>
             </div>
           </div>
+          {/* fin ajustes seguridad */}
         </div>
       </div>
+
+      {/* ======= MODAL CAMBIO DE CONTRASEÑA ======= */}
       {showPwdModal && (
         <div className="modal-overlay" role="dialog" aria-modal="true">
           <div className="modal-card">
@@ -355,11 +496,7 @@ export const EmployeeProfile = () => {
                 >
                   Cancelar
                 </button>
-                <button
-                  type="submit"
-                  className="ep-btn ep-btn--primary"
-                  disabled={pwdLoading}
-                >
+                <button type="submit" className="ep-btn ep-btn--primary" disabled={pwdLoading}>
                   {pwdLoading ? "Guardando..." : "Guardar"}
                 </button>
               </div>
@@ -367,6 +504,9 @@ export const EmployeeProfile = () => {
           </div>
         </div>
       )}
+      {/* ======= FIN MODAL CAMBIO DE CONTRASEÑA ======= */}
+
+      {/* ======= MODAL DE ÉXITO ======= */}
       {showSuccessModal && (
         <div className="modal-overlay" role="dialog" aria-modal="true">
           <div className="modal-card">
@@ -382,7 +522,7 @@ export const EmployeeProfile = () => {
               </button>
             </div>
             <div className="modal-body">
-              <p>✅ La contraseña se actualizó correctamente.</p>
+              <p>{successText || "Operación realizada correctamente."}</p>
               <div className="modal-actions">
                 <button
                   type="button"
@@ -396,6 +536,7 @@ export const EmployeeProfile = () => {
           </div>
         </div>
       )}
+      {/* ======= FIN MODAL DE ÉXITO ======= */}
     </section>
   );
 };
