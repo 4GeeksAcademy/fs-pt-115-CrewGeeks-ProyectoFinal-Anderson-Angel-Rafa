@@ -1,0 +1,20 @@
+/* Contenedor base */
+.cg-minimal { width: min(1100px, 92vw); margin: 0 auto; padding: 24px 0 56px; }
+
+/* Secciones y títulos */
+.cg-section { padding: 32px 0; border-bottom: 1px solid #e5e7eb; }
+.cg-section:last-child { border-bottom: 0; }
+.cg-title { font-size: clamp(24px, 3vw, 32px); margin: 0 0 10px; font-weight: 800; }
+.cg-summary__title { font-size: clamp(22px, 2.6vw, 28px); margin: 6px 0 8px; font-weight: 800; }
+
+/* Texto y enlaces */
+.cg-summary__text { color: #475569; line-height: 1.75; font-size: 15px; margin: 0; }
+.cg-summary__text + .cg-summary__text { margin-top: 12px; }
+.cg-link { color: #3b82f6; text-decoration: none; }
+.cg-link:hover { text-decoration: underline; }
+
+/* Para que el ancla no quede oculto si hay header sticky */
+[id] { scroll-margin-top: 90px; }
+
+/* Accesibilidad foco */
+a:focus-visible { outline: 3px solid #3b82f6; outline-offset: 2px; border-radius: 8px; }
