@@ -1,8 +1,15 @@
-import './EmployeeData.css'
-
+import "./EmployeeData.css";
+import { useTimePunch, formatHMS, formatTimeHHMM } from "../../hooks/useTimePunch";
 
 export const EmployeeData = () => {
-
+    const {
+        status,
+        todayWorkSeconds,
+        handleStart,
+        handlePauseToggle,
+        handleEnd,
+        loadingAction,
+    } = useTimePunch();
 
     return (
         <section className='content-area'>
@@ -14,40 +21,64 @@ export const EmployeeData = () => {
             </div>
             <div className='content-body'>
                 <div className="cg-actions-grid">
-                    <button className="cg-action" type="button" aria-label="Iniciar jornada">
-                        <span className="cg-aicon cg-aicon--start" aria-hidden="true"><i className="fa-solid fa-play" style={{ color: "#16a34a" }}></i></span>
+                    <button className="cg-action" type="button" aria-label="Iniciar jornada"
+                        onClick={handleStart} aria-disabled={status.open || loadingAction !== null}>
+                        <span className="cg-aicon cg-aicon--start" aria-hidden="true">
+                            <i className="fa-solid fa-play" style={{ color: "#16a34a" }}></i>
+                        </span>
                         <span className="cg-action__label">Iniciar jornada</span>
                     </button>
 
-                    <button className="cg-action" type="button" aria-label="Pausa o descanso">
-                        <span className="cg-aicon cg-aicon--pause" aria-hidden="true"><i className="fa-solid fa-pause" style={{ color: "#ca8a04" }}></i></span>
-                        <span className="cg-action__label">Pausa / Descanso</span>
+                    <button className="cg-action" type="button" aria-label="Pausa o descanso"
+                        onClick={handlePauseToggle} aria-disabled={!status.open || loadingAction !== null}>
+                        <span className="cg-aicon cg-aicon--pause" aria-hidden="true">
+                            <i className="fa-solid fa-pause" style={{ color: "#ca8a04" }}></i>
+                        </span>
+                        <span className="cg-action__label">
+                            {status.paused ? "Reanudar" : "Pausa / Descanso"}
+                        </span>
                     </button>
 
-                    <button className="cg-action" type="button" aria-label="Finalizar jornada">
-                        <span className="cg-aicon cg-aicon--stop" aria-hidden="true"><i className="fa-solid fa-stop" style={{ color: "#dc2626" }}></i></span>
+                    <button className="cg-action" type="button" aria-label="Finalizar jornada"
+                        onClick={handleEnd} aria-disabled={!status.open || loadingAction !== null}>
+                        <span className="cg-aicon cg-aicon--stop" aria-hidden="true">
+                            <i className="fa-solid fa-stop" style={{ color: "#dc2626" }}></i>
+                        </span>
                         <span className="cg-action__label">Finalizar jornada</span>
                     </button>
 
                     <button className="cg-action" type="button" aria-label="Solicitar permiso">
-                        <span className="cg-aicon cg-aicon--leave" aria-hidden="true"><i className="fa-solid fa-file-export" style={{ color: "#4f46e5" }}></i></span>
+                        <span className="cg-aicon cg-aicon--leave" aria-hidden="true">
+                            <i className="fa-solid fa-file-export" style={{ color: "#4f46e5" }}></i>
+                        </span>
                         <span className="cg-action__label">Solicitar permiso</span>
                     </button>
                 </div>
-                <div className="cg-kpis-grid">
 
+                <div className="cg-kpis-grid">
+                    <article className="cg-kpi">
+                        <div className="cg-kpi-head">
+                            <div className="cg-kpi-icon" aria-hidden="true"><i className="fa-solid fa-clock" style={{ color: "#3b82f6" }}></i></div>
+                            <h3 className="cg-kpi-title">Jornada de hoy</h3>
+                        </div>
+                        <div className="cg-kpi-value"><strong>{formatHMS(todayWorkSeconds)}</strong></div>
+                        <div className="cg-chip">
+                            Último evento: {status.last_type ? `${status.last_type} — ${formatTimeHHMM(status.last_at)}` : "—"}
+                        </div>
+                    </article>
                     <article className="cg-kpi ">
                         <div className="cg-kpi-head">
                             <div className="cg-kpi-icon" aria-hidden="true"><i className="fa-solid fa-calendar" style={{ color: "#3b82f6" }}></i></div>
                             <h3 className="cg-kpi-title">Días trabajados</h3>
                         </div>
                         <div>
-                        <div className="cg-kpi-value"><strong>23</strong></div>
+                            <div className="cg-kpi-value"><strong>23</strong></div>
                         </div>
                         <div className="cg-chip cg-chip--up">
                             +2 vs mes anterior
                         </div>
                     </article>
+
                     <article className="cg-kpi">
                         <div className="cg-kpi-head">
                             <div className="cg-kpi-icon" aria-hidden="true"><i className="fa-solid fa-hourglass-half" style={{ color: "#3b82f6" }}></i></div>
@@ -58,18 +89,9 @@ export const EmployeeData = () => {
                             +8h vs objetivo
                         </div>
                     </article>
-                    <article className="cg-kpi">
-                        <div className="cg-kpi-head">
-                            <div className="cg-kpi-icon" aria-hidden="true"><i className="fa-solid fa-bullseye" style={{ color: "#3b82f6" }}></i></div>
-                            <h3 className="cg-kpi-title">Puntualidad</h3>
-                        </div>
-                        <div>
-                        <p className='cg-kpi-value'><strong>98%</strong></p>
-                        </div>
-                        <div className="cg-chip cg-chip--ok">
-                            Excelente
-                        </div>
-                    </article>
+
+                    
+
                     <article className="cg-kpi">
                         <div className="cg-kpi-head">
                             <div className="cg-kpi-icon" aria-hidden="true"><i className="fa-solid fa-umbrella-beach" style={{ color: "#3b82f6" }}></i></div>
@@ -82,6 +104,7 @@ export const EmployeeData = () => {
                     </article>
                 </div>
 
+                {/* Actividad reciente */}
                 <div className='activity-section'>
                     <div className='section-header'>
                         <div className='section-title'>Actividad reciente</div>
@@ -123,6 +146,9 @@ export const EmployeeData = () => {
         </section>
     );
 };
+
+
+
 
 
 
