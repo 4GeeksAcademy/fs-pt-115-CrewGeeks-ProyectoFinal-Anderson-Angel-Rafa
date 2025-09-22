@@ -5,12 +5,12 @@ import { Loader } from "../Loader/Loader";
 
 export const EmployeeProfile = () => {
 
-  const { user, token, loading, uploadProfileImage, deleteProfileImage } = useAuth(); // ← añadimos uploadProfileImage del hook
+  const { user, token, loading, uploadProfileImage, deleteProfileImage } = useAuth();
 
   console.log(user);
 
   const [isEditing, setIsEditing] = useState(false);
-  const fileInputRef = useRef(null); // ← ref para el input oculto
+  const fileInputRef = useRef(null);
 
   const toggleEdit = () => {
     setIsEditing((prev) => !prev);
@@ -26,12 +26,12 @@ export const EmployeeProfile = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      await uploadProfileImage(file); // ← sube y refresca el perfil
+      await uploadProfileImage(file);
     } catch (err) {
-      // opcional: manejar error (toast/alerta)
+
       console.error(err);
     } finally {
-      // limpiar el input para poder volver a elegir el mismo archivo si se desea
+
       e.target.value = "";
     }
   };
@@ -44,6 +44,76 @@ export const EmployeeProfile = () => {
     }
   };
 
+  const [showPwdModal, setShowPwdModal] = useState(false);
+  const [oldPwd, setOldPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmPwd, setConfirmPwd] = useState("");
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [pwdError, setPwdError] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const resetPwdForm = () => {
+    setOldPwd("");
+    setNewPwd("");
+    setConfirmPwd("");
+    setPwdError("");
+  };
+
+  const closePwdModal = () => {
+    if (pwdLoading) return;
+    setShowPwdModal(false);
+    resetPwdForm();
+  };
+
+  const submitPwdChange = async (e) => {
+    e?.preventDefault?.();
+    setPwdError("");
+
+    // Validaciones simples
+    if (!oldPwd || !newPwd || !confirmPwd) {
+      setPwdError("Por favor, completa todos los campos.");
+      return;
+    }
+    if (newPwd.length < 8) {
+      setPwdError("La nueva contraseña debe tener al menos 8 caracteres.");
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      setPwdError("Las contraseñas no coinciden.");
+      return;
+    }
+
+    try {
+      setPwdLoading(true);
+      const baseUrl = import.meta.env.VITE_BACKEND_URL + "/api";
+      const resp = await fetch(`${baseUrl}/employees/change-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          old_password: oldPwd,
+          new_password: newPwd,
+        }),
+      });
+
+      const data = await resp.json();
+      if (!resp.ok) {
+        setPwdError(data?.error || "No se pudo cambiar la contraseña.");
+        return;
+      }
+
+      // Éxito
+      closePwdModal();
+      setShowSuccessModal(true);
+    } catch (err) {
+      console.error(err);
+      setPwdError("Error inesperado al cambiar la contraseña.");
+    } finally {
+      setPwdLoading(false);
+    }
+  };
 
   return (
     <section className='content-area'>
@@ -56,9 +126,9 @@ export const EmployeeProfile = () => {
 
       <div className='content-body'>
         <div className="employee-profile__wrapper">
-          {/* Columna izquierda */}
+
           <div className="employee-profile__left">
-            {/* Foto */}
+
             <div className="ep-box ep-photo">
               <img src={user?.image || 'rigo-baby.jpg'} alt="Foto empleado" />
               {loading ? <Loader /> :
@@ -87,8 +157,9 @@ export const EmployeeProfile = () => {
                     onChange={handleFileChange}
                     style={{ display: "none" }}
                   />
-                </div>
-
+                </div>  
+              </div>
+            </div>
               }
             </div>
 
@@ -96,6 +167,7 @@ export const EmployeeProfile = () => {
 
 
             {/* Datos laborales */}
+
             <div className="ep-box ep-company">
               <h3>Datos Laborales</h3>
 
@@ -114,9 +186,9 @@ export const EmployeeProfile = () => {
             </div>
           </div>
 
-          {/* Columna derecha */}
+
           <div className="employee-profile__right">
-            {/* Datos personales */}
+
             <div className="ep-box ep-personal">
               <h2>Datos Personales</h2>
               {!isEditing ? (
@@ -149,27 +221,23 @@ export const EmployeeProfile = () => {
               ) : (
                 <form
                   className="ep-personal__grid"
-                // onSubmit={(e) => e.preventDefault()}
                 >
                   <label>
                     Nombre
                     <input
                       value={user.first_name}
-                    // onChange={handleChange("first_name")}
                     />
                   </label>
                   <label>
                     Apellidos
                     <input
                       value={user.last_name}
-                    // onChange={handleChange("last_name")}
                     />
                   </label>
                   <label>
                     DNI
                     <input
                       value={user.dni}
-                    // onChange={handleChange("dni")}
                     />
                   </label>
                   <label>
@@ -177,14 +245,12 @@ export const EmployeeProfile = () => {
                     <input
                       type="date"
                       value={user.birth}
-                    // onChange={handleChange("birth")}
                     />
                   </label>
                   <label>
                     Dirección
                     <input
                       value={user.address}
-                    // onChange={handleChange("address")}
                     />
                   </label>
                   <label>
@@ -192,14 +258,12 @@ export const EmployeeProfile = () => {
                     <input
                       type="email"
                       value={user.email}
-                    // onChange={handleChange("email")}
                     />
                   </label>
                   <label>
                     Teléfono
                     <input
                       value={user.phone}
-                    // onChange={handleChange("phone")}
                     />
                   </label>
                   <label>
@@ -227,7 +291,7 @@ export const EmployeeProfile = () => {
                   <button
                     type="button"
                     className="ep-btn ep-btn--link"
-                  // onClick={onChangePassword}
+                    onClick={() => setShowPwdModal(true)}
                   >
                     Cambiar contraseña
                   </button>
@@ -235,10 +299,105 @@ export const EmployeeProfile = () => {
               </div>
             </div>
           </div>
-
-          {/* fin ajustes seguridad */}
         </div>
       </div>
+      {showPwdModal && (
+        <div className="modal-overlay" role="dialog" aria-modal="true">
+          <div className="modal-card">
+            <div className="modal-header">
+              <h3>Cambiar contraseña</h3>
+              <button
+                type="button"
+                className="modal-close"
+                onClick={closePwdModal}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            <form className="modal-body" onSubmit={submitPwdChange}>
+              <label className="modal-field">
+                <span>Contraseña actual</span>
+                <input
+                  type="password"
+                  value={oldPwd}
+                  onChange={(e) => setOldPwd(e.target.value)}
+                  autoFocus
+                />
+              </label>
+
+              <label className="modal-field">
+                <span>Nueva contraseña</span>
+                <input
+                  type="password"
+                  value={newPwd}
+                  onChange={(e) => setNewPwd(e.target.value)}
+                  placeholder="Mín. 8 caracteres"
+                />
+              </label>
+
+              <label className="modal-field">
+                <span>Confirmar nueva contraseña</span>
+                <input
+                  type="password"
+                  value={confirmPwd}
+                  onChange={(e) => setConfirmPwd(e.target.value)}
+                />
+              </label>
+
+              {pwdError && <div className="modal-error">{pwdError}</div>}
+
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="ep-btn ep-btn--ghost"
+                  onClick={closePwdModal}
+                  disabled={pwdLoading}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="ep-btn ep-btn--primary"
+                  disabled={pwdLoading}
+                >
+                  {pwdLoading ? "Guardando..." : "Guardar"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {showSuccessModal && (
+        <div className="modal-overlay" role="dialog" aria-modal="true">
+          <div className="modal-card">
+            <div className="modal-header">
+              <h3>Éxito</h3>
+              <button
+                type="button"
+                className="modal-close"
+                onClick={() => setShowSuccessModal(false)}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <p>✅ La contraseña se actualizó correctamente.</p>
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="ep-btn ep-btn--primary"
+                  onClick={() => setShowSuccessModal(false)}
+                >
+                  Aceptar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

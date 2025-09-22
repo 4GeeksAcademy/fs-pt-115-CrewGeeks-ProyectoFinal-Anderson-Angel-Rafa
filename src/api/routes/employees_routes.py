@@ -351,3 +351,32 @@ def delete_img():
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
+@employee_bp.route("/change-password", methods=["POST"])
+@jwt_required()
+def change_password():
+    try:
+        data = request.get_json(silent=True) or {}
+        old_password = (data.get("old_password") or "").strip()
+        new_password = (data.get("new_password") or "").strip()
+
+        if not old_password or not new_password:
+            return jsonify({"error": "old_password y new_password son requeridos"}), 400
+        if len(new_password) < 8:
+            return jsonify({"error": "La nueva contraseña debe tener al menos 8 caracteres"}), 400
+
+        emp_id = get_jwt_identity()
+        employee = db.session.get(Employee, int(emp_id))
+        if not employee:
+            return jsonify({"error": "Empleado no encontrado"}), 404
+
+        if not employee.check_password(old_password):
+            return jsonify({"error": "La contraseña actual no es correcta"}), 401
+
+        employee.set_password(new_password)
+        db.session.commit()
+
+        return jsonify({"msg": "Contraseña actualizada correctamente"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
