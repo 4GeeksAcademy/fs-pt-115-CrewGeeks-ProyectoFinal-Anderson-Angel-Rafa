@@ -84,20 +84,23 @@ export const updateSuggestion = async (id, payload) => {
 
 
 export const deleteSuggestion = async (id) => {
-    try {
-        const response = await fetch(`${urlApi}/suggestions/delete/${id}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`
-            }
-        });
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.error || data.msg || "Error al borrar la sugerencia")
-        }
-        return data;
-    } catch (error) {
-        console.error("deleteSuggestion failed:", error);
-        throw error;
+  try {
+    const response = await fetch(`${urlApi}/suggestions/delete/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+    });
+
+    if (response.status === 204) return true; // sin body
+    const ct = response.headers.get("content-type") || "";
+    const hasJson = ct.includes("application/json");
+    const data = hasJson ? await response.json() : null;
+
+    if (!response.ok) {
+      throw new Error((data && (data.error || data.msg)) || "Error al borrar la sugerencia");
     }
-}
+    return data ?? true;
+  } catch (error) {
+    console.error("deleteSuggestion failed:", error);
+    throw error;
+  }
+};
