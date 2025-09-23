@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
 		setUser(null)
 	}
 
-	// ➜ En tu AuthProvider, añade esta función dentro del componente (junto a login/createEmployee)
+	
 	const uploadProfileImage = async (file) => {
 		if (!file) return;
 		setLoading(true);
@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }) => {
 				method: "POST",
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem("token")}`,
-					// NO pongas Content-Type aquí; fetch lo pone solo con FormData
+					
 				},
 				body: formData,
 			});

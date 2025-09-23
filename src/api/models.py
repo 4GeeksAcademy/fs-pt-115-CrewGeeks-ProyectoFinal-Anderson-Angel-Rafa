@@ -1,10 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Date, Integer, ForeignKey, Text, DateTime, Enum, Index, Time, UniqueConstraint, Boolean
+from sqlalchemy import String, Date, Integer, ForeignKey, Text, DateTime, Enum, Index, Time, UniqueConstraint,CheckConstraint, Boolean, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from flask_bcrypt import generate_password_hash, check_password_hash
 import enum
-from datetime import datetime, timezone
-
+from datetime import datetime, timezone, date
+from api.utils_auth.utils_vacations import HolidayStatus
 from typing import Optional
 
 db = SQLAlchemy()
@@ -56,6 +56,43 @@ class Company(db.Model):
 
 
 # --------------------
+# Vacation Balance
+# --------------------
+
+class VacationBalance(db.Model):
+    __tablename__ = "vacation_balance"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    company_id: Mapped[int] = mapped_column(ForeignKey("company.id"), nullable=False)
+    employee_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=False)
+    year: Mapped[int] = mapped_column(Integer, nullable=False)
+    allocated_days: Mapped[int] = mapped_column(Integer, nullable=False, default=22)
+    used_days: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        server_onupdate=func.now(),
+        nullable=False
+    )
+
+    __table_args__ = (
+        CheckConstraint("allocated_days >= 0", name="ck_balance_alloc_nonneg"),
+        CheckConstraint("used_days >= 0", name="ck_balance_used_nonneg"),
+        Index("ix_balance_emp_year", "employee_id", "year", unique=True),
+        Index("ix_balance_company_emp_year", "company_id", "employee_id", "year"),
+    )
+
+    def serialize(self):
+        return {
+            "company_id": self.company_id,
+            "employee_id": self.employee_id,
+            "year": self.year,
+            "allocated_days": self.allocated_days,
+            "used_days": self.used_days,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+# --------------------
 # Holidays
 # --------------------
 
@@ -65,11 +102,18 @@ class Holidays(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     company_id: Mapped[int] = mapped_column(ForeignKey("company.id"), nullable=False)
     employee_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=False)
-    start_date: Mapped[Date] = mapped_column(Date, nullable=False)
-    end_date: Mapped[Date] = mapped_column(Date, nullable=False)
-    status: Mapped[str] = mapped_column(String(255), nullable=False)
+    start_date: Mapped[date] = mapped_column(Date, nullable=False)
+    end_date: Mapped[date] = mapped_column(Date, nullable=False)
+    status: Mapped[HolidayStatus] = mapped_column(
+        Enum(HolidayStatus, name="holiday_status"),
+        nullable=False,
+        default=HolidayStatus.PENDING,
+    )
     approved_user_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=True)
-    remaining_days: Mapped[int] = mapped_column(Integer, nullable=False)
+    approved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    requested_days: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    reason: Mapped[str] = mapped_column(String(500), nullable=True)
+
 
     company: Mapped["Company"] = relationship("Company", back_populates="holidays")
     employee: Mapped["Employee"] = relationship(
@@ -83,16 +127,25 @@ class Holidays(db.Model):
         foreign_keys=[approved_user_id],
     )
 
+    __table_args__ = (
+        CheckConstraint("start_date <= end_date", name="ck_holidays_start_le_end"),
+        CheckConstraint("requested_days >= 0", name="ck_holidays_req_nonneg"),
+        Index("ix_holidays_emp_start", "employee_id", "start_date"),
+        Index("ix_holidays_company_emp_start", "company_id", "employee_id", "start_date"),
+    )
+
     def serialize(self):
         return {
             "id": self.id,
             "company_id": self.company_id,
             "employee_id": self.employee_id,
-            "start_date": self.start_date,
-            "end_date": self.end_date,
-            "status": self.status,
+            "start_date": self.start_date.isoformat() if self.start_date else None,
+            "end_date": self.end_date.isoformat() if self.end_date else None,
+            "status": self.status.value if isinstance(self.status, HolidayStatus) else self.status,
             "approved_user_id": self.approved_user_id,
-            "remaining_days": self.remaining_days,
+            "approved_at": self.approved_at.isoformat() if self.approved_at else None,
+            "requested_days": self.requested_days,
+            "reason": self.reason,
         }
 
 
