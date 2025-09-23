@@ -44,7 +44,7 @@ export const Sidebar = () => {
                     aria-label="Menú lateral"
                 >
 
-                    <button
+                 <button
                         type="button"
                         className="sidewrap__close"
                         aria-label="Cerrar menú lateral"
@@ -52,14 +52,16 @@ export const Sidebar = () => {
                     >
                         X
                     </button>
-
-                    <div className="user-card">
-                        <div className="avatar">AS</div>
-                        <div className="user-meta">
-                            <div className="user-name">{user.first_name} {user.last_name}</div>
-                            <div className="user-role">{user.company}</div>
-                        </div>
+                
+                <div className="user-card">
+                    <div><img className="avatar" src={user?.image} alt="" /></div>
+                    <div className="user-meta">
+                        <div className="user-name">{user?.first_name} {user?.last_name}</div>
+                        <div className="user-role">{user?.company}</div>
                     </div>
+                </div>
+
+        
 
                     <main className="side-nav" onClick={handleNavClick}>
                         <div className="nav-section">

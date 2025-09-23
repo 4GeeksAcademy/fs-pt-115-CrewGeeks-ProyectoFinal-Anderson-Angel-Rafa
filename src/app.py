@@ -13,7 +13,8 @@ from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
 from flask import Flask
 from api.mail_config import mail
-import cloudinary 
+import cloudinary
+from datetime import timedelta
 
 
 # from models import Person
@@ -24,7 +25,9 @@ static_file_dir = os.path.join(os.path.dirname(
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
-app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET_KEY')
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "change-me")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=30)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=7)
 jwt = JWTManager(app)
 
 # database condiguration

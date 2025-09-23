@@ -38,8 +38,8 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: #1a2e54;
-  color: #3b82f6;
+  
+  z-index: 20;
   font-weight: 700;
   font-size: 18px;
   border: 2px solid rgba(255, 255, 255, 0.2);
