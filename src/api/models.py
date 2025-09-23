@@ -163,6 +163,7 @@ class Employee(db.Model):
         return {
             "id": self.id,
             "company_id": self.company_id,
+            "company" : self.company.name,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "dni": self.dni,
@@ -171,6 +172,7 @@ class Employee(db.Model):
             "email": self.email,
             "seniority": self.seniority.isoformat() if self.seniority else None,
             "phone": self.phone,
+            "image" : self.image,
             "role_id": self.role_id,
         }
 

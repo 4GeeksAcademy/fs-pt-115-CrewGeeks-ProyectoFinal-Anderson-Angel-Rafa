@@ -68,44 +68,24 @@ export const EmployeeProfile = () => {
 
   const handleOpenFileDialog = () => fileInputRef.current?.click();
 
-  const refreshProfileFromAPI = async () => {
-    // Ajusta el endpoint si tu API usa /employees/me
-    const baseUrl = import.meta.env.VITE_BACKEND_URL + "/api";
-    const resp = await fetch(`${baseUrl}/employees/${profile.id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (resp.ok) {
-      const fresh = await resp.json();
-      setProfile(fresh);
-      return fresh;
-    }
-    // Si no devuelve 200, mantenemos el perfil actual
-    return null;
-  };
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files?.[0];
+  const handleFileChange = async (event) => {
+    const file = event.target.files?.[0];
     if (!file) return;
-    // Preview instantáneo
+
     const objectUrl = URL.createObjectURL(file);
     setAvatarPreview(objectUrl);
 
     try {
       setImgUploading(true);
-      // Sube al backend (asegúrate de que uploadProfileImage usa FormData correctamente)
       await uploadProfileImage(file);
-      // Refresca datos desde el backend (nueva image URL)
-      await refreshProfileFromAPI();
-      // Ya no necesitamos el preview si el backend da URL real
       setAvatarPreview(null);
-    } catch (err) {
-      console.error("Error subiendo imagen:", err);
-      // Conserva el preview para que el usuario vea algo, aunque la subida fallara
+    } catch (error) {
+      console.error("Error subiendo imagen:", error);
     } finally {
       setImgUploading(false);
-      // Limpia el input y el object URL
-      e.target.value = "";
-      setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+      event.target.value = "";
+      URL.revokeObjectURL(objectUrl);
     }
   };
 
@@ -113,10 +93,9 @@ export const EmployeeProfile = () => {
     try {
       setImgUploading(true);
       await deleteProfileImage();
-      await refreshProfileFromAPI();
       setAvatarPreview(null);
-    } catch (err) {
-      console.error("Error eliminando imagen:", err);
+    } catch (error) {
+      console.error("Error eliminando imagen:", error);
     } finally {
       setImgUploading(false);
     }
@@ -183,7 +162,7 @@ export const EmployeeProfile = () => {
       }
 
       closePwdModal();
-      setSuccessText("✅ La contraseña se actualizó correctamente.");
+      setSuccessText("La contraseña se actualizó correctamente.");
       setShowSuccessModal(true);
     } catch (err) {
       console.error(err);
@@ -239,11 +218,11 @@ export const EmployeeProfile = () => {
 
       setProfile(nextProfile);
       setIsEditing(false);
-      setSuccessText("✅ Perfil actualizado correctamente.");
+      setSuccessText("Perfil actualizado correctamente.");
       setShowSuccessModal(true);
     } catch (err) {
       console.error(err);
-      setSuccessText("❌ Error al actualizar el perfil.");
+      setSuccessText("Error al actualizar el perfil.");
       setShowSuccessModal(true);
     } finally {
       setSavingProfile(false);
@@ -451,7 +430,7 @@ export const EmployeeProfile = () => {
                 onClick={closePwdModal}
                 aria-label="Cerrar"
               >
-                ×
+                X
               </button>
             </div>
 
@@ -518,7 +497,7 @@ export const EmployeeProfile = () => {
                 onClick={() => setShowSuccessModal(false)}
                 aria-label="Cerrar"
               >
-                ×
+                X
               </button>
             </div>
             <div className="modal-body">
