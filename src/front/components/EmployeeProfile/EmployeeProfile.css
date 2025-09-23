@@ -37,7 +37,12 @@
 /* Columna izquierda */
 .employee-profile__left { display: flex; flex-direction: column; gap: 20px; }
 
+
 .ep-photo { text-align: center; }
+.ep-photo > :first-child{
+  align-self:center;
+  justify-self:center;
+}
 .ep-photo img {
   width: 200px;
   height: 200px;
