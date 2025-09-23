@@ -29,7 +29,7 @@ def setup_admin(app):
         form_columns = ["id", "company_id", "employee_id", "content"]
 
     class HolidaysAdmin(ModelView):
-        form_columns = ["id", "company_id", "employee_id", "start_date", "end_date", "status", "approved_user_id", "remaining_days"]
+        form_columns = ["id", "company_id"]
 
     class ShiftsAdmin(ModelView):
         form_columns = ["id", "company_id", "employee_id"]
