@@ -13,7 +13,7 @@ export const HeroSection = () => {
                     <p className="cg-trust"><i className="fa-solid fa-shield-halved" style={{color:' #22c55e'}}></i> Cumple con el RGPD</p>
                 </div>
                 <div className="cg-hero-image" aria-label="Product dashboard mockup">
-                    
+                    <img src="plataforma.png" alt="" />
                 </div>
             </div>
         </section>
