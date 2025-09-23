@@ -1,4 +1,5 @@
 import './CallToAction.css'
+import { Link } from "react-router-dom";
 
 
 export const CallToAction = () => {
@@ -11,8 +12,12 @@ export const CallToAction = () => {
                 </p>
 
                 <div className="cg-cta-actions">
+                    <Link to = "/login">
                     <a href="#contacto" className="cg-btn cg-btn--primary">Comience a usar nuestro Software</a>
+                    </Link>
+                    <Link to = "/features">
                     <a href="#demo" className="cg-btn cg-btn--secondary">Programar demostración</a>
+                    </Link>
                 </div>
             </div>
         </section>
