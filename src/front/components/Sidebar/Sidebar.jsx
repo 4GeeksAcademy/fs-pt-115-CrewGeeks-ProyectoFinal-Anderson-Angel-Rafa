@@ -54,10 +54,10 @@ export const Sidebar = () => {
                 </button>
                 
                 <div className="user-card">
-                    <div className="avatar">AS</div>
+                    <div><img className="avatar" src={user?.image} alt="" /></div>
                     <div className="user-meta">
-                        <div className="user-name">{user.first_name} {user.last_name}</div>
-                        <div className="user-role">{user.company}</div>
+                        <div className="user-name">{user?.first_name} {user?.last_name}</div>
+                        <div className="user-role">{user?.company}</div>
                     </div>
                 </div>
 

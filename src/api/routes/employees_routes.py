@@ -1,7 +1,7 @@
 from flask import jsonify, Blueprint, request, render_template
 from api.models import db, Employee, Company, Role
 from flask_cors import CORS
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, create_refresh_token
 from flask_mail import Message
 from sqlalchemy.exc import IntegrityError
 from api.mail_config import mail
@@ -295,11 +295,17 @@ def login():
         "company_id": employee.company_id,
         "system_role": system_role
     }
-    access_token = create_access_token(identity=str(employee.id), additional_claims=additional_claims, expires_delta=timedelta(minutes=30))
-    return jsonify({"msg": "Login succesful", "token": access_token, "user": employee.serialize()}), 200
+    access_token = create_access_token(identity=str(employee.id), additional_claims=additional_claims)
+    refresh_token = create_refresh_token(identity=str(employee.id))
+    return jsonify({"msg": "Login succesful", "token": access_token, "refresh_token":refresh_token, "user": employee.serialize()}), 200
 
 
-
+@employee_bp.post("/refresh")
+@jwt_required(refresh=True)
+def refresh_access():
+    identity = get_jwt_identity()         # str
+    new_access = create_access_token(identity=str(identity))
+    return jsonify({"access_token": new_access}), 200
 
 
 # CLOUDINARY
