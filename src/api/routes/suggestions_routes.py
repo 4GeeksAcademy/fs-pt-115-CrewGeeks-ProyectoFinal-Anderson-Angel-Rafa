@@ -1,5 +1,15 @@
 from flask import jsonify, Blueprint, request
-from api.models import db, Employee, Company, Role, Salary, Payroll, Shifts, Holidays, Suggestions
+from api.models import (
+    db,
+    Employee,
+    Company,
+    Role,
+    Salary,
+    Payroll,
+    Shifts,
+    Holidays,
+    Suggestions,
+)
 from flask_cors import CORS
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy.exc import IntegrityError
@@ -8,14 +18,12 @@ from api.utils_auth.helpers_auth import (
     get_system_role,
     is_admin_or_hr,
     current_employee_id,
-    is_ownerdb
+    is_ownerdb,
 )
 
-suggestions_bp = Blueprint('suggestions', __name__, url_prefix='/suggestions')
+suggestions_bp = Blueprint("suggestions", __name__, url_prefix="/suggestions")
 
 CORS(suggestions_bp)
-
-
 
 
 # EMPLOYEE SOLO VE SUS SUGERENCIAS
@@ -28,20 +36,26 @@ def get_suggestions():
         return jsonify({"error": "Unauthorized"}), 401
 
     if is_admin_or_hr() or is_ownerdb():
-        items = db.session.execute(
-            db.select(Suggestions).where(Suggestions.company_id == company_id)
-        ).scalars().all()
-    else:
-        items = db.session.execute(
-            db.select(Suggestions).where(
-                Suggestions.company_id == company_id,
-                Suggestions.employee_id == current_employee_id(),
+        items = (
+            db.session.execute(
+                db.select(Suggestions).where(Suggestions.company_id == company_id)
             )
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
+    else:
+        items = (
+            db.session.execute(
+                db.select(Suggestions).where(
+                    Suggestions.company_id == company_id,
+                    Suggestions.employee_id == current_employee_id(),
+                )
+            )
+            .scalars()
+            .all()
+        )
 
     return jsonify([s.serialize() for s in items]), 200
-
-
 
 
 # EMPLOYEE SOLO VE SI SON SUYAS
@@ -57,12 +71,13 @@ def get_suggestion(id):
     if not item or item.company_id != company_id:
         return jsonify({"error": "Suggestion not found"}), 404
 
-    if not (is_admin_or_hr() or is_ownerdb()) and item.employee_id != current_employee_id():
+    if (
+        not (is_admin_or_hr() or is_ownerdb())
+        and item.employee_id != current_employee_id()
+    ):
         return jsonify({"error": "Suggestion not found"}), 404
 
     return jsonify(item.serialize()), 200
-
-
 
 
 # VERSION NUEVA
@@ -116,7 +131,6 @@ def create_suggestion():
     return jsonify(item.serialize()), 201
 
 
-
 # EMPLOYEE PUEDE EDITAR LA SUYA
 # ADMIN PUEDE MODIFICAR TODAS
 @suggestions_bp.route("/edit/<int:id>", methods=["PUT"])
@@ -163,8 +177,6 @@ def update_suggestion(id):
     return jsonify(item.serialize()), 200
 
 
-
-
 # EMPLOYEE PUEDE BORRAR LAS SUYAS
 # ADMIN PUEDE BORRAR CUALQUIERA DENTRO DE SU EMPRESA
 @suggestions_bp.route("/delete/<int:id>", methods=["DELETE"])
@@ -178,7 +190,10 @@ def delete_suggestion(id):
     if not item or item.company_id != company_id:
         return jsonify({"error": "Suggestion not found"}), 404
 
-    if not (is_admin_or_hr() or is_ownerdb()) and item.employee_id != current_employee_id():
+    if (
+        not (is_admin_or_hr() or is_ownerdb())
+        and item.employee_id != current_employee_id()
+    ):
         return jsonify({"error": "Suggestion not found"}), 404
 
     try:

@@ -8,7 +8,7 @@ export const AuthLayout = ({ redirectTo = "/login" }) => {
     const location = useLocation();
 
     // Mientras haces peticiones iniciales puedes enseñar un placeholder si quieres
-    if (loading || !user) return <Loader />;
+    // if (loading || !user) return <Loader />;
 
     // La condición buena es por token (lo tienes nada más montar desde localStorage)
     if (!token) return <Navigate to={redirectTo} replace state={{ from: location }} />;

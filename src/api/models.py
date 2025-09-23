@@ -1,5 +1,19 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Date, Integer, ForeignKey, Text, DateTime, Enum, Index, Time, UniqueConstraint,CheckConstraint, Boolean, func
+from sqlalchemy import (
+    String,
+    Date,
+    Integer,
+    ForeignKey,
+    Text,
+    DateTime,
+    Enum,
+    Index,
+    Time,
+    UniqueConstraint,
+    CheckConstraint,
+    Boolean,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from flask_bcrypt import generate_password_hash, check_password_hash
 import enum
@@ -12,6 +26,7 @@ db = SQLAlchemy()
 # --------------------
 # Company
 # --------------------
+
 
 class Company(db.Model):
     __tablename__ = "company"
@@ -31,9 +46,7 @@ class Company(db.Model):
         cascade="all, delete-orphan",
     )
     shift_types: Mapped[list["ShiftType"]] = relationship(
-        "ShiftType",
-        back_populates="company",
-        cascade="all, delete-orphan"
+        "ShiftType", back_populates="company", cascade="all, delete-orphan"
     )
     suggestions: Mapped[list["Suggestions"]] = relationship(
         "Suggestions",
@@ -59,6 +72,7 @@ class Company(db.Model):
 # Vacation Balance
 # --------------------
 
+
 class VacationBalance(db.Model):
     __tablename__ = "vacation_balance"
 
@@ -72,7 +86,7 @@ class VacationBalance(db.Model):
         DateTime(timezone=True),
         server_default=func.now(),
         server_onupdate=func.now(),
-        nullable=False
+        nullable=False,
     )
 
     __table_args__ = (
@@ -92,9 +106,11 @@ class VacationBalance(db.Model):
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
 
+
 # --------------------
 # Holidays
 # --------------------
+
 
 class Holidays(db.Model):
     __tablename__ = "holidays"
@@ -109,11 +125,14 @@ class Holidays(db.Model):
         nullable=False,
         default=HolidayStatus.PENDING,
     )
-    approved_user_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=True)
-    approved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    approved_user_id: Mapped[int] = mapped_column(
+        ForeignKey("employee.id"), nullable=True
+    )
+    approved_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     requested_days: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     reason: Mapped[str] = mapped_column(String(500), nullable=True)
-
 
     company: Mapped["Company"] = relationship("Company", back_populates="holidays")
     employee: Mapped["Employee"] = relationship(
@@ -131,7 +150,9 @@ class Holidays(db.Model):
         CheckConstraint("start_date <= end_date", name="ck_holidays_start_le_end"),
         CheckConstraint("requested_days >= 0", name="ck_holidays_req_nonneg"),
         Index("ix_holidays_emp_start", "employee_id", "start_date"),
-        Index("ix_holidays_company_emp_start", "company_id", "employee_id", "start_date"),
+        Index(
+            "ix_holidays_company_emp_start", "company_id", "employee_id", "start_date"
+        ),
     )
 
     def serialize(self):
@@ -141,7 +162,11 @@ class Holidays(db.Model):
             "employee_id": self.employee_id,
             "start_date": self.start_date.isoformat() if self.start_date else None,
             "end_date": self.end_date.isoformat() if self.end_date else None,
-            "status": self.status.value if isinstance(self.status, HolidayStatus) else self.status,
+            "status": (
+                self.status.value
+                if isinstance(self.status, HolidayStatus)
+                else self.status
+            ),
             "approved_user_id": self.approved_user_id,
             "approved_at": self.approved_at.isoformat() if self.approved_at else None,
             "requested_days": self.requested_days,
@@ -152,6 +177,7 @@ class Holidays(db.Model):
 # --------------------
 # Employee
 # --------------------
+
 
 class Employee(db.Model):
     __tablename__ = "employee"
@@ -168,7 +194,7 @@ class Employee(db.Model):
     phone: Mapped[str] = mapped_column(String(50), nullable=False)
     role_id: Mapped[int] = mapped_column(ForeignKey("role.id"), nullable=False)
     image: Mapped[Optional[str]] = mapped_column(Text)
-    password_hash: Mapped[str] = mapped_column(nullable = False)
+    password_hash: Mapped[str] = mapped_column(nullable=False)
 
     company: Mapped["Company"] = relationship("Company", back_populates="employees")
     role: Mapped["Role"] = relationship("Role", back_populates="employees")
@@ -186,28 +212,26 @@ class Employee(db.Model):
     holidays: Mapped[list["Holidays"]] = relationship(
         "Holidays",
         back_populates="employee",
-        foreign_keys=[Holidays.employee_id],  
+        foreign_keys=[Holidays.employee_id],
         cascade="all, delete-orphan",
     )
     approved_holidays: Mapped[list["Holidays"]] = relationship(
         "Holidays",
         back_populates="approved_user",
-        foreign_keys=[Holidays.approved_user_id], 
+        foreign_keys=[Holidays.approved_user_id],
     )
     payrolls: Mapped[list["Payroll"]] = relationship(
         "Payroll",
         back_populates="employee",
         cascade="all, delete-orphan",
     )
-    
+
     time_punches: Mapped[list["TimePunch"]] = relationship(
-        "TimePunch",
-        back_populates="employee",
-        cascade="all, delete-orphan"
+        "TimePunch", back_populates="employee", cascade="all, delete-orphan"
     )
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password).decode('utf-8')
+        self.password_hash = generate_password_hash(password).decode("utf-8")
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -216,7 +240,7 @@ class Employee(db.Model):
         return {
             "id": self.id,
             "company_id": self.company_id,
-            "company" : self.company.name,
+            "company": self.company.name,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "dni": self.dni,
@@ -225,7 +249,7 @@ class Employee(db.Model):
             "email": self.email,
             "seniority": self.seniority.isoformat() if self.seniority else None,
             "phone": self.phone,
-            "image" : self.image,
+            "image": self.image,
             "role_id": self.role_id,
         }
 
@@ -233,6 +257,7 @@ class Employee(db.Model):
 # --------------------
 # Role / Salary
 # --------------------
+
 
 class Role(db.Model):
     __tablename__ = "role"
@@ -243,7 +268,9 @@ class Role(db.Model):
     salary_id: Mapped[int] = mapped_column(ForeignKey("salary.id"), nullable=False)
 
     salary: Mapped["Salary"] = relationship("Salary", back_populates="roles")
-    employees: Mapped[list["Employee"]] = relationship("Employee", back_populates="role")
+    employees: Mapped[list["Employee"]] = relationship(
+        "Employee", back_populates="role"
+    )
 
     def serialize(self):
         return {
@@ -274,6 +301,7 @@ class Salary(db.Model):
 # Payroll
 # --------------------
 
+
 class Payroll(db.Model):
     __tablename__ = "payroll"
 
@@ -300,6 +328,7 @@ class Payroll(db.Model):
 # Shifts
 # --------------------
 
+
 class Shifts(db.Model):
     __tablename__ = "shifts"
 
@@ -308,14 +337,16 @@ class Shifts(db.Model):
     employee_id: Mapped[int] = mapped_column(ForeignKey("employee.id"), nullable=False)
 
     # NUEVO: fecha y horas del turno
-    date: Mapped[Date] = mapped_column(Date, nullable=False)           # día local del turno
-    start_time: Mapped[Time] = mapped_column(Time, nullable=False)     # HH:MM
-    end_time: Mapped[Time] = mapped_column(Time, nullable=False)       # HH:MM
+    date: Mapped[Date] = mapped_column(Date, nullable=False)  # día local del turno
+    start_time: Mapped[Time] = mapped_column(Time, nullable=False)  # HH:MM
+    end_time: Mapped[Time] = mapped_column(Time, nullable=False)  # HH:MM
 
     # NUEVO: referencia a tipo
     type_id: Mapped[int] = mapped_column(ForeignKey("shift_type.id"), nullable=False)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
-    status: Mapped[str] = mapped_column(String(20), nullable=False, default="planned")  # planned|published|cancelled
+    status: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="planned"
+    )  # planned|published|cancelled
 
     company: Mapped["Company"] = relationship("Company", back_populates="shifts")
     employee: Mapped["Employee"] = relationship("Employee", back_populates="shifts")
@@ -337,7 +368,6 @@ class Shifts(db.Model):
             "notes": self.notes,
             "status": self.status,
         }
-    
 
 
 # --------------------
@@ -348,8 +378,12 @@ class ShiftType(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     # Si company_id es None => tipo GLOBAL (válido para todas las empresas)
-    company_id: Mapped[int | None] = mapped_column(ForeignKey("company.id"), nullable=True)
-    code: Mapped[str] = mapped_column(String(50), nullable=False)      # REGULAR|MORNING|EVENING|HOLIDAY...
+    company_id: Mapped[int | None] = mapped_column(
+        ForeignKey("company.id"), nullable=True
+    )
+    code: Mapped[str] = mapped_column(
+        String(50), nullable=False
+    )  # REGULAR|MORNING|EVENING|HOLIDAY...
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     color_hex: Mapped[str] = mapped_column(String(7), nullable=False)  # "#3b82f6"
 
@@ -368,7 +402,7 @@ class ShiftType(db.Model):
             "name": self.name,
             "color_hex": self.color_hex,
         }
-    
+
 
 # --------------------
 # ShiftSeries (reglas recurrentes)
@@ -386,9 +420,15 @@ class ShiftSeries(db.Model):
     start_time: Mapped[Time] = mapped_column(Time, nullable=False)
     end_time: Mapped[Time] = mapped_column(Time, nullable=False)
 
-    weekdays_mask: Mapped[int] = mapped_column(Integer, nullable=False)  # bits Lun..Dom (bit0=Lun)
-    interval_weeks: Mapped[int] = mapped_column(Integer, nullable=False, default=1)  # cada N semanas
-    tz_name: Mapped[str] = mapped_column(String(64), nullable=False, default="Europe/Madrid")
+    weekdays_mask: Mapped[int] = mapped_column(
+        Integer, nullable=False
+    )  # bits Lun..Dom (bit0=Lun)
+    interval_weeks: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=1
+    )  # cada N semanas
+    tz_name: Mapped[str] = mapped_column(
+        String(64), nullable=False, default="Europe/Madrid"
+    )
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
@@ -421,7 +461,6 @@ class ShiftSeries(db.Model):
         }
 
 
-
 # --------------------
 # ShiftException (cancelar/modificar un día de una serie)
 # --------------------
@@ -429,17 +468,25 @@ class ShiftException(db.Model):
     __tablename__ = "shift_exception"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    series_id: Mapped[int] = mapped_column(ForeignKey("shift_series.id"), nullable=False)
+    series_id: Mapped[int] = mapped_column(
+        ForeignKey("shift_series.id"), nullable=False
+    )
     date: Mapped[Date] = mapped_column(Date, nullable=False)
 
     # action: 'cancel' o 'modify'
-    action: Mapped[str] = mapped_column(String(10), nullable=False)  # 'cancel' | 'modify'
+    action: Mapped[str] = mapped_column(
+        String(10), nullable=False
+    )  # 'cancel' | 'modify'
     new_start_time: Mapped[Time | None] = mapped_column(Time, nullable=True)
     new_end_time: Mapped[Time | None] = mapped_column(Time, nullable=True)
-    new_type_id: Mapped[int | None] = mapped_column(ForeignKey("shift_type.id"), nullable=True)
+    new_type_id: Mapped[int | None] = mapped_column(
+        ForeignKey("shift_type.id"), nullable=True
+    )
     note: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    series: Mapped["ShiftSeries"] = relationship("ShiftSeries", back_populates="exceptions")
+    series: Mapped["ShiftSeries"] = relationship(
+        "ShiftSeries", back_populates="exceptions"
+    )
     new_type: Mapped["ShiftType"] = relationship("ShiftType")
 
     __table_args__ = (
@@ -453,17 +500,21 @@ class ShiftException(db.Model):
             "series_id": self.series_id,
             "date": self.date.isoformat(),
             "action": self.action,
-            "new_start_time": (self.new_start_time.strftime("%H:%M") if self.new_start_time else None),
-            "new_end_time": (self.new_end_time.strftime("%H:%M") if self.new_end_time else None),
+            "new_start_time": (
+                self.new_start_time.strftime("%H:%M") if self.new_start_time else None
+            ),
+            "new_end_time": (
+                self.new_end_time.strftime("%H:%M") if self.new_end_time else None
+            ),
             "new_type_id": self.new_type_id,
             "note": self.note,
         }
 
 
-
 # --------------------
 # Suggestions
 # --------------------
+
 
 class Suggestions(db.Model):
     __tablename__ = "suggestions"
@@ -474,7 +525,9 @@ class Suggestions(db.Model):
     content: Mapped[str] = mapped_column(String(255), nullable=False)
 
     company: Mapped["Company"] = relationship("Company", back_populates="suggestions")
-    employee: Mapped["Employee"] = relationship("Employee", back_populates="suggestions")
+    employee: Mapped["Employee"] = relationship(
+        "Employee", back_populates="suggestions"
+    )
 
     def serialize(self):
         return {
@@ -483,7 +536,6 @@ class Suggestions(db.Model):
             "employee_id": self.employee_id,
             "content": self.content,
         }
-
 
 
 class PunchType(enum.Enum):
@@ -501,18 +553,17 @@ class TimePunch(db.Model):
 
     punch_type: Mapped[PunchType] = mapped_column(
         Enum(PunchType, name="punch_type", native_enum=False, validate_strings=True),
-        nullable=False
+        nullable=False,
     )
     punched_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
-        default=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.now(timezone.utc),
     )
     note: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     employee: Mapped["Employee"] = relationship(
-    "Employee",
-    back_populates="time_punches"
+        "Employee", back_populates="time_punches"
     )
 
     __table_args__ = (
@@ -527,5 +578,3 @@ class TimePunch(db.Model):
             "punched_at": self.punched_at.isoformat(),
             "note": self.note,
         }
-
-  

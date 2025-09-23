@@ -1,28 +1,13 @@
 import { Link } from "react-router-dom";
 // import { useLocation } from "react-router-dom";
 import './Navbar.css'
+import { useAuth } from "../../hooks/useAuth";
 
 export const Navbar = () => {
 
-	// const location = useLocation()
-
-	// const getButtonContent = () => {
-	// 	switch(location.pathname) {
-	// 		case '/':
-	// 			return {text: 'LOGIN', to: '/login'};
-	// 		case '/login':
-	// 			return {text: 'VOLVER', to: '/' };
-	// 		case '/profile':
-	// 			return {text: 'CERRAR SESION', to: '/login'}
-	// 		case '/holidays':
-	// 			return {text: 'CERRAR SESION', to: '/login'}
+	const {token} = useAuth();
 
 
-	// 	}
-	// }
-
-
-	// const buttonConfig = getButtonContent()
 
 	return (
 		<header className="header-site">
@@ -37,7 +22,7 @@ export const Navbar = () => {
 						<a href="#euteams" className="cg-nav-link">Por qué nosotros</a>
 						<a href="#contact" className="cg-nav-link">Contacto</a>
 					</nav>
-					<a href="/login" className="cg-btn cg-btn--primary">Login</a>
+					<a href="/login" className="cg-btn cg-btn--primary">{token ? "Dashboard" : "Login"}</a>
 				</div>
 			</div>
 		</header>

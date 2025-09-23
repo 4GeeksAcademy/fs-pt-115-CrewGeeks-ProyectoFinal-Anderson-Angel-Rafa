@@ -3,18 +3,16 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_cors import CORS
 from api.models import db, Employee, TimePunch, PunchType
 from datetime import datetime, date, time, timedelta, timezone
-from zoneinfo import ZoneInfo 
-from api.utils_auth.helpers_auth import (
-    get_jwt_company_id,
-    is_admin_or_hr,
-    is_ownerdb
-)
+from zoneinfo import ZoneInfo
+from api.utils_auth.helpers_auth import get_jwt_company_id, is_admin_or_hr, is_ownerdb
 
 time_punch_bp = Blueprint("time_punch_bp", __name__, url_prefix="/time-punch")
 CORS(time_punch_bp)
 
+
 def _now_utc() -> datetime:
     return datetime.now(timezone.utc)
+
 
 def _ultimo_fichaje(employee_id: int) -> TimePunch | None:
     return db.session.execute(
@@ -24,7 +22,9 @@ def _ultimo_fichaje(employee_id: int) -> TimePunch | None:
         .limit(1)
     ).scalar_one_or_none()
 
+
 DEBOUNCE_SECONDS = 2  # ventana anti-doble-click
+
 
 def _ultimo_reciente(employee_id: int) -> TimePunch | None:
     ultimo = _ultimo_fichaje(employee_id)
@@ -34,7 +34,12 @@ def _ultimo_reciente(employee_id: int) -> TimePunch | None:
     return ultimo if delta < DEBOUNCE_SECONDS else None
 
 
-def _crear_fichaje(employee_id: int, punch_type: PunchType, note: str | None = None, at: datetime | None = None) -> TimePunch:
+def _crear_fichaje(
+    employee_id: int,
+    punch_type: PunchType,
+    note: str | None = None,
+    at: datetime | None = None,
+) -> TimePunch:
     """
     Crea el objeto TimePunch y lo añade a la sesión, PERO NO hace commit.
     El endpoint llamará a db.session.commit() cuando corresponda.
@@ -49,7 +54,6 @@ def _crear_fichaje(employee_id: int, punch_type: PunchType, note: str | None = N
     return fichaje
 
 
-
 @time_punch_bp.route("/start", methods=["POST"])
 @jwt_required()
 def start_shift():
@@ -61,15 +65,16 @@ def start_shift():
     # Si el último fichaje es MUY reciente y ya es IN, tratamos como idempotente
     ultimo_reciente = _ultimo_reciente(employee_id)
     if ultimo_reciente and ultimo_reciente.punch_type == PunchType.IN:
-        return jsonify({
-            "ok": True,
-            "punch": ultimo_reciente.serialize(),
-            "idempotent": True
-        }), 200
+        return (
+            jsonify(
+                {"ok": True, "punch": ultimo_reciente.serialize(), "idempotent": True}
+            ),
+            200,
+        )
 
     ultimo = _ultimo_fichaje(employee_id)
     if ultimo and ultimo.punch_type != PunchType.OUT:
-        return jsonify({"error": "Ya tienes un turno abierto"}), 409 
+        return jsonify({"error": "Ya tienes un turno abierto"}), 409
 
     try:
         note = (request.get_json(silent=True) or {}).get("note")
@@ -79,9 +84,6 @@ def start_shift():
     except Exception:
         db.session.rollback()
         return jsonify({"error": "No se pudo iniciar el turno"}), 500
-
-
-
 
 
 @time_punch_bp.route("/pause-toggle", methods=["POST"])
@@ -95,11 +97,12 @@ def pause_toggle():
     # Si el último fichaje es MUY reciente (cualquier tipo), ignora como doble click
     ultimo_reciente = _ultimo_reciente(employee_id)
     if ultimo_reciente:
-        return jsonify({
-            "ok": True,
-            "punch": ultimo_reciente.serialize(),
-            "idempotent": True
-        }), 200
+        return (
+            jsonify(
+                {"ok": True, "punch": ultimo_reciente.serialize(), "idempotent": True}
+            ),
+            200,
+        )
 
     ultimo = _ultimo_fichaje(employee_id)
     if not ultimo or ultimo.punch_type == PunchType.OUT:
@@ -121,9 +124,6 @@ def pause_toggle():
         return jsonify({"error": "No se pudo cambiar el estado de pausa"}), 500
 
 
-
-
-
 @time_punch_bp.route("/end", methods=["POST"])
 @jwt_required()
 def end_shift():
@@ -135,11 +135,12 @@ def end_shift():
     # Si el último fichaje es OUT muy reciente, trata como idempotente
     ultimo_reciente = _ultimo_reciente(employee_id)
     if ultimo_reciente and ultimo_reciente.punch_type == PunchType.OUT:
-        return jsonify({
-            "ok": True,
-            "punch": ultimo_reciente.serialize(),
-            "idempotent": True
-        }), 200
+        return (
+            jsonify(
+                {"ok": True, "punch": ultimo_reciente.serialize(), "idempotent": True}
+            ),
+            200,
+        )
 
     ultimo = _ultimo_fichaje(employee_id)
     if not ultimo or ultimo.punch_type == PunchType.OUT:
@@ -165,9 +166,6 @@ def end_shift():
         return jsonify({"error": "No se pudo cerrar el turno"}), 500
 
 
-
-
-
 # (Opcional) estado para la UI: qué botones habilitar
 @time_punch_bp.route("/status", methods=["GET"])
 @jwt_required()
@@ -178,7 +176,7 @@ def status():
         "open": bool(ultimo and ultimo.punch_type != PunchType.OUT),
         "paused": bool(ultimo and ultimo.punch_type == PunchType.BREAK_START),
         "last_type": (ultimo.punch_type.value if ultimo else None),
-        "last_at": (ultimo.punched_at.isoformat() if ultimo else None)
+        "last_at": (ultimo.punched_at.isoformat() if ultimo else None),
     }
     return jsonify(estado), 200
 
@@ -203,15 +201,19 @@ def summarize_time_punches(
     start_utc = start_local.astimezone(timezone.utc)
     end_utc = end_local.astimezone(timezone.utc)
 
-    punches = db.session.execute(
-        db.select(TimePunch)
-        .where(
-            TimePunch.employee_id == employee_id,
-            TimePunch.punched_at >= start_utc,
-            TimePunch.punched_at < end_utc,
+    punches = (
+        db.session.execute(
+            db.select(TimePunch)
+            .where(
+                TimePunch.employee_id == employee_id,
+                TimePunch.punched_at >= start_utc,
+                TimePunch.punched_at < end_utc,
+            )
+            .order_by(TimePunch.punched_at.asc())
         )
-        .order_by(TimePunch.punched_at.asc())
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     sessions: list[dict] = []
     current_in: datetime | None = None
@@ -238,7 +240,10 @@ def summarize_time_punches(
         elif p.punch_type == PunchType.OUT:
             if current_in is not None:
                 # Si hay una pausa abierta, la cerramos al momento del OUT
-                if current_break_start is not None and p.punched_at > current_break_start:
+                if (
+                    current_break_start is not None
+                    and p.punched_at > current_break_start
+                ):
                     total_break += p.punched_at - current_break_start
                     current_break_start = None
 
@@ -247,14 +252,16 @@ def summarize_time_punches(
                 if net.total_seconds() > 0:
                     in_local = current_in.astimezone(tz)
                     out_local = p.punched_at.astimezone(tz)
-                    sessions.append({
-                        "date": in_local.date().isoformat(),
-                        "in": in_local.isoformat(),
-                        "out": out_local.isoformat(),
-                        "gross_seconds": int(gross.total_seconds()),
-                        "break_seconds": int(total_break.total_seconds()),
-                        "net_seconds": int(net.total_seconds()),
-                    })
+                    sessions.append(
+                        {
+                            "date": in_local.date().isoformat(),
+                            "in": in_local.isoformat(),
+                            "out": out_local.isoformat(),
+                            "gross_seconds": int(gross.total_seconds()),
+                            "break_seconds": int(total_break.total_seconds()),
+                            "net_seconds": int(net.total_seconds()),
+                        }
+                    )
 
                 # Reset para la siguiente sesión
                 current_in = None
@@ -271,11 +278,10 @@ def summarize_time_punches(
     return {
         "days_worked": days_worked,
         "total_seconds": total_seconds,
-        "total_hours": total_hours,   # número decimal (2 decimales)
-        "human_total": human_total,   # "Xh Ym"
-        "sessions": sessions,         # detalle por sesión
+        "total_hours": total_hours,  # número decimal (2 decimales)
+        "human_total": human_total,  # "Xh Ym"
+        "sessions": sessions,  # detalle por sesión
     }
-
 
 
 @time_punch_bp.route("/summary", methods=["GET"])
@@ -303,21 +309,32 @@ def time_punch_summary():
         # Si NO eres OWNERDB, debes pertenecer a la misma company que el empleado solicitado
         if not is_ownerdb():
             requester_company_id = get_jwt_company_id()
-            if requester_company_id is None or employee_target.company_id != requester_company_id:
-                return jsonify({"error": "Forbidden: el empleado no pertenece a tu empresa"}), 403
+            if (
+                requester_company_id is None
+                or employee_target.company_id != requester_company_id
+            ):
+                return (
+                    jsonify(
+                        {"error": "Forbidden: el empleado no pertenece a tu empresa"}
+                    ),
+                    403,
+                )
 
         target_employee_id = requested_employee_id
 
-    date_from_str = request.args.get("from")   # 'YYYY-MM-DD'
-    date_to_str   = request.args.get("to")     # 'YYYY-MM-DD'
-    tz_name       = request.args.get("tz", "Europe/Madrid")
+    date_from_str = request.args.get("from")  # 'YYYY-MM-DD'
+    date_to_str = request.args.get("to")  # 'YYYY-MM-DD'
+    tz_name = request.args.get("tz", "Europe/Madrid")
 
     if not date_from_str or not date_to_str:
-        return jsonify({"error": "Params 'from' y 'to' son requeridos (YYYY-MM-DD)."}), 400
+        return (
+            jsonify({"error": "Params 'from' y 'to' son requeridos (YYYY-MM-DD)."}),
+            400,
+        )
 
     try:
         date_from = date.fromisoformat(date_from_str)
-        date_to   = date.fromisoformat(date_to_str)
+        date_to = date.fromisoformat(date_to_str)
     except ValueError:
         return jsonify({"error": "Formato de fecha inválido. Usa YYYY-MM-DD."}), 400
 
@@ -342,14 +359,17 @@ def time_punch_list():
     requested_employee_id_param = request.args.get("employee_id")
     tz_name = request.args.get("tz", "Europe/Madrid")
     date_from_str = request.args.get("from")  # 'YYYY-MM-DD'
-    date_to_str   = request.args.get("to")    # 'YYYY-MM-DD'
+    date_to_str = request.args.get("to")  # 'YYYY-MM-DD'
 
     if not date_from_str or not date_to_str:
-        return jsonify({"error": "Params 'from' y 'to' son requeridos (YYYY-MM-DD)."}), 400
+        return (
+            jsonify({"error": "Params 'from' y 'to' son requeridos (YYYY-MM-DD)."}),
+            400,
+        )
 
     try:
         date_from = date.fromisoformat(date_from_str)
-        date_to   = date.fromisoformat(date_to_str)
+        date_to = date.fromisoformat(date_to_str)
     except ValueError:
         return jsonify({"error": "Formato de fecha inválido. Usa YYYY-MM-DD."}), 400
 
@@ -370,26 +390,38 @@ def time_punch_list():
             return jsonify({"error": "Empleado no encontrado"}), 404
         if not is_ownerdb():
             requester_company_id = get_jwt_company_id()
-            if requester_company_id is None or employee_target.company_id != requester_company_id:
-                return jsonify({"error": "Forbidden: el empleado no pertenece a tu empresa"}), 403
+            if (
+                requester_company_id is None
+                or employee_target.company_id != requester_company_id
+            ):
+                return (
+                    jsonify(
+                        {"error": "Forbidden: el empleado no pertenece a tu empresa"}
+                    ),
+                    403,
+                )
         target_employee_id = requested_employee_id
 
     # Ventana local -> UTC
     tz = ZoneInfo(tz_name)
     start_local = datetime.combine(date_from, time(0, 0), tzinfo=tz)
-    end_local   = datetime.combine(date_to + timedelta(days=1), time(0, 0), tzinfo=tz)
+    end_local = datetime.combine(date_to + timedelta(days=1), time(0, 0), tzinfo=tz)
     start_utc = start_local.astimezone(timezone.utc)
-    end_utc   = end_local.astimezone(timezone.utc)
+    end_utc = end_local.astimezone(timezone.utc)
 
-    punches = db.session.execute(
-        db.select(TimePunch)
-        .where(
-            TimePunch.employee_id == target_employee_id,
-            TimePunch.punched_at >= start_utc,
-            TimePunch.punched_at < end_utc,
+    punches = (
+        db.session.execute(
+            db.select(TimePunch)
+            .where(
+                TimePunch.employee_id == target_employee_id,
+                TimePunch.punched_at >= start_utc,
+                TimePunch.punched_at < end_utc,
+            )
+            .order_by(TimePunch.punched_at.asc())
         )
-        .order_by(TimePunch.punched_at.asc())
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     def to_local_iso(dt_aware):
         return dt_aware.astimezone(tz).isoformat()
@@ -405,4 +437,7 @@ def time_punch_list():
         }
         for p in punches
     ]
-    return jsonify({"employee_id": target_employee_id, "tz": tz_name, "punches": result}), 200
+    return (
+        jsonify({"employee_id": target_employee_id, "tz": tz_name, "punches": result}),
+        200,
+    )
