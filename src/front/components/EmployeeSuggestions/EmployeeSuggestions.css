@@ -1,13 +1,16 @@
+/* EmployeeSuggestions.css - Versión Limpia */
+
 .employee-suggestions {
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1.2fr;
-  gap: 1rem;
+  gap: 2rem;
   margin: 0;
   padding: 30px 40px;
 }
+
 .content-header {
-  background: whitesmoke;
+  background: #f8fafc;
   padding: 30px 40px;
   border-bottom: 1px solid #e9ecef;
 }
@@ -15,7 +18,7 @@
 .content-title {
   font-size: 28px;
   font-weight: bold;
-  color: #2c3e50;
+  color: #1f2937;
   margin-bottom: 15px;
 }
 
@@ -24,170 +27,317 @@
   font-size: 14px;
 }
 
-/* Tarjetas base */
-.es-card {
-  background-color: #ffffff;
+/* Formulario de Nueva Sugerencia */
+.suggestion-form-card {
+  background: #ffffff;
   border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
 }
 
-.es-title {
-  margin: 0 0 12px 0;
-  font-size: clamp(1.1rem, 1.4vw, 1.35rem);
-  font-weight: 700;
-  line-height: 1.2;
+.form-header {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  padding: 24px;
+  color: white;
 }
 
-/* Descripción */
-.es-textarea {
+.form-title {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.form-subtitle {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.form-body {
+  padding: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-textarea {
   width: 100%;
-  min-height: 160px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 14px;
+  color: #374151;
   resize: vertical;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 0.95rem;
-  outline: none;
-}
-.es-textarea:focus {
-  border-color: #94a3b8;
-  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.25);
+  min-height: 120px;
+  transition: all 0.2s;
+  font-family: inherit;
 }
 
-/* Form añadir tarea */
-.es-form {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.es-input {
-  flex: 1;
-  height: 40px;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 0 12px;
-  font-size: 0.95rem;
+.form-textarea:focus {
   outline: none;
-}
-.es-input:focus {
-  border-color: #94a3b8;
-  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.25);
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
 }
 
-.es-btn {
-  height: 40px;
-  padding: 0 14px;
+.form-textarea::placeholder {
+  color: #9ca3af;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 48px;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: white;
   border: none;
   border-radius: 12px;
-  background-color: #2563eb;
-  color: #fff;
   font-weight: 600;
+  font-size: 16px;
   cursor: pointer;
-}
-.es-btn:hover {
-  filter: brightness(1.05);
-}
-
-/* Lista */
-.es-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 8px;
-}
-.es-empty {
-  color: #6b7280;
-  font-size: 0.95rem;
-  padding: 10px 0;
-}
-
-/* Ítems */
-.es-item {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border: 1px solid #eef2f7;
-  border-radius: 12px;
-  background: #f9fafb;
-}
-
-/* CAMBIO: permitir que los ítems con varias líneas no se descuadren */
-.es-item {
-  /* CAMBIO */
-  grid-template-columns: auto minmax(0, 1fr) auto; /* CAMBIO: evita overflow del texto */
-  align-items: start; /* CAMBIO: alinea checkbox y borrar arriba para varias líneas */
-}
-
-.es-item--done .es-text {
-  text-decoration: line-through;
-  color: #6b7280;
-}
-
-/* Checkbox custom sencillo */
-.es-check {
-  position: relative;
-  width: 20px;
-  height: 20px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
 }
-.es-check input {
-  position: absolute;
-  opacity: 0;
-  width: 20px;
-  height: 20px;
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(14, 165, 233, 0.25);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Lista de Sugerencias */
+.suggestions-list-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.list-header {
+  background: none;
+  padding: 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.list-title {
   margin: 0;
-  cursor: pointer;
-}
-.es-check__box {
-  width: 18px;
-  height: 18px;
-  border: 2px solid #94a3b8;
-  border-radius: 6px;
-  box-sizing: border-box;
-  pointer-events: none;
-}
-.es-check input:checked + .es-check__box {
-  background: #2563eb;
-  border-color: #2563eb;
-  box-shadow: inset 0 0 0 3px #ffffff;
+  font-size: flex;
+  font-weight: 600;
+  color: #1f2937;
 }
 
-/* CAMBIO: hacer que el texto largo salte de línea y no invada otros elementos */
-.es-text {
-  font-size: 0.95rem;
-  display: inline-block; /* CAMBIO */
-  max-width: 100%; /* CAMBIO */
-  min-width: 0; /* CAMBIO: necesario con grid + minmax para que pueda romper */
-  white-space: normal; /* CAMBIO */
-  overflow-wrap: anywhere; /* CAMBIO: corta palabras muy largas */
-  word-break: break-word; /* CAMBIO: compat extra */
-  line-height: 1.35; /* CAMBIO: mejora legibilidad en varias líneas */
+.suggestions-count {
+  background: #0ea5e9;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-/* Botón eliminar */
-.es-del {
+.suggestions-container {
+  padding: 24px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* Estado Vacío */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #374151;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Lista de Sugerencias */
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.suggestion-item {
+  background: #ffffff;
+  border: 2px solid #f1f5f9;
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.suggestion-item:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.suggestion-reviewed {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.suggestion-reviewed::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #0ea5e9;
+  border-radius: 16px 0 0 16px;
+}
+
+.suggestion-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.suggestion-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.suggestion-date {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.suggestion-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pending {
+  color: #f59e0b;
+}
+
+.status-reviewed {
+  color: #059669;
+}
+
+.suggestion-content {
+  color: #374151;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.suggestion-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.action-btn {
+  padding: 8px 16px;
   border: none;
-  background: transparent;
-  font-size: 20px;
-  line-height: 1;
+  border-radius: 8px;
   cursor: pointer;
-  color: #9ca3af;
-  padding: 0 2px;
-}
-.es-del:hover {
-  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
-/* Responsivo */
+.toggle-btn {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.toggle-btn:hover {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.edit-btn {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.edit-btn:hover {
+  background: #fde68a;
+  transform: translateY(-1px);
+}
+
+.delete-btn {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
 @media (max-width: 900px) {
   .employee-suggestions {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .form-header {
+    padding: 20px;
+  }
+  
+  .form-body, .suggestions-container {
+    padding: 20px;
+  }
+  
+  .suggestion-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .suggestion-actions {
+    justify-content: stretch;
+  }
+  
+  .action-btn {
+    flex: 1;
   }
 }
