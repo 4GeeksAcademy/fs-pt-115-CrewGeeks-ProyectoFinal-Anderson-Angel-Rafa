@@ -17,7 +17,6 @@ export const LandingPage = () => {
 			<HeroSection />
 			<Features />
 			<AboutPlatform />
-			<ContactForm />
 			<CallToAction />
 			<Footer />
 		</>
