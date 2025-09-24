@@ -1,5 +1,10 @@
 import "./EmployeeData.css";
 import { useTimePunch, formatHMS, formatTimeHHMM } from "../../hooks/useTimePunch";
+import { useEffect, useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
+import { getSummaryApi, getPunchesListApi } from "../../services/timePunchAPI";
+import { getMyHolidayBalance } from "../../services/holidaysAPI";
+import { pad2 } from "../../hooks/useTimePunch";
 
 export const EmployeeData = () => {
     const {
@@ -10,6 +15,133 @@ export const EmployeeData = () => {
         handleEnd,
         loadingAction,
     } = useTimePunch();
+
+    // === KPIs dinámicos (sin tocar tu layout) ===
+    const { token } = useAuth();
+    const [kpiDaysWorked, setKpiDaysWorked] = useState(null);
+    const [kpiTotalHoursHuman, setKpiTotalHoursHuman] = useState(null);
+    const [kpiVacRemaining, setKpiVacRemaining] = useState(null);
+    const [kpiLoading, setKpiLoading] = useState(false);
+    const [kpiError, setKpiError] = useState(null);
+
+    // Rango: 1 → hoy del mes actual
+    const nowKpi = new Date();
+    const fromIso = `${nowKpi.getFullYear()}-${pad2(nowKpi.getMonth() + 1)}-01`;
+    const toIso = `${nowKpi.getFullYear()}-${pad2(nowKpi.getMonth() + 1)}-${pad2(nowKpi.getDate())}`;
+
+    // Helpers fallback si el summary devuelve 0h
+    const toDate = (v) => (v ? new Date(v) : null);
+    const fmtHumanFromSeconds = (secs) => {
+        const total = Math.max(0, Math.floor(secs || 0));
+        const h = Math.floor(total / 3600);
+        const m = Math.floor((total % 3600) / 60);
+        return `${h}h ${m}m`;
+    };
+    const computeWorkedSeconds = (punches = []) => {
+        const sorted = [...punches].sort((a, b) =>
+            String(a.punched_at_local).localeCompare(String(b.punched_at_local))
+        );
+        let totalMs = 0;
+        let lastIn = null;
+
+        for (const p of sorted) {
+            const t = toDate(p.punched_at_local);
+            if (!t) continue;
+            const type = String(p.punch_type || "").toUpperCase();
+            if (type === "IN") lastIn = t;
+            else if (type === "OUT" && lastIn) {
+                const start = lastIn.getTime();
+                const end = t.getTime();
+                if (end > start) totalMs += (end - start);
+                lastIn = null;
+            }
+        }
+        return Math.max(0, Math.floor(totalMs / 1000));
+    };
+
+    useEffect(() => {
+        let alive = true;
+
+        const toDate = (v) => (v ? new Date(v) : null);
+        const fmtHumanFromSeconds = (secs) => {
+            const total = Math.max(0, Math.floor(secs || 0));
+            const h = Math.floor(total / 3600);
+            const m = Math.floor((total % 3600) / 60);
+            return `${h}h ${m}m`;
+        };
+        const computeWorkedSeconds = (punches = []) => {
+            const sorted = [...punches].sort((a, b) =>
+                String(a.punched_at_local).localeCompare(String(b.punched_at_local))
+            );
+            let totalMs = 0;
+            let lastIn = null;
+
+            for (const p of sorted) {
+                const t = toDate(p.punched_at_local);
+                if (!t) continue;
+                const type = String(p.punch_type || "").toUpperCase();
+                if (type === "IN") {
+                    lastIn = t;
+                } else if (type === "OUT" && lastIn) {
+                    const start = lastIn.getTime();
+                    const end = t.getTime();
+                    if (end > start) totalMs += (end - start);
+                    lastIn = null;
+                }
+            }
+            return Math.max(0, Math.floor(totalMs / 1000));
+        };
+
+        (async () => {
+            try {
+                setKpiLoading(true);
+                setKpiError(null);
+
+                const summary = await getSummaryApi(token, fromIso, toIso, "Europe/Madrid");
+                let human =
+                    summary?.human_total ||
+                    (summary?.total_hours != null ? `${summary.total_hours}h` : null);
+
+                const list = await getPunchesListApi(token, fromIso, toIso, "Europe/Madrid");
+                const punches = Array.isArray(list?.punches) ? list.punches : [];
+
+                const uniqueDays = new Set(
+                    punches
+                        .map((p) => String(p.punched_at_local || "").slice(0, 10))
+                        .filter(Boolean)
+                ).size;
+
+                if ((!human || /^0+h\s*0+m?$/i.test(String(human))) && punches.length > 0) {
+                    const seconds = computeWorkedSeconds(punches);
+                    if (seconds > 0) human = fmtHumanFromSeconds(seconds);
+                }
+
+                if (!alive) return;
+                setKpiDaysWorked(uniqueDays);
+                setKpiTotalHoursHuman(human);
+
+
+                const balance = await getMyHolidayBalance(token, { year: nowKpi.getFullYear() });
+                if (!alive) return;
+                setKpiVacRemaining(
+                    balance?.remaining_days ??
+                    (balance?.allocated_days != null && balance?.used_days != null
+                        ? balance.allocated_days - balance.used_days
+                        : null)
+                );
+            } catch (error) {
+                if (alive) setKpiError(error?.message || "Error al cargar KPIs");
+            } finally {
+                if (alive) setKpiLoading(false);
+            }
+        })();
+
+        return () => {
+            alive = false;
+        };
+    }, [token, fromIso, toIso]);
+
+
 
     return (
         <section className='content-area'>
@@ -72,7 +204,7 @@ export const EmployeeData = () => {
                             <h3 className="cg-kpi-title">Días trabajados</h3>
                         </div>
                         <div>
-                            <div className="cg-kpi-value"><strong>23</strong></div>
+                            <div className="cg-kpi-value"><strong>{kpiLoading ? "…" : (kpiDaysWorked ?? "—")}</strong></div>
                         </div>
                         <div className="cg-chip cg-chip--up">
                             +2 vs mes anterior
@@ -84,20 +216,20 @@ export const EmployeeData = () => {
                             <div className="cg-kpi-icon" aria-hidden="true"><i className="fa-solid fa-hourglass-half" style={{ color: "#3b82f6" }}></i></div>
                             <h3 className="cg-kpi-title">Horas totales</h3>
                         </div>
-                        <div className="cg-kpi-value"><strong>164h</strong></div>
+                        <div className="cg-kpi-value"><strong>{kpiLoading ? "…" : (kpiTotalHoursHuman ?? "—")}</strong></div>
                         <div className="cg-chip cg-chip--up">
                             +8h vs objetivo
                         </div>
                     </article>
 
-                    
+
 
                     <article className="cg-kpi">
                         <div className="cg-kpi-head">
                             <div className="cg-kpi-icon" aria-hidden="true"><i className="fa-solid fa-umbrella-beach" style={{ color: "#3b82f6" }}></i></div>
                             <h3 className="cg-kpi-title">Vacaciones restantes</h3>
                         </div>
-                        <div className="cg-kpi-value"><strong>12</strong></div>
+                        <div className="cg-kpi-value"><strong>{kpiLoading ? "…" : (kpiVacRemaining ?? "—")}</strong></div>
                         <div className="cg-chip cg-chip--down">
                             -3 usados
                         </div>
