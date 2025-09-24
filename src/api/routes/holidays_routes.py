@@ -1,6 +1,16 @@
 # api/routers/holidays.py
 from flask import jsonify, Blueprint, request
-from api.models import db, Employee, Company, Role, Salary, Payroll, Shifts, Holidays, VacationBalance
+from api.models import (
+    db,
+    Employee,
+    Company,
+    Role,
+    Salary,
+    Payroll,
+    Shifts,
+    Holidays,
+    VacationBalance,
+)
 from flask_cors import CORS
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy.exc import IntegrityError
@@ -10,14 +20,15 @@ from api.utils_auth.helpers_auth import (
     get_jwt_company_id,
     is_admin_or_hr,
     current_employee_id,
-    is_ownerdb
+    is_ownerdb,
 )
 from api.utils_auth.utils_vacations import HolidayStatus, business_days
 
-holidays_bp = Blueprint('holidays', __name__, url_prefix='/holidays')
+holidays_bp = Blueprint("holidays", __name__, url_prefix="/holidays")
 CORS(holidays_bp)
 
 # ---------- helpers internos ----------
+
 
 def _parse_iso(d: str) -> date | None:
     try:
@@ -26,7 +37,10 @@ def _parse_iso(d: str) -> date | None:
     except Exception:
         return None
 
-def _overlaps(emp_id: int, start: date, end: date, company_id: int, exclude_id: int | None = None) -> bool:
+
+def _overlaps(
+    emp_id: int, start: date, end: date, company_id: int, exclude_id: int | None = None
+) -> bool:
     # """
     # Devuelve True si hay solape con otra solicitud del mismo empleado en estados relevantes.
     # Reglas: Solapa con PENDING o APPROVED.
@@ -41,12 +55,15 @@ def _overlaps(emp_id: int, start: date, end: date, company_id: int, exclude_id: 
         q = q.where(Holidays.id != exclude_id)
     return db.session.execute(q).first() is not None
 
-def _get_or_create_balance(company_id: int, employee_id: int, year: int) -> VacationBalance:
+
+def _get_or_create_balance(
+    company_id: int, employee_id: int, year: int
+) -> VacationBalance:
     vb = db.session.execute(
         select(VacationBalance).where(
             VacationBalance.company_id == company_id,
             VacationBalance.employee_id == employee_id,
-            VacationBalance.year == year
+            VacationBalance.year == year,
         )
     ).scalar_one_or_none()
     if vb is None:
@@ -55,13 +72,16 @@ def _get_or_create_balance(company_id: int, employee_id: int, year: int) -> Vaca
             employee_id=employee_id,
             year=year,
             allocated_days=22,  # default
-            used_days=0
+            used_days=0,
         )
         db.session.add(vb)
         db.session.flush()
     return vb
 
-def _pending_days(company_id: int, employee_id: int, year: int, exclude_id: int | None = None) -> int:
+
+def _pending_days(
+    company_id: int, employee_id: int, year: int, exclude_id: int | None = None
+) -> int:
     q = select(Holidays.requested_days).where(
         Holidays.company_id == company_id,
         Holidays.employee_id == employee_id,
@@ -74,7 +94,9 @@ def _pending_days(company_id: int, employee_id: int, year: int, exclude_id: int 
     rows = db.session.execute(q).all()
     return sum(r[0] or 0 for r in rows)
 
+
 # ---------- LISTADOS EXISTENTES ----------
+
 
 @holidays_bp.route("/", methods=["GET"])
 @jwt_required()
@@ -118,6 +140,7 @@ def get_all_holidays():
 
     return jsonify([h.serialize() for h in holidays]), 200
 
+
 @holidays_bp.route("/<int:id>", methods=["GET"])
 @jwt_required()
 def get_holiday(id):
@@ -137,7 +160,9 @@ def get_holiday(id):
 
     return jsonify(holiday.serialize()), 200
 
+
 # ----------  Balance del empleado ----------
+
 
 @holidays_bp.route("/balance/me", methods=["GET"])
 @jwt_required()
@@ -153,11 +178,9 @@ def get_my_balance():
     pending = _pending_days(company_id, emp_id, year)
     remaining = max(0, (vb.allocated_days or 0) - (vb.used_days or 0) - pending)
     payload = vb.serialize()
-    payload.update({
-        "pending_days": pending,
-        "remaining_days": remaining
-    })
+    payload.update({"pending_days": pending, "remaining_days": remaining})
     return jsonify(payload), 200
+
 
 # endpoint admin/hr para ajustar allocated_days
 @holidays_bp.route("/balance/allocate", methods=["PUT"])
@@ -172,7 +195,10 @@ def set_allocation():
         year = int(data.get("year") or date.today().year)
         allocated = int(data.get("allocated_days"))
     except (TypeError, ValueError):
-        return jsonify({"error": "employee_id, year, allocated_days must be integers"}), 400
+        return (
+            jsonify({"error": "employee_id, year, allocated_days must be integers"}),
+            400,
+        )
 
     # OWNERDB puede cualquier empresa; ADMIN/HR limitado a su empresa
     employee = db.session.get(Employee, employee_id_body)
@@ -200,7 +226,9 @@ def set_allocation():
     payload.update({"pending_days": pending, "remaining_days": remaining})
     return jsonify(payload), 200
 
+
 # ---------- CREAR SOLICITUD ----------
+
 
 @holidays_bp.route("/", methods=["POST"])
 @jwt_required()
@@ -257,11 +285,17 @@ def create_holiday():
                 except (TypeError, ValueError):
                     return jsonify({"error": "employee_id must be an integer"}), 400
                 if eid != target_employee_id:
-                    return jsonify({"error": "You can only create holidays for yourself"}), 403
+                    return (
+                        jsonify({"error": "You can only create holidays for yourself"}),
+                        403,
+                    )
 
     # Solapes
     if _overlaps(target_employee_id, start_d, end_d, target_company_id):
-        return jsonify({"error": "The selected range overlaps with another request"}), 409
+        return (
+            jsonify({"error": "The selected range overlaps with another request"}),
+            409,
+        )
 
     # Días solicitados (laborables)
     req_days = business_days(start_d, end_d)
@@ -297,7 +331,9 @@ def create_holiday():
 
     return jsonify(new_holiday.serialize()), 201
 
+
 # ---------- EDITAR ----------
+
 
 @holidays_bp.route("/edit/<int:id>", methods=["PUT"])
 @jwt_required()
@@ -333,8 +369,17 @@ def update_holiday(id):
         # Si cambiaron fechas, recalcular y validar solape
         if holiday.end_date < holiday.start_date:
             return jsonify({"error": "end_date must be >= start_date"}), 400
-        if _overlaps(holiday.employee_id, holiday.start_date, holiday.end_date, holiday.company_id, exclude_id=holiday.id):
-            return jsonify({"error": "The selected range overlaps with another request"}), 409
+        if _overlaps(
+            holiday.employee_id,
+            holiday.start_date,
+            holiday.end_date,
+            holiday.company_id,
+            exclude_id=holiday.id,
+        ):
+            return (
+                jsonify({"error": "The selected range overlaps with another request"}),
+                409,
+            )
         holiday.requested_days = business_days(holiday.start_date, holiday.end_date)
 
         # Cambio de status directo
@@ -376,8 +421,17 @@ def update_holiday(id):
 
         if holiday.end_date < holiday.start_date:
             return jsonify({"error": "end_date must be >= start_date"}), 400
-        if _overlaps(holiday.employee_id, holiday.start_date, holiday.end_date, holiday.company_id, exclude_id=holiday.id):
-            return jsonify({"error": "The selected range overlaps with another request"}), 409
+        if _overlaps(
+            holiday.employee_id,
+            holiday.start_date,
+            holiday.end_date,
+            holiday.company_id,
+            exclude_id=holiday.id,
+        ):
+            return (
+                jsonify({"error": "The selected range overlaps with another request"}),
+                409,
+            )
         holiday.requested_days = business_days(holiday.start_date, holiday.end_date)
 
         if status_in in {e.value for e in HolidayStatus}:
@@ -395,7 +449,10 @@ def update_holiday(id):
     if holiday.employee_id != current_employee_id():
         return jsonify({"error": "Holiday request not found"}), 404
     if holiday.status != HolidayStatus.PENDING:
-        return jsonify({"error": "Only PENDING requests can be edited by the employee"}), 403
+        return (
+            jsonify({"error": "Only PENDING requests can be edited by the employee"}),
+            403,
+        )
 
     start_iso = data.get("start_date")
     end_iso = data.get("end_date")
@@ -416,14 +473,25 @@ def update_holiday(id):
 
     if holiday.end_date < holiday.start_date:
         return jsonify({"error": "end_date must be >= start_date"}), 400
-    if _overlaps(holiday.employee_id, holiday.start_date, holiday.end_date, holiday.company_id, exclude_id=holiday.id):
-        return jsonify({"error": "The selected range overlaps with another request"}), 409
+    if _overlaps(
+        holiday.employee_id,
+        holiday.start_date,
+        holiday.end_date,
+        holiday.company_id,
+        exclude_id=holiday.id,
+    ):
+        return (
+            jsonify({"error": "The selected range overlaps with another request"}),
+            409,
+        )
     holiday.requested_days = business_days(holiday.start_date, holiday.end_date)
 
     # saldo
     year = holiday.start_date.year
     vb = _get_or_create_balance(holiday.company_id, holiday.employee_id, year)
-    pending_others = _pending_days(holiday.company_id, holiday.employee_id, year, exclude_id=holiday.id)
+    pending_others = _pending_days(
+        holiday.company_id, holiday.employee_id, year, exclude_id=holiday.id
+    )
     remaining = (vb.allocated_days or 0) - (vb.used_days or 0) - pending_others
     if holiday.requested_days > remaining:
         return jsonify({"error": "Insufficient remaining days for this request"}), 409
@@ -436,7 +504,9 @@ def update_holiday(id):
 
     return jsonify(holiday.serialize()), 200
 
+
 # ---------- BORRAR ----------
+
 
 @holidays_bp.route("/delete/<int:id>", methods=["DELETE"])
 @jwt_required()
@@ -465,7 +535,12 @@ def delete_holiday(id):
         if holiday.employee_id != current_employee_id():
             return jsonify({"error": "Holiday request not found"}), 404
         if holiday.status != HolidayStatus.PENDING:
-            return jsonify({"error": "Only PENDING requests can be deleted by the employee"}), 403
+            return (
+                jsonify(
+                    {"error": "Only PENDING requests can be deleted by the employee"}
+                ),
+                403,
+            )
 
     try:
         db.session.delete(holiday)
@@ -476,7 +551,9 @@ def delete_holiday(id):
 
     return jsonify({"message": "Holiday successfully deleted"}), 200
 
+
 # ---------- ENDPOINTS de decisión ----------
+
 
 @holidays_bp.route("/<int:id>/approve", methods=["POST"])
 @jwt_required()
@@ -500,8 +577,17 @@ def approve_holiday(id):
     # Revalidar fechas, solape y saldo
     if holiday.end_date < holiday.start_date:
         return jsonify({"error": "Invalid date range"}), 400
-    if _overlaps(holiday.employee_id, holiday.start_date, holiday.end_date, holiday.company_id, exclude_id=holiday.id):
-        return jsonify({"error": "The selected range overlaps with another request"}), 409
+    if _overlaps(
+        holiday.employee_id,
+        holiday.start_date,
+        holiday.end_date,
+        holiday.company_id,
+        exclude_id=holiday.id,
+    ):
+        return (
+            jsonify({"error": "The selected range overlaps with another request"}),
+            409,
+        )
 
     # Recalcular por seguridad
     holiday.requested_days = business_days(holiday.start_date, holiday.end_date)
@@ -510,7 +596,9 @@ def approve_holiday(id):
 
     year = holiday.start_date.year
     vb = _get_or_create_balance(holiday.company_id, holiday.employee_id, year)
-    pending_others = _pending_days(holiday.company_id, holiday.employee_id, year, exclude_id=holiday.id)
+    pending_others = _pending_days(
+        holiday.company_id, holiday.employee_id, year, exclude_id=holiday.id
+    )
     remaining = (vb.allocated_days or 0) - (vb.used_days or 0) - pending_others
     if holiday.requested_days > remaining:
         return jsonify({"error": "Insufficient remaining days to approve"}), 409
@@ -532,6 +620,7 @@ def approve_holiday(id):
         return jsonify({"error": "Integrity error approving holiday"}), 400
 
     return jsonify(holiday.serialize()), 200
+
 
 @holidays_bp.route("/<int:id>/reject", methods=["POST"])
 @jwt_required()
@@ -562,5 +651,3 @@ def reject_holiday(id):
         return jsonify({"error": "Integrity error rejecting holiday"}), 400
 
     return jsonify(holiday.serialize()), 200
-
-

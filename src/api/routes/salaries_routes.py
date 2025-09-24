@@ -1,5 +1,15 @@
 from flask import jsonify, Blueprint, request
-from api.models import db, Employee, Company, Role, Salary, Payroll, Shifts, Holidays, Suggestions
+from api.models import (
+    db,
+    Employee,
+    Company,
+    Role,
+    Salary,
+    Payroll,
+    Shifts,
+    Holidays,
+    Suggestions,
+)
 from flask_cors import CORS
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy.exc import IntegrityError
@@ -8,15 +18,13 @@ from api.utils_auth.helpers_auth import (
     get_system_role,
     is_admin_or_hr,
     current_employee_id,
-    is_ownerdb
+    is_ownerdb,
 )
 
-salary_bp = Blueprint('salary', __name__, url_prefix = '/salaries')
+salary_bp = Blueprint("salary", __name__, url_prefix="/salaries")
 
 
 CORS(salary_bp)
-
-
 
 
 # AQUI PUEDEN HACER GET ADMIN/HR/OWNERDB
@@ -25,11 +33,9 @@ CORS(salary_bp)
 def get_salaries():
     if not (is_admin_or_hr() or is_ownerdb()):
         return jsonify({"error": "Forbidden"}), 403
-    
+
     salaries = db.session.execute(db.select(Salary)).scalars().all()
     return jsonify([s.serialize() for s in salaries]), 200
-
-
 
 
 # AQUI PUEDEN HACER GET ADMIN/HR/OWNERDB
@@ -37,15 +43,12 @@ def get_salaries():
 @jwt_required()
 def get_salary(id):
     if not (is_admin_or_hr() or is_ownerdb()):
-        return jsonify({"error": "Forbidden"}),403
-    
+        return jsonify({"error": "Forbidden"}), 403
+
     salary = db.session.get(Salary, id)
     if not salary:
         return jsonify({"error": "Salary not found"}), 404
     return jsonify(salary.serialize()), 200
-
-
-
 
 
 # AQUI PUEDEN POSTEAR ADMIN/HR/OWNERDB
@@ -54,18 +57,18 @@ def get_salary(id):
 def create_salary():
     if not (is_admin_or_hr() or is_ownerdb()):
         return jsonify({"error": "Forbidden"}), 403
-    
+
     data = request.get_json(silent=True)
     if not data:
-        return jsonify({"error": "JSON body required"}),400
-    
+        return jsonify({"error": "JSON body required"}), 400
+
     try:
         amount = int(data.get("amount"))
     except (TypeError, ValueError):
         return jsonify({"error": "amount must be an integer"}), 400
     if amount <= 0:
         return jsonify({"error": "amount must be more than 0"}), 400
-    
+
     salary = Salary(amount=amount)
     try:
         db.session.add(salary)
@@ -73,11 +76,8 @@ def create_salary():
     except IntegrityError:
         db.session.rollback()
         return jsonify({"error": "Integrity error creating salary"}), 400
-    
+
     return jsonify(salary.serialize()), 201
-
-
-
 
 
 # AQUI PUEDEN EDITAR ADMIN/HR/OWNERDB
@@ -111,9 +111,6 @@ def update_salary(id):
         return jsonify({"error": "Integrity error updating salary"}), 400
 
     return jsonify(salary.serialize()), 200
-
-
-
 
 
 # AQUI BORRAN ADMIN/HR/OWNERDB

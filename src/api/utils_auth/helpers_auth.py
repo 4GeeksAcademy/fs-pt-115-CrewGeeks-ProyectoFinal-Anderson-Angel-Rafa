@@ -3,7 +3,7 @@ from api.models import db, Employee
 
 
 def get_system_role() -> str:
-    
+
     claims = get_jwt()
     system_role_claim = (claims.get("system_role") or "").upper()
     if system_role_claim in {"OWNERDB", "ADMIN", "HR", "EMPLOYEE"}:
@@ -37,8 +37,9 @@ def is_ownerdb() -> bool:
 def current_employee_id() -> int:
     return int(get_jwt_identity())
 
+
 def get_jwt_company_id() -> int | None:
-    
+
     claims = get_jwt()
     company_id_claim = claims.get("company_id")
     if company_id_claim is not None:

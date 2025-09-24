@@ -1,11 +1,13 @@
 import enum
 from datetime import date, timedelta
 
+
 class HolidayStatus(enum.Enum):
     PENDING = "PENDING"
     APPROVED = "APPROVED"
     REJECTED = "REJECTED"
     CANCELLED = "CANCELLED"
+
 
 def business_days(start: date, end: date) -> int:
     # """

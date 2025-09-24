@@ -9,7 +9,7 @@ from .suggestions_routes import suggestions_bp
 from .salaries_routes import salary_bp
 from .timepunch_routes import time_punch_bp
 
-api = Blueprint('api', __name__)
+api = Blueprint("api", __name__)
 
 api.register_blueprint(company_bp)
 api.register_blueprint(employee_bp)

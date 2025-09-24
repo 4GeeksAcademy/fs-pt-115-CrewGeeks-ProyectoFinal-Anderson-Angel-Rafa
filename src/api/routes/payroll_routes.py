@@ -12,11 +12,9 @@ from api.utils_auth.helpers_auth import (
 )
 
 
-payroll_bp = Blueprint('payroll', __name__, url_prefix = '/payroll')
+payroll_bp = Blueprint("payroll", __name__, url_prefix="/payroll")
 
 CORS(payroll_bp)
-
-
 
 
 # Todos los payrolls por empresa y rol
@@ -30,9 +28,11 @@ def get_all_payrolls():
                 cid = int(cid_param)
             except (TypeError, ValueError):
                 return jsonify({"error": "company_id must be an integer"}), 400
-            payrolls = db.session.execute(
-                db.select(Payroll).where(Payroll.company_id == cid)
-            ).scalars().all()
+            payrolls = (
+                db.session.execute(db.select(Payroll).where(Payroll.company_id == cid))
+                .scalars()
+                .all()
+            )
         else:
             payrolls = db.session.execute(db.select(Payroll)).scalars().all()
         return jsonify([p.serialize() for p in payrolls]), 200
@@ -43,20 +43,26 @@ def get_all_payrolls():
         return jsonify({"error": "Unauthorized"}), 401
 
     if is_admin_or_hr():
-        payrolls = db.session.execute(
-            db.select(Payroll).where(Payroll.company_id == company_id)
-        ).scalars().all()
-    else:
-        payrolls = db.session.execute(
-            db.select(Payroll).where(
-                Payroll.company_id == company_id,
-                Payroll.employee_id == current_employee_id(),
+        payrolls = (
+            db.session.execute(
+                db.select(Payroll).where(Payroll.company_id == company_id)
             )
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
+    else:
+        payrolls = (
+            db.session.execute(
+                db.select(Payroll).where(
+                    Payroll.company_id == company_id,
+                    Payroll.employee_id == current_employee_id(),
+                )
+            )
+            .scalars()
+            .all()
+        )
 
     return jsonify([p.serialize() for p in payrolls]), 200
-
-
 
 
 # Obtener payroll por id, empresa y propiedad
@@ -81,8 +87,6 @@ def get_payroll(id):
         return jsonify({"error": "Payroll not found"}), 404
 
     return jsonify(payroll.serialize()), 200
-
-
 
 
 # Crear payroll (solo ADMIN/HR)
@@ -125,7 +129,10 @@ def create_payroll():
             except (TypeError, ValueError):
                 return jsonify({"error": "company_id must be an integer"}), 400
             if company_id_body != employee_target.company_id:
-                return jsonify({"error": "company_id does not match employee's company"}), 400
+                return (
+                    jsonify({"error": "company_id does not match employee's company"}),
+                    400,
+                )
             target_company_id = company_id_body
         else:
             target_company_id = employee_target.company_id
@@ -171,9 +178,7 @@ def create_payroll():
     return jsonify(payroll.serialize()), 201
 
 
-
-
-#Actualizar payroll (solo ADMIN/HR)
+# Actualizar payroll (solo ADMIN/HR)
 @payroll_bp.route("/edit/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_payroll(id):
@@ -196,7 +201,12 @@ def update_payroll(id):
         new_period_year = int(new_period_year)
         new_period_month = int(new_period_month)
     except (TypeError, ValueError):
-        return jsonify({"error": "employee_id, period_year and period_month must be integers"}), 400
+        return (
+            jsonify(
+                {"error": "employee_id, period_year and period_month must be integers"}
+            ),
+            400,
+        )
 
     # Validaciones de rango
     if not (1 <= new_period_month <= 12):
@@ -218,7 +228,10 @@ def update_payroll(id):
             except (TypeError, ValueError):
                 return jsonify({"error": "company_id must be an integer"}), 400
             if body_company_id != employee_target.company_id:
-                return jsonify({"error": "company_id does not match employee's company"}), 400
+                return (
+                    jsonify({"error": "company_id does not match employee's company"}),
+                    400,
+                )
 
         target_company_id = employee_target.company_id
 
@@ -242,7 +255,10 @@ def update_payroll(id):
             except (TypeError, ValueError):
                 return jsonify({"error": "company_id must be an integer"}), 400
             if body_company_id != company_id:
-                return jsonify({"error": "You cannot move payrolls to another company"}), 403
+                return (
+                    jsonify({"error": "You cannot move payrolls to another company"}),
+                    403,
+                )
 
         # El empleado destino debe ser de mi empresa
         employee_target = db.session.get(Employee, new_employee_id)
@@ -252,9 +268,11 @@ def update_payroll(id):
         target_company_id = company_id  # se mantiene
 
     # ---- ÚNICO check de duplicado (empleado + periodo) ----
-    if (new_employee_id != payroll.employee_id or
-        new_period_year != payroll.period_year or
-        new_period_month != payroll.period_month):
+    if (
+        new_employee_id != payroll.employee_id
+        or new_period_year != payroll.period_year
+        or new_period_month != payroll.period_month
+    ):
         existing = db.session.execute(
             db.select(Payroll).where(
                 Payroll.employee_id == new_employee_id,
@@ -263,7 +281,12 @@ def update_payroll(id):
             )
         ).scalar_one_or_none()
         if existing and existing.id != payroll.id:
-            return jsonify({"error": "Another payroll exists for this employee and period"}), 409
+            return (
+                jsonify(
+                    {"error": "Another payroll exists for this employee and period"}
+                ),
+                409,
+            )
 
     # Aplicar cambios (asegura company_id consistente con el empleado destino)
     payroll.employee_id = new_employee_id
@@ -280,9 +303,7 @@ def update_payroll(id):
     return jsonify(payroll.serialize()), 200
 
 
-
-
-#Borrar payroll (solo ADMIN / HR)
+# Borrar payroll (solo ADMIN / HR)
 @payroll_bp.route("/delete/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_payroll(id):

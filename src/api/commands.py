@@ -10,8 +10,8 @@ Flask commands are usefull to run cronjobs or tasks outside of the API but sill 
 with youy database, for example: Import the price of bitcoin every night as 12am
 """
 # def setup_commands(app):
-    
-#     """ 
+
+#     """
 #     This is an example command "insert-test-Employees" that you can run from the command line
 #     by typing: $ flask insert-test-Employees 5
 #     Note: 5 is the number of Employees to add
@@ -35,6 +35,7 @@ with youy database, for example: Import the price of bitcoin every night as 12am
 #     def insert_test_data():
 #         pass
 
+
 def setup_commands(app):
     @app.cli.command("seed")
     @click.option("--email", default=None, help="Email del empleado inicial")
@@ -43,8 +44,13 @@ def setup_commands(app):
         with app.app_context():
             seed_defaults(email=email, password=password)
             click.echo(" Datos por defecto creados/actualizados.")
+
     @app.cli.command("resetdb")
-    @click.option("--with-seed", is_flag=True, help="Sembrar datos por defecto tras recrear tablas")
+    @click.option(
+        "--with-seed",
+        is_flag=True,
+        help="Sembrar datos por defecto tras recrear tablas",
+    )
     def resetdb(with_seed):
         with app.app_context():
             db.drop_all()
@@ -54,12 +60,13 @@ def setup_commands(app):
             click.echo(" Base de datos reiniciada" + (" + seed" if with_seed else ""))
 
 
-def _ensure_shift_type(code: str, name: str, color_hex: str, company_id: int | None = None):
+def _ensure_shift_type(
+    code: str, name: str, color_hex: str, company_id: int | None = None
+):
     """Crea o actualiza un ShiftType (unique por code+company_id)."""
     t = db.session.execute(
         db.select(ShiftType).where(
-            ShiftType.code == code,
-            ShiftType.company_id == company_id
+            ShiftType.code == code, ShiftType.company_id == company_id
         )
     ).scalar_one_or_none()
 
@@ -77,24 +84,26 @@ def _ensure_shift_type(code: str, name: str, color_hex: str, company_id: int | N
 
 def seed_defaults(email: Optional[str] = None, password: Optional[str] = None):
     company_name = os.getenv("SEED_COMPANY_NAME")
-    company_cif  = os.getenv("SEED_COMPANY_CIF")
-    role_name        = os.getenv("SEED_ROLE_NAME")
+    company_cif = os.getenv("SEED_COMPANY_CIF")
+    role_name = os.getenv("SEED_ROLE_NAME")
     role_description = os.getenv("SEED_ROLE_DESCRIPTION")
-    salary_amount    = int(os.getenv("SEED_SALARY_AMOUNT"))
-    admin_email      = email or os.getenv("SEED_ADMIN_EMAIL")
-    admin_password   = password or os.getenv("SEED_ADMIN_PASSWORD")
+    salary_amount = int(os.getenv("SEED_SALARY_AMOUNT"))
+    admin_email = email or os.getenv("SEED_ADMIN_EMAIL")
+    admin_password = password or os.getenv("SEED_ADMIN_PASSWORD")
     admin_first_name = os.getenv("SEED_ADMIN_FIRST_NAME")
-    admin_last_name  = os.getenv("SEED_ADMIN_LAST_NAME")
-    admin_dni        = os.getenv("SEED_ADMIN_DNI")
-    admin_birth      = os.getenv("SEED_ADMIN_BIRTH")  # YYYY-MM-DD
-    admin_seniority  = os.getenv("SEED_ADMIN_SENIORITY")
-    admin_phone      = os.getenv("SEED_ADMIN_PHONE")
-    admin_address    = os.getenv("SEED_ADMIN_ADDRESS")
+    admin_last_name = os.getenv("SEED_ADMIN_LAST_NAME")
+    admin_dni = os.getenv("SEED_ADMIN_DNI")
+    admin_birth = os.getenv("SEED_ADMIN_BIRTH")  # YYYY-MM-DD
+    admin_seniority = os.getenv("SEED_ADMIN_SENIORITY")
+    admin_phone = os.getenv("SEED_ADMIN_PHONE")
+    admin_address = os.getenv("SEED_ADMIN_ADDRESS")
+
     def parse_iso(d: str) -> date:
         try:
             return date.fromisoformat(d)
         except Exception:
             return date(2000, 1, 1)
+
     company = db.session.execute(
         db.select(Company).where(Company.cif == company_cif)
     ).scalar_one_or_none()
@@ -106,9 +115,15 @@ def seed_defaults(email: Optional[str] = None, password: Optional[str] = None):
     TYPES_SCOPE = os.getenv("SEED_TYPES_SCOPE", "global")  # "global" o "company"
     types_company_id = None if TYPES_SCOPE.lower() == "global" else company.id
 
-    _ensure_shift_type("REGULAR", "Turno con Nocturnidad", "#3b82f6", company_id=types_company_id)
-    _ensure_shift_type("MORNING", "Turno de Mañana", "#22c55e", company_id=types_company_id)
-    _ensure_shift_type("EVENING", "Turno de Tarde", "#f59e0b", company_id=types_company_id)
+    _ensure_shift_type(
+        "REGULAR", "Turno con Nocturnidad", "#3b82f6", company_id=types_company_id
+    )
+    _ensure_shift_type(
+        "MORNING", "Turno de Mañana", "#22c55e", company_id=types_company_id
+    )
+    _ensure_shift_type(
+        "EVENING", "Turno de Tarde", "#f59e0b", company_id=types_company_id
+    )
     _ensure_shift_type("HOLIDAY", "Descanso", "#ef4444", company_id=types_company_id)
 
     salary = db.session.execute(

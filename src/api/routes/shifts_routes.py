@@ -1,5 +1,16 @@
 from flask import jsonify, Blueprint, request
-from api.models import db, Employee, Company, Role, Salary, Payroll, Shifts, ShiftType, ShiftSeries, ShiftException
+from api.models import (
+    db,
+    Employee,
+    Company,
+    Role,
+    Salary,
+    Payroll,
+    Shifts,
+    ShiftType,
+    ShiftSeries,
+    ShiftException,
+)
 from datetime import date, datetime, timedelta
 from flask_cors import CORS
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -9,19 +20,19 @@ from api.utils_auth.helpers_auth import (
     get_system_role,
     is_admin_or_hr,
     current_employee_id,
-    is_ownerdb
+    is_ownerdb,
 )
 
 
-shift_bp = Blueprint('shift', __name__, url_prefix = '/shifts')
+shift_bp = Blueprint("shift", __name__, url_prefix="/shifts")
 
 CORS(shift_bp)
-
 
 
 # --- helpers básicos ---
 def _parse_time_hhmm(s: str):
     return datetime.strptime(s, "%H:%M").time()
+
 
 def _can_access_employee(target: Employee) -> bool:
     if is_ownerdb():
@@ -33,12 +44,15 @@ def _can_access_employee(target: Employee) -> bool:
     except Exception:
         return False
 
+
 def _overlaps(a_start, a_end, b_start, b_end) -> bool:
     # Intervalos [start, end); solapa si start < otro_end y otro_start < end
     return (a_start < b_end) and (b_start < a_end)
 
+
 # Weekday mapping: bit0=Lun ... bit6=Dom
-WD2BIT = {"MO":0, "TU":1, "WE":2, "TH":3, "FR":4, "SA":5, "SU":6}
+WD2BIT = {"MO": 0, "TU": 1, "WE": 2, "TH": 3, "FR": 4, "SA": 5, "SU": 6}
+
 
 def _weekdays_mask_from_list(lst: list[str]) -> int:
     m = 0
@@ -46,27 +60,32 @@ def _weekdays_mask_from_list(lst: list[str]) -> int:
         bit = WD2BIT.get(s.upper())
         if bit is None:
             raise ValueError(f"weekday inválido: {s}")
-        m |= (1 << bit)
+        m |= 1 << bit
     return m
+
 
 def _weekday_bit_for_date(d: date) -> int:
     # Monday=0 .. Sunday=6
     return d.weekday()
 
+
 def _weeks_between(monday0: date, d: date) -> int:
     # semanas enteras entre (alineando a lunes)
     base = monday0 - timedelta(days=monday0.weekday())  # lunes de la semana de monday0
-    curr = d - timedelta(days=d.weekday())              # lunes de la semana de d
+    curr = d - timedelta(days=d.weekday())  # lunes de la semana de d
     return (curr - base).days // 7
+
 
 # --- Shift types ---
 @shift_bp.route("/types", methods=["GET"])
 @jwt_required()
 def list_shift_types():
     company_id = get_jwt_company_id()
-    q = db.select(ShiftType).where(
-        (ShiftType.company_id == company_id) | (ShiftType.company_id.is_(None))
-    ).order_by(ShiftType.company_id.is_not(None), ShiftType.name.asc())
+    q = (
+        db.select(ShiftType)
+        .where((ShiftType.company_id == company_id) | (ShiftType.company_id.is_(None)))
+        .order_by(ShiftType.company_id.is_not(None), ShiftType.name.asc())
+    )
     items = db.session.execute(q).scalars().all()
     return jsonify([t.serialize() for t in items]), 200
 
@@ -88,14 +107,14 @@ def list_shifts():
     requester_id = int(get_jwt_identity())
     emp_param = request.args.get("employee_id")
     from_str = request.args.get("from")
-    to_str   = request.args.get("to")
+    to_str = request.args.get("to")
 
     if not from_str or not to_str:
         return jsonify({"error": "Params 'from' y 'to' requeridos (YYYY-MM-DD)."}), 400
 
     try:
         d_from = date.fromisoformat(from_str)
-        d_to   = date.fromisoformat(to_str)
+        d_to = date.fromisoformat(to_str)
     except ValueError:
         return jsonify({"error": "Fechas inválidas (usa YYYY-MM-DD)."}), 400
     if d_from > d_to:
@@ -120,15 +139,19 @@ def list_shifts():
             return jsonify({"error": "Empleado no encontrado"}), 404
 
     # 1) Shifts explícitos del rango
-    explicit = db.session.execute(
-        db.select(Shifts)
-        .where(
-            Shifts.employee_id == target_id,
-            Shifts.date >= d_from,
-            Shifts.date <= d_to,
+    explicit = (
+        db.session.execute(
+            db.select(Shifts)
+            .where(
+                Shifts.employee_id == target_id,
+                Shifts.date >= d_from,
+                Shifts.date <= d_to,
+            )
+            .order_by(Shifts.date.asc(), Shifts.start_time.asc())
         )
-        .order_by(Shifts.date.asc(), Shifts.start_time.asc())
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     explicit_serial = [s.serialize() for s in explicit]
 
@@ -139,28 +162,34 @@ def list_shifts():
         explicit_by_date.setdefault(k, []).append((s.start_time, s.end_time))
 
     # 2) Series activas que intersecten el rango
-    series = db.session.execute(
-        db.select(ShiftSeries)
-        .where(
-            ShiftSeries.employee_id == target_id,
-            ShiftSeries.active.is_(True),
-            ShiftSeries.start_date <= d_to,
-            ( (ShiftSeries.end_date.is_(None)) | (ShiftSeries.end_date >= d_from) )
+    series = (
+        db.session.execute(
+            db.select(ShiftSeries).where(
+                ShiftSeries.employee_id == target_id,
+                ShiftSeries.active.is_(True),
+                ShiftSeries.start_date <= d_to,
+                ((ShiftSeries.end_date.is_(None)) | (ShiftSeries.end_date >= d_from)),
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     # precargar excepciones de las series en rango
     series_ids = [s.id for s in series]
     exceptions_by_series_date: dict[tuple[int, str], ShiftException] = {}
     if series_ids:
-        exs = db.session.execute(
-            db.select(ShiftException)
-            .where(
-                ShiftException.series_id.in_(series_ids),
-                ShiftException.date >= d_from,
-                ShiftException.date <= d_to,
+        exs = (
+            db.session.execute(
+                db.select(ShiftException).where(
+                    ShiftException.series_id.in_(series_ids),
+                    ShiftException.date >= d_from,
+                    ShiftException.date <= d_to,
+                )
             )
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
         for ex in exs:
             key = (ex.series_id, ex.date.isoformat())
             exceptions_by_series_date[key] = ex
@@ -170,7 +199,7 @@ def list_shifts():
     for ser in series:
         # límites del loop
         start = max(ser.start_date, d_from)
-        end   = min(ser.end_date or d_to, d_to)
+        end = min(ser.end_date or d_to, d_to)
         if end < start:
             continue
 
@@ -204,9 +233,12 @@ def list_shifts():
 
                         # aplica modify
                         if ex and ex.action == "modify":
-                            if ex.new_start_time: s_time = ex.new_start_time
-                            if ex.new_end_time:   e_time = ex.new_end_time
-                            if ex.new_type_id:    type_id = ex.new_type_id
+                            if ex.new_start_time:
+                                s_time = ex.new_start_time
+                            if ex.new_end_time:
+                                e_time = ex.new_end_time
+                            if ex.new_type_id:
+                                type_id = ex.new_type_id
                             # V1: si queda inconsistente, omitimos
                             if e_time <= s_time:
                                 day += timedelta(days=1)
@@ -214,7 +246,7 @@ def list_shifts():
 
                         # evitar solapamiento con explícitos de ese día
                         overlaps_explicit = False
-                        for (a_start, a_end) in explicit_by_date.get(day.isoformat(), []):
+                        for a_start, a_end in explicit_by_date.get(day.isoformat(), []):
                             if _overlaps(s_time, e_time, a_start, a_end):
                                 overlaps_explicit = True
                                 break
@@ -225,19 +257,21 @@ def list_shifts():
                         # cargar tipo (para color) solo si necesario
                         stype = db.session.get(ShiftType, type_id)
 
-                        expanded.append({
-                            "id": None,  # ocurrencia generada
-                            "company_id": ser.company_id,
-                            "employee_id": ser.employee_id,
-                            "date": day.isoformat(),
-                            "start_time": s_time.strftime("%H:%M"),
-                            "end_time": e_time.strftime("%H:%M"),
-                            "type": stype.serialize() if stype else None,
-                            "notes": ser.notes,
-                            "status": "planned",
-                            "generated": True,
-                            "series_id": ser.id,
-                        })
+                        expanded.append(
+                            {
+                                "id": None,  # ocurrencia generada
+                                "company_id": ser.company_id,
+                                "employee_id": ser.employee_id,
+                                "date": day.isoformat(),
+                                "start_time": s_time.strftime("%H:%M"),
+                                "end_time": e_time.strftime("%H:%M"),
+                                "type": stype.serialize() if stype else None,
+                                "notes": ser.notes,
+                                "status": "planned",
+                                "generated": True,
+                                "series_id": ser.id,
+                            }
+                        )
             day += timedelta(days=1)
 
     # combinar y ordenar
@@ -275,15 +309,20 @@ def create_shift():
         except (TypeError, ValueError):
             return jsonify({"error": "employee_id inválido"}), 400
 
-    date_str  = data.get("date")
+    date_str = data.get("date")
     start_str = data.get("start_time")
-    end_str   = data.get("end_time")
+    end_str = data.get("end_time")
     type_id_raw = data.get("type_id")
-    notes   = data.get("notes")
-    status  = data.get("status", "planned")
+    notes = data.get("notes")
+    status = data.get("status", "planned")
 
     if not all([date_str, start_str, end_str, type_id_raw]):
-        return jsonify({"error": "Campos requeridos: date, start_time, end_time, type_id"}), 400
+        return (
+            jsonify(
+                {"error": "Campos requeridos: date, start_time, end_time, type_id"}
+            ),
+            400,
+        )
 
     # Entidades y permisos
     emp = db.session.get(Employee, emp_id)
@@ -298,11 +337,18 @@ def create_shift():
         return jsonify({"error": "date inválida (YYYY-MM-DD)"}), 400
     try:
         t_start = _parse_time_hhmm(start_str)
-        t_end   = _parse_time_hhmm(end_str)
+        t_end = _parse_time_hhmm(end_str)
     except Exception:
         return jsonify({"error": "start_time/end_time inválidos (HH:MM)"}), 400
     if t_end <= t_start:
-        return jsonify({"error": "end_time debe ser mayor que start_time (V1 no cruza medianoche)"}), 400
+        return (
+            jsonify(
+                {
+                    "error": "end_time debe ser mayor que start_time (V1 no cruza medianoche)"
+                }
+            ),
+            400,
+        )
 
     try:
         type_id = int(type_id_raw)
@@ -315,15 +361,23 @@ def create_shift():
         return jsonify({"error": "El tipo de turno no pertenece a tu empresa"}), 400
 
     # Anti-solapamiento en el mismo día
-    existing = db.session.execute(
-        db.select(Shifts).where(
-            Shifts.employee_id == emp.id,
-            Shifts.date == d
+    existing = (
+        db.session.execute(
+            db.select(Shifts).where(Shifts.employee_id == emp.id, Shifts.date == d)
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     for e in existing:
         if _overlaps(t_start, t_end, e.start_time, e.end_time):
-            return jsonify({"error": "Conflicto: se solapa con otro turno existente en ese día"}), 409
+            return (
+                jsonify(
+                    {
+                        "error": "Conflicto: se solapa con otro turno existente en ese día"
+                    }
+                ),
+                409,
+            )
 
     # Crear turno
     s = Shifts(
@@ -340,7 +394,6 @@ def create_shift():
     db.session.commit()
     db.session.refresh(s)
     return jsonify(s.serialize()), 201
-
 
 
 @shift_bp.route("/<int:shift_id>", methods=["PUT"])
@@ -369,14 +422,20 @@ def update_shift(shift_id: int):
 
     # parse condicional
     if "date" in data:
-        try: d = date.fromisoformat(data["date"])
-        except: return jsonify({"error": "date inválida"}), 400
+        try:
+            d = date.fromisoformat(data["date"])
+        except:
+            return jsonify({"error": "date inválida"}), 400
     if "start_time" in data:
-        try: t_start = _parse_time_hhmm(data["start_time"])
-        except: return jsonify({"error": "start_time inválido"}), 400
+        try:
+            t_start = _parse_time_hhmm(data["start_time"])
+        except:
+            return jsonify({"error": "start_time inválido"}), 400
     if "end_time" in data:
-        try: t_end = _parse_time_hhmm(data["end_time"])
-        except: return jsonify({"error": "end_time inválido"}), 400
+        try:
+            t_end = _parse_time_hhmm(data["end_time"])
+        except:
+            return jsonify({"error": "end_time inválido"}), 400
     if "type_id" in data:
         try:
             type_id = int(data["type_id"])
@@ -394,16 +453,25 @@ def update_shift(shift_id: int):
         return jsonify({"error": "El tipo de turno no pertenece a tu empresa"}), 400
 
     # anti-solapamiento (excluye este turno)
-    existing = db.session.execute(
-        db.select(Shifts).where(
-            Shifts.employee_id == emp.id,
-            Shifts.date == d,
-            Shifts.id != s.id
+    existing = (
+        db.session.execute(
+            db.select(Shifts).where(
+                Shifts.employee_id == emp.id, Shifts.date == d, Shifts.id != s.id
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     for e in existing:
         if _overlaps(t_start, t_end, e.start_time, e.end_time):
-            return jsonify({"error": "Conflicto: se solapa con otro turno existente en ese día"}), 409
+            return (
+                jsonify(
+                    {
+                        "error": "Conflicto: se solapa con otro turno existente en ese día"
+                    }
+                ),
+                409,
+            )
 
     # aplicar cambios
     s.date = d
@@ -462,7 +530,14 @@ def create_series():
     notes = data.get("notes")
 
     if not all([emp_id, type_id, start_date, start_time, end_time]) or not weekdays:
-        return jsonify({"error": "Faltan campos: employee_id, type_id, start_date, start_time, end_time, weekdays[]"}), 400
+        return (
+            jsonify(
+                {
+                    "error": "Faltan campos: employee_id, type_id, start_date, start_time, end_time, weekdays[]"
+                }
+            ),
+            400,
+        )
 
     emp = db.session.get(Employee, int(emp_id))
     if not emp:
@@ -480,7 +555,7 @@ def create_series():
         d_start = date.fromisoformat(start_date)
         d_end = date.fromisoformat(end_date) if end_date else None
         t_start = _parse_time_hhmm(start_time)
-        t_end   = _parse_time_hhmm(end_time)
+        t_end = _parse_time_hhmm(end_time)
         mask = _weekdays_mask_from_list(weekdays)
     except Exception as e:
         return jsonify({"error": f"Parámetros inválidos: {e}"}), 400
@@ -488,7 +563,14 @@ def create_series():
     if d_end and d_end < d_start:
         return jsonify({"error": "end_date no puede ser menor que start_date"}), 400
     if t_end <= t_start:
-        return jsonify({"error": "end_time debe ser mayor que start_time (V1 no cruza medianoche)"}), 400
+        return (
+            jsonify(
+                {
+                    "error": "end_time debe ser mayor que start_time (V1 no cruza medianoche)"
+                }
+            ),
+            400,
+        )
     if interval_weeks < 1:
         return jsonify({"error": "interval_weeks debe ser >= 1"}), 400
     if mask <= 0:
@@ -537,9 +619,15 @@ def list_series():
             return jsonify({"error": "Forbidden"}), 403
         target_id = wanted
 
-    items = db.session.execute(
-        db.select(ShiftSeries).where(ShiftSeries.employee_id == target_id).order_by(ShiftSeries.start_date.desc())
-    ).scalars().all()
+    items = (
+        db.session.execute(
+            db.select(ShiftSeries)
+            .where(ShiftSeries.employee_id == target_id)
+            .order_by(ShiftSeries.start_date.desc())
+        )
+        .scalars()
+        .all()
+    )
     return jsonify([s.serialize() for s in items]), 200
 
 
@@ -572,29 +660,40 @@ def update_series(series_id: int):
     active = bool(data.get("active", ser.active))
 
     if "type_id" in data:
-        try: type_id = int(data["type_id"])
-        except: return jsonify({"error": "type_id inválido"}), 400
+        try:
+            type_id = int(data["type_id"])
+        except:
+            return jsonify({"error": "type_id inválido"}), 400
 
     if "start_date" in data:
-        try: d_start = date.fromisoformat(data["start_date"])
-        except: return jsonify({"error": "start_date inválida"}), 400
+        try:
+            d_start = date.fromisoformat(data["start_date"])
+        except:
+            return jsonify({"error": "start_date inválida"}), 400
     if "end_date" in data:
         v = data["end_date"]
         if v is None:
             d_end = None
         else:
-            try: d_end = date.fromisoformat(v)
-            except: return jsonify({"error": "end_date inválida"}), 400
+            try:
+                d_end = date.fromisoformat(v)
+            except:
+                return jsonify({"error": "end_date inválida"}), 400
 
     if "start_time" in data:
-        try: t_start = _parse_time_hhmm(data["start_time"])
-        except: return jsonify({"error": "start_time inválido"}), 400
+        try:
+            t_start = _parse_time_hhmm(data["start_time"])
+        except:
+            return jsonify({"error": "start_time inválido"}), 400
     if "end_time" in data:
-        try: t_end = _parse_time_hhmm(data["end_time"])
-        except: return jsonify({"error": "end_time inválido"}), 400
+        try:
+            t_end = _parse_time_hhmm(data["end_time"])
+        except:
+            return jsonify({"error": "end_time inválido"}), 400
 
     if "weekdays" in data:
-        try: mask = _weekdays_mask_from_list(data["weekdays"])
+        try:
+            mask = _weekdays_mask_from_list(data["weekdays"])
         except Exception as e:
             return jsonify({"error": f"weekdays inválidos: {e}"}), 400
 
@@ -613,7 +712,14 @@ def update_series(series_id: int):
     if d_end and d_end < d_start:
         return jsonify({"error": "end_date no puede ser menor que start_date"}), 400
     if t_end <= t_start:
-        return jsonify({"error": "end_time debe ser mayor que start_time (V1 no cruza medianoche)"}), 400
+        return (
+            jsonify(
+                {
+                    "error": "end_time debe ser mayor que start_time (V1 no cruza medianoche)"
+                }
+            ),
+            400,
+        )
     if interval_weeks < 1:
         return jsonify({"error": "interval_weeks debe ser >= 1"}), 400
     if mask <= 0:
@@ -678,7 +784,10 @@ def upsert_exception(series_id: int):
     note = data.get("note")
 
     if not date_str or action not in ("cancel", "modify"):
-        return jsonify({"error": "Campos requeridos: date y action ('cancel'|'modify')"}), 400
+        return (
+            jsonify({"error": "Campos requeridos: date y action ('cancel'|'modify')"}),
+            400,
+        )
 
     try:
         d = date.fromisoformat(date_str)
@@ -687,14 +796,29 @@ def upsert_exception(series_id: int):
 
     if action == "modify":
         if not any([new_start, new_end, new_type_id]):
-            return jsonify({"error": "Modificar requiere new_start_time y/o new_end_time y/o new_type_id"}), 400
+            return (
+                jsonify(
+                    {
+                        "error": "Modificar requiere new_start_time y/o new_end_time y/o new_type_id"
+                    }
+                ),
+                400,
+            )
         if new_start:
-            try: _parse_time_hhmm(new_start)
-            except: return jsonify({"error": "new_start_time inválido"}), 400
+            try:
+                _parse_time_hhmm(new_start)
+            except:
+                return jsonify({"error": "new_start_time inválido"}), 400
         if new_end:
-            try: _parse_time_hhmm(new_end)
-            except: return jsonify({"error": "new_end_time inválido"}), 400
-        if new_start and new_end and _parse_time_hhmm(new_end) <= _parse_time_hhmm(new_start):
+            try:
+                _parse_time_hhmm(new_end)
+            except:
+                return jsonify({"error": "new_end_time inválido"}), 400
+        if (
+            new_start
+            and new_end
+            and _parse_time_hhmm(new_end) <= _parse_time_hhmm(new_start)
+        ):
             return jsonify({"error": "new_end_time debe ser > new_start_time"}), 400
         if new_type_id:
             st = db.session.get(ShiftType, int(new_type_id))
@@ -705,7 +829,9 @@ def upsert_exception(series_id: int):
 
     # upsert (única por serie+fecha)
     ex = db.session.execute(
-        db.select(ShiftException).where(ShiftException.series_id == ser.id, ShiftException.date == d)
+        db.select(ShiftException).where(
+            ShiftException.series_id == ser.id, ShiftException.date == d
+        )
     ).scalar_one_or_none()
     if not ex:
         ex = ShiftException(series_id=ser.id, date=d, action=action)
@@ -714,8 +840,8 @@ def upsert_exception(series_id: int):
     ex.action = action
     ex.note = note
     ex.new_start_time = _parse_time_hhmm(new_start) if new_start else None
-    ex.new_end_time   = _parse_time_hhmm(new_end) if new_end else None
-    ex.new_type_id    = int(new_type_id) if new_type_id else None
+    ex.new_end_time = _parse_time_hhmm(new_end) if new_end else None
+    ex.new_type_id = int(new_type_id) if new_type_id else None
 
     db.session.commit()
     db.session.refresh(ex)
@@ -745,7 +871,9 @@ def delete_exception_by_series_date(series_id: int):
         return jsonify({"error": "date inválida"}), 400
 
     ex = db.session.execute(
-        db.select(ShiftException).where(ShiftException.series_id == series_id, ShiftException.date == d)
+        db.select(ShiftException).where(
+            ShiftException.series_id == series_id, ShiftException.date == d
+        )
     ).scalar_one_or_none()
     if not ex:
         return jsonify({"error": "Excepción no encontrada"}), 404
