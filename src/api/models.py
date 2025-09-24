@@ -578,3 +578,30 @@ class TimePunch(db.Model):
             "punched_at": self.punched_at.isoformat(),
             "note": self.note,
         }
+    
+class Contact(db.Model):
+    __tablename__ = "Contact"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    company: Mapped[Optional[str]] = mapped_column(Text)
+    phone: Mapped[str] = mapped_column(String(50), nullable=False)
+    subject: Mapped[Optional[str]] = mapped_column(Text)
+    message: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    def serialize(self):
+
+        return{
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "company": self.company,
+            "phone": self.phone,
+            "subject": self.subject,
+            "message": self.message
+        }
+
+
+
+
