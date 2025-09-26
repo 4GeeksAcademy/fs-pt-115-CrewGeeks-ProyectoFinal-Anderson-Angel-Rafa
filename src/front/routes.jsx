@@ -19,6 +19,7 @@ import { SuggestionsPage } from "./pages/SuggestionsPage";
 import { InboxPage } from "./pages/Inboxpage";
 import { SiteFeaturesPage } from "./pages/SiteFeaturesPage";
 import { AdminPayrollPage } from "./pages/AdminPayrollPage";
+import { AdminSolicitudesPage } from "./pages/AdminSolicitudesPage";
 
 import { AuthLayout } from "./Layout/AuthLayout"; 
 
@@ -33,6 +34,7 @@ export const router = createBrowserRouter(
         <Route path="features" element={<SiteFeaturesPage />} />
 
         <Route path="adminPayroll" element={<AdminPayrollPage />} />
+        <Route path="adminSolicitudes" element={<AdminSolicitudesPage />} />
 
         {/* Privadas (envueltas por AuthLayout que comprueba token) */}
         <Route element={<AuthLayout redirectTo="/login" />}>
