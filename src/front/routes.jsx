@@ -19,7 +19,7 @@ import { SuggestionsPage } from "./pages/SuggestionsPage";
 import { InboxPage } from "./pages/Inboxpage";
 import { SiteFeaturesPage } from "./pages/SiteFeaturesPage";
 import { AdminPayrollPage } from "./pages/AdminPayrollPage";
-import { AdminSolicitudesPage } from "./pages/AdminSolicitudesPage";
+import { AdminRequestsPage } from "./pages/AdminRequestsPage";
 import { AdminShiftAssignment } from "./pages/AdminShiftAssignment";
 
 import { AuthLayout } from "./Layout/AuthLayout"; 
@@ -34,7 +34,7 @@ export const router = createBrowserRouter(
         <Route path="login" element={<LoginPage />} />
         <Route path="features" element={<SiteFeaturesPage />} />
         <Route path="adminPayroll" element={<AdminPayrollPage />} />
-        <Route path="adminSolicitudes" element={<AdminSolicitudesPage />} />
+        <Route path="adminRequests" element={<AdminRequestsPage />} />
         <Route path="adminShiftAssignment" element={<AdminShiftAssignment />} />
 
         {/* Privadas (envueltas por AuthLayout que comprueba token) */}
