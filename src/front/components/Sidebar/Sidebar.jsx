@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import "./Sidebar.css";
 import { useAuth } from "../../hooks/useAuth";
-
+import { useRole } from "../../auth/useRole"; // ← NUEVO
 
 const PUBLIC_PATHS = new Set(["/", "/login"]);
 
@@ -11,12 +11,11 @@ export const Sidebar = () => {
     if (PUBLIC_PATHS.has(location.pathname)) return null;
 
     const { user, loading, logout } = useAuth();
+    const { isOwnerDb, isAdmin, isHr } = useRole();     
+    const isAdminPlus = isOwnerDb || isAdmin || isHr; 
+
     const navigate = useNavigate();
-
-
     const [isOpen, setIsOpen] = useState(false);
-
-    // if (loading || !user) return null;
 
     const handleLogout = () => {
         logout();
@@ -25,7 +24,6 @@ export const Sidebar = () => {
     };
 
     const handleNavClick = () => {
-
         if (isOpen) setIsOpen(false);
     };
 
@@ -43,8 +41,7 @@ export const Sidebar = () => {
                     role="complementary"
                     aria-label="Menú lateral"
                 >
-
-                 <button
+                    <button
                         type="button"
                         className="sidewrap__close"
                         aria-label="Cerrar menú lateral"
@@ -52,18 +49,19 @@ export const Sidebar = () => {
                     >
                         X
                     </button>
-                
-                <div className="user-card">
-                    <div><img className="avatar" src={user?.image || "rigo-baby.jpg"} alt="" /></div>
-                    <div className="user-meta">
-                        <div className="user-name">{user?.first_name} {user?.last_name}</div>
-                        <div className="user-role">{user?.company}</div>
-                    </div>
-                </div>
 
-        
+                    <div className="user-card">
+                        <div>
+                            <img className="avatar" src={user?.image || "rigo-baby.jpg"} alt="" />
+                        </div>
+                        <div className="user-meta">
+                            <div className="user-name">{user?.first_name} {user?.last_name}</div>
+                            <div className="user-role">{user?.company}</div>
+                        </div>
+                    </div>
 
                     <main className="side-nav" onClick={handleNavClick}>
+                        {/* ===== Menú base (empleado / cualquier autenticado) ===== */}
                         <div className="nav-section">
                             <div className="nav-section-label">Principal</div>
                             <NavLink to="/dashboard" className="nav-item">
@@ -96,13 +94,23 @@ export const Sidebar = () => {
                             <NavLink to="/suggestions" className="nav-item">Sugerencias</NavLink>
                         </div>
 
+                        {/* ===== Bloque adicional SOLO para Owner/Admin/HR ===== */}
+                        {isAdminPlus && (
+                            <div className="nav-section">
+                                <div className="nav-section-label">Administración</div>
+                                <NavLink to="/adminEmpProfile" className="nav-item">Empleados</NavLink>
+                                <NavLink to="/adminPayroll" className="nav-item">Subir nóminas</NavLink>
+                                <NavLink to="/adminRequests" className="nav-item">Gestión de solicitudes</NavLink>
+                                <NavLink to="/adminShiftAssignment" className="nav-item">Asignación de turnos</NavLink>
+                            </div>
+                        )}
+
                         <button className="nav-item" type="button" onClick={handleLogout}>
                             <i className="fas fa-sign-out-alt icon" aria-hidden="true"></i>
                             <span>Logout</span>
                         </button>
                     </main>
                 </div>
-
 
                 <button
                     type="button"
@@ -114,3 +122,4 @@ export const Sidebar = () => {
         </>
     );
 };
+

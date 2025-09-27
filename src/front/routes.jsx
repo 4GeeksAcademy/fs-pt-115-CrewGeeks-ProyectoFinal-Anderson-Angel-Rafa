@@ -1,9 +1,8 @@
 // Import necessary components and functions from react-router-dom.
-
 import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Route,
+	createBrowserRouter,
+	createRoutesFromElements,
+	Route,
 } from "react-router-dom";
 
 import { Layout } from "./pages/Layout";
@@ -23,37 +22,49 @@ import { AdminRequestsPage } from "./pages/AdminRequestsPage";
 import { AdminShiftAssignment } from "./pages/AdminShiftAssignment";
 import { AdminEmpProfile } from "./pages/AdminEmpProfile";
 
-import { AuthLayout } from "./Layout/AuthLayout"; 
+import { AuthLayout } from "./Layout/AuthLayout";
+
+// Guards y roles
+import { RequireRole, Unauthorized } from "./auth/RouteGuards";
+import { ROLES } from "./auth/roles";
 
 export const router = createBrowserRouter(
-  createRoutesFromElements(
-    <>
-      {/* Root con un único Layout */}
-      <Route path="/" element={<Layout />}>
-        {/* Públicas */}
-        <Route index element={<LandingPage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="features" element={<SiteFeaturesPage />} />
-        <Route path="adminPayroll" element={<AdminPayrollPage />} />
-        <Route path="adminRequests" element={<AdminRequestsPage />} />
-        <Route path="adminShiftAssignment" element={<AdminShiftAssignment />} />
-        <Route path="adminEmpProfile" element={<AdminEmpProfile />} />
+	createRoutesFromElements(
+		<>
+			{/* Root con un único Layout */}
+			<Route path="/" element={<Layout />}>
+				{/* Públicas */}
+				<Route index element={<LandingPage />} />
+				<Route path="login" element={<LoginPage />} />
+				<Route path="features" element={<SiteFeaturesPage />} />
+				{/* <Route path="unauthorized" element={<Unauthorized />} /> */}
 
-        {/* Privadas (envueltas por AuthLayout que comprueba token) */}
-        <Route element={<AuthLayout redirectTo="/login" />}>
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="holidays" element={<HolidaysPage />} />
-          <Route path="payroll" element={<PayrollPage />} />
-          <Route path="shifts" element={<ShiftsPage />} />
-          <Route path="TimeLog" element={<TimeLogPage />} /> {/* respeta tu path */}
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="inbox" element={<InboxPage />} />
-          <Route path="suggestions" element={<SuggestionsPage />} />
-        </Route>
-      </Route>
+				{/* Privadas */}
+				<Route element={<AuthLayout redirectTo="/login" />}>
+					{/* Acceso de empleado (y cualquiera autenticado) */}
+					<Route path="dashboard" element={<DashboardPage />} />
+					<Route path="holidays" element={<HolidaysPage />} />
+					<Route path="payroll" element={<PayrollPage />} />
+					<Route path="shifts" element={<ShiftsPage />} />
+					<Route path="TimeLog" element={<TimeLogPage />} /> {/* respeta tu path */}
+					<Route path="profile" element={<ProfilePage />} />
+					<Route path="inbox" element={<InboxPage />} />
+					<Route path="suggestions" element={<SuggestionsPage />} />
 
-      {/* 404 */}
-      <Route path="*" element={<h1>Not found!</h1>} />
-    </>
-  )
+					
+
+					{/* HR + Admin + Owner (gestión de solicitudes y asignación de turnos) */}
+					<Route element={<RequireRole roles={[ROLES.OWNERDB, ROLES.ADMIN, ROLES.HR]} />}>
+						<Route path="adminPayroll" element={<AdminPayrollPage />} />
+						<Route path="adminEmpProfile" element={<AdminEmpProfile />} />
+						<Route path="adminRequests" element={<AdminRequestsPage />} />
+						<Route path="adminShiftAssignment" element={<AdminShiftAssignment />} />
+					</Route>
+				</Route>
+			</Route>
+
+			{/* 404 */}
+			<Route path="*" element={<h1>Not found!</h1>} />
+		</>
+	)
 );
