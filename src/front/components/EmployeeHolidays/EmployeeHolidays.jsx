@@ -104,10 +104,15 @@ export const EmployeeHolidays = () => {
 			const balanceData = await getMyHolidayBalance(token, { year: new Date().getFullYear() });
 			setBalance(balanceData);
 
-			// Listado de mis holidays (la API ya filtra por usuario si no eres admin/hr)
+			
 			const holidays = await listHolidays(token);
+			// Filtrar para que solo salgan MIS solicitudes (aunque sea admin/HR)
+			const myId = user?.id;
+			const mine = Array.isArray(holidays) && myId
+				? holidays.filter(h => h.employee_id === myId)
+				: holidays;
 			// Mapeo de API → UI (mantengo tus campos: id, inicio, fin, dias, motivo, estado)
-			const mapped = holidays.map((h) => ({
+			const mapped = mine.map((h) => ({
 				id: h.id,
 				inicio: h.start_date,                 // "YYYY-MM-DD"
 				fin: h.end_date,                      // "YYYY-MM-DD"
