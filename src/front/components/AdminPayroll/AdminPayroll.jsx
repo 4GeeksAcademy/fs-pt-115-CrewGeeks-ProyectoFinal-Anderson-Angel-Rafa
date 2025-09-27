@@ -20,6 +20,8 @@ const MONTHS = [
   { value: 12, label: "Diciembre" },
 ];
 
+const urlApi = import.meta.env.VITE_BACKEND_URL + "/api";
+
 export const AdminPayroll = () => {
   const { token } = useAuth();
 
@@ -39,7 +41,9 @@ export const AdminPayroll = () => {
   const [uploads, setUploads] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
   const fileInputRef = useRef(null);
+  const fileInputId = "payroll-pdf-input";
 
   const headersAuth = useMemo(
     () =>
@@ -51,12 +55,14 @@ export const AdminPayroll = () => {
     [token]
   );
 
-  // Empleados
+  // Empleados (de la misma empresa)
   useEffect(() => {
     const loadEmployees = async () => {
       try {
-        const res = await fetch("/employees", { headers: { ...headersAuth } }); // ajusta prefijo /api si procede
-        const data = await res.json();
+        const response = await fetch(`${urlApi}/employees`, {
+          headers: { ...headersAuth },
+        });
+        const data = await response.json();
         setEmployees(Array.isArray(data) ? data : []);
       } catch {
         setEmployees([]);
@@ -66,16 +72,16 @@ export const AdminPayroll = () => {
   }, [headersAuth]);
 
   // Últimas subidas
-  const fetchUploads = async (p = 1) => {
+  const fetchUploads = async (newPage = 1) => {
     try {
-      const res = await fetch(`/payrolls?limit=10&page=${p}`, {
-        headers: { ...headersAuth },
-      });
-      const data = await res.json();
-      // Soporta formatos {items, total_pages} o array directo
+      const response = await fetch(
+        `${urlApi}/payrolls?limit=10&page=${newPage}`,
+        { headers: { ...headersAuth } }
+      );
+      const data = await response.json();
       if (Array.isArray(data)) {
         setUploads(data);
-        setTotalPages(p);
+        setTotalPages(newPage);
       } else {
         setUploads(data.items || []);
         setTotalPages(data.total_pages || 1);
@@ -92,12 +98,15 @@ export const AdminPayroll = () => {
   }, [page, token]);
 
   const years = useMemo(() => {
-    const y = new Date().getFullYear();
-    return Array.from({ length: 11 }, (_, i) => y - i);
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 11 }, (_, index) => currentYear - index);
   }, []);
 
   const onSelectFile = (file) => {
-    if (!file) return;
+    if (!file) {
+      setForm((prev) => ({ ...prev, file: null }));
+      return;
+    }
     if (file.type !== "application/pdf") {
       setError("Solo se admite PDF.");
       return;
@@ -107,19 +116,19 @@ export const AdminPayroll = () => {
       return;
     }
     setError("");
-    setForm((f) => ({ ...f, file }));
+    setForm((prev) => ({ ...prev, file }));
   };
 
-  const onDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const onDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     setDragOver(false);
-    const file = e.dataTransfer.files?.[0];
+    const file = event.dataTransfer.files?.[0];
     onSelectFile(file);
   };
 
-  const onBrowse = (e) => {
-    const file = e.target.files?.[0];
+  const onBrowse = (event) => {
+    const file = event.target.files?.[0];
     onSelectFile(file);
   };
 
@@ -132,11 +141,11 @@ export const AdminPayroll = () => {
     });
     setError("");
     setOk(false);
-    fileInputRef.current && (fileInputRef.current.value = "");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setOk(false);
     setError("");
 
@@ -145,65 +154,67 @@ export const AdminPayroll = () => {
 
     setSubmitting(true);
     try {
-      const fd = new FormData();
-      fd.append("employee_id", form.employeeId);
-      fd.append("month", String(form.month));
-      fd.append("year", String(form.year));
-      fd.append("file", form.file);
+      const formData = new FormData();
+      formData.append("employee_id", form.employeeId);
+      formData.append("month", String(form.month));
+      formData.append("year", String(form.year));
+      formData.append("file", form.file);
 
-      const res = await fetch("/payrolls", {
+      const response = await fetch(`${urlApi}/payrolls`, {
         method: "POST",
         headers: { ...headersAuth }, // no fijar Content-Type con FormData
-        body: fd,
+        body: formData,
       });
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err?.error || "Error subiendo la nómina.");
+      if (!response.ok) {
+        const responseError = await response.json().catch(() => ({}));
+        throw new Error(
+          responseError?.error || responseError?.msg || "Error subiendo la nómina."
+        );
       }
 
       setOk(true);
       resetForm();
-      fetchUploads(1);
       setPage(1);
-    } catch (err) {
-      setError(err.message);
+      fetchUploads(1);
+    } catch (caughtError) {
+      setError(caughtError.message);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleDownload = async (id) => {
+  const handleDownload = async (payrollId) => {
     try {
-      const res = await fetch(`/payrolls/${id}/download`, {
+      const response = await fetch(`${urlApi}/payrolls/${payrollId}/download`, {
         headers: { ...headersAuth },
       });
-      if (!res.ok) throw new Error("No se pudo descargar.");
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `nomina_${id}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      if (!response.ok) throw new Error("No se pudo descargar.");
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = `nomina_${payrollId}.pdf`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(objectUrl);
     } catch {
-      // opcional: mostrar toast
+      // opcional: toast
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (payrollId) => {
     if (!confirm("¿Eliminar esta nómina?")) return;
     try {
-      const res = await fetch(`/payrolls/${id}`, {
+      const response = await fetch(`${urlApi}/payrolls/${payrollId}`, {
         method: "DELETE",
         headers: { ...headersAuth },
       });
-      if (!res.ok) throw new Error("No se pudo eliminar.");
-      setUploads((u) => u.filter((x) => x.id !== id));
+      if (!response.ok) throw new Error("No se pudo eliminar.");
+      setUploads((prev) => prev.filter((item) => item.id !== payrollId));
     } catch {
-      // opcional: mostrar toast
+      // opcional: toast
     }
   };
 
@@ -221,18 +232,22 @@ export const AdminPayroll = () => {
         <form onSubmit={handleSubmit} className="form-grid">
           {/* Empleado */}
           <div className="form-row" style={{ marginBottom: 16 }}>
-            <label className="form-label">Seleccionar empleado</label>
+            <label className="form-label" htmlFor="employee-select">
+              Seleccionar empleado
+            </label>
             <select
+              id="employee-select"
               className="form-control"
               value={form.employeeId}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, employeeId: e.target.value }))
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, employeeId: event.target.value }))
               }
             >
               <option value="">Elige un empleado…</option>
-              {employees.map((e) => (
-                <option key={e.id} value={e.id}>
-                  {e.first_name} {e.last_name} {e.email ? `— ${e.email}` : ""}
+              {employees.map((employee) => (
+                <option key={employee.id} value={employee.id}>
+                  {employee.first_name} {employee.last_name}{" "}
+                  {employee.email ? `— ${employee.email}` : ""}
                 </option>
               ))}
             </select>
@@ -249,12 +264,18 @@ export const AdminPayroll = () => {
             }}
           >
             <div>
-              <label className="form-label">Mes</label>
+              <label className="form-label" htmlFor="month-select">
+                Mes
+              </label>
               <select
+                id="month-select"
                 className="form-control"
                 value={form.month}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, month: Number(e.target.value) }))
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    month: Number(event.target.value),
+                  }))
                 }
               >
                 {MONTHS.map((m) => (
@@ -265,47 +286,67 @@ export const AdminPayroll = () => {
               </select>
             </div>
             <div>
-              <label className="form-label">Año</label>
+              <label className="form-label" htmlFor="year-select">
+                Año
+              </label>
               <select
+                id="year-select"
                 className="form-control"
                 value={form.year}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, year: Number(e.target.value) }))
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    year: Number(event.target.value),
+                  }))
                 }
               >
-                {years.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
                   </option>
                 ))}
               </select>
             </div>
           </div>
 
-          {/* PDF */}
-          <div className="form-row" style={{ marginBottom: 16 }}>
-            <label className="form-label">Documento de nómina (PDF)</label>
+          {/* PDF (fila ancho completo; label arriba, dropzone debajo) */}
+          <div
+            className="form-row"
+            style={{
+              marginBottom: 16,
+              gridColumn: "1 / -1",
+              display: "block",
+            }}
+          >
+            <label
+              className="form-label"
+              htmlFor={fileInputId}
+              style={{ display: "block", marginBottom: 8 }}
+            >
+              Documento de nómina (PDF)
+            </label>
+
             <div
-              onDragOver={(e) => {
-                e.preventDefault();
+              onDragOver={(event) => {
+                event.preventDefault();
                 setDragOver(true);
               }}
               onDragLeave={() => setDragOver(false)}
               onDrop={onDrop}
               className={`dropzone ${dragOver ? "is-over" : ""}`}
               style={{
+                width: "100%",
                 border: "1px dashed #cbd5e1",
                 borderRadius: 12,
                 padding: 24,
                 textAlign: "center",
+                background: "#f8fafc",
               }}
             >
               {form.file ? (
                 <div style={{ lineHeight: 1.5 }}>
                   <strong>{form.file.name}</strong>
-                  <div>
-                    {(form.file.size / MEGABYTE).toFixed(2)} MB — PDF
-                  </div>
+                  <div>{(form.file.size / MEGABYTE).toFixed(2)} MB — PDF</div>
                   <button
                     type="button"
                     className="btn btn-link"
@@ -317,15 +358,14 @@ export const AdminPayroll = () => {
                 </div>
               ) : (
                 <>
-                  <div style={{ marginBottom: 8 }}>
-                    Arrastra el PDF aquí
-                  </div>
+                  <div style={{ marginBottom: 8 }}>Arrastra el PDF aquí</div>
                   <div>
                     o{" "}
                     <button
                       type="button"
                       className="btn btn-link"
                       onClick={() => fileInputRef.current?.click()}
+                      aria-controls={fileInputId}
                     >
                       examina tus archivos
                     </button>
@@ -335,7 +375,10 @@ export const AdminPayroll = () => {
                   </div>
                 </>
               )}
+
+              {/* input oculto */}
               <input
+                id={fileInputId}
                 ref={fileInputRef}
                 type="file"
                 accept="application/pdf"
@@ -372,11 +415,7 @@ export const AdminPayroll = () => {
             <button type="button" className="btn" onClick={resetForm}>
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={submitting}
-            >
+            <button type="submit" className="btn btn-primary" disabled={submitting}>
               Subir nómina
             </button>
           </div>
@@ -391,9 +430,9 @@ export const AdminPayroll = () => {
           <p style={{ opacity: 0.7, margin: 0 }}>Aún no hay nóminas.</p>
         ) : (
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {uploads.map((u) => (
+            {uploads.map((uploadItem) => (
               <li
-                key={u.id}
+                key={uploadItem.id}
                 className="upload-item"
                 style={{
                   display: "flex",
@@ -408,13 +447,22 @@ export const AdminPayroll = () => {
               >
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <strong style={{ marginBottom: 2 }}>
-                    {u.employee_name
-                      ? `${u.employee_name} - ${MONTHS.find((m) => m.value === Number(u.month))?.label || u.month} ${u.year}`
-                      : u.title || `Nómina #${u.id}`}
+                    {uploadItem.employee_name
+                      ? `${uploadItem.employee_name} - ${
+                          MONTHS.find(
+                            (m) => m.value === Number(uploadItem.period_month)
+                          )?.label ||
+                          MONTHS.find(
+                            (m) => m.value === Number(uploadItem.month)
+                          )?.label ||
+                          uploadItem.period_month ||
+                          uploadItem.month
+                        } ${uploadItem.period_year ?? uploadItem.year}`
+                      : uploadItem.title || `Nómina #${uploadItem.id}`}
                   </strong>
                   <small style={{ opacity: 0.7 }}>
-                    {u.uploaded_at
-                      ? new Date(u.uploaded_at).toLocaleString()
+                    {uploadItem.uploaded_at
+                      ? new Date(uploadItem.uploaded_at).toLocaleString()
                       : "Fecha desconocida"}
                   </small>
                 </div>
@@ -430,9 +478,9 @@ export const AdminPayroll = () => {
                       color: "#065f46",
                     }}
                   >
-                    {u.status?.toLowerCase() === "delivered"
+                    {uploadItem.status?.toLowerCase() === "delivered"
                       ? "Entregada"
-                      : u.status || "Entregada"}
+                      : uploadItem.status || "Entregada"}
                   </span>
 
                   <details style={{ position: "relative" }}>
@@ -462,7 +510,7 @@ export const AdminPayroll = () => {
                     >
                       <button
                         className="menu-item"
-                        onClick={() => handleDownload(u.id)}
+                        onClick={() => handleDownload(uploadItem.id)}
                         style={{
                           width: "100%",
                           textAlign: "left",
@@ -476,7 +524,7 @@ export const AdminPayroll = () => {
                       </button>
                       <button
                         className="menu-item"
-                        onClick={() => handleDelete(u.id)}
+                        onClick={() => handleDelete(uploadItem.id)}
                         style={{
                           width: "100%",
                           textAlign: "left",
@@ -509,7 +557,7 @@ export const AdminPayroll = () => {
         >
           <button
             className="btn"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             disabled={page <= 1}
           >
             ◀
@@ -519,7 +567,7 @@ export const AdminPayroll = () => {
           </span>
           <button
             className="btn"
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
             disabled={page >= totalPages}
           >
             ▶
@@ -529,3 +577,4 @@ export const AdminPayroll = () => {
     </div>
   );
 };
+

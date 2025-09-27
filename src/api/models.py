@@ -311,6 +311,14 @@ class Payroll(db.Model):
     period_year: Mapped[int] = mapped_column(Integer, nullable=False)
     period_month: Mapped[int] = mapped_column(Integer, nullable=False)
 
+    # --- NUEVOS CAMPOS CLOUDINARY ---
+    cloudinary_public_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    cloudinary_version:   Mapped[str | None] = mapped_column(String(50), nullable=True)
+    cloudinary_resource_type: Mapped[str | None] = mapped_column(String(20), nullable=True)  # "raw"
+    cloudinary_secure_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    cloudinary_bytes:     Mapped[int | None]  = mapped_column(Integer, nullable=True)
+    original_filename:    Mapped[str | None]  = mapped_column(String(255), nullable=True)
+
     company: Mapped["Company"] = relationship("Company", back_populates="payrolls")
     employee: Mapped["Employee"] = relationship("Employee", back_populates="payrolls")
 
@@ -321,6 +329,9 @@ class Payroll(db.Model):
             "employee_id": self.employee_id,
             "period_year": self.period_year,
             "period_month": self.period_month,
+            # extras para tu UI:
+            "original_filename": self.original_filename,
+            "cloudinary_bytes": self.cloudinary_bytes,
         }
 
 

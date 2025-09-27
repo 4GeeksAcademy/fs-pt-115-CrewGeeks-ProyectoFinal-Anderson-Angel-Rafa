@@ -9,6 +9,7 @@ from .suggestions_routes import suggestions_bp
 from .salaries_routes import salary_bp
 from .timepunch_routes import time_punch_bp
 from .contact_routes import contact_bp
+from .payrolls_cloudinary_routes import payrolls_bp
 
 api = Blueprint("api", __name__)
 
@@ -22,3 +23,4 @@ api.register_blueprint(suggestions_bp)
 api.register_blueprint(salary_bp)
 api.register_blueprint(time_punch_bp)
 api.register_blueprint(contact_bp)
+api.register_blueprint(payrolls_bp)
