@@ -78,11 +78,11 @@
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.content-body {
+/* .content-body {
   padding: 32px 40px;
   max-width: 1200px;
   margin: 0 auto;
-}
+} */
 
 /* Barra de búsqueda y filtros */
 .search-filters-section {

@@ -1,174 +1,195 @@
-import React, { useState } from "react";
-import { Download, Euro, Calculator, TrendingUp } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Download } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
 import "./EmployeePayroll.css";
 
+const urlApi = import.meta.env.VITE_BACKEND_URL + "/api";
+const MONTHS = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const periodLabel = (y,m) => `${MONTHS[Number(m)] || m} de ${y}`;
 
 export const EmployeePayroll = () => {
-    const [selectedYear, setSelectedYear] = useState("2024");
+  const { token, user } = useAuth(); // espero user?.id
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()));
 
-    const earnings = [
-        { label: "Salario base", amount: "€3,200.00" },
-        { label: "Horas extra (8h)", amount: "€180.00" },
-        { label: "Bono por rendimiento", amount: "€250.00" },
-    ];
+  const headersAuth = useMemo(
+    () => (token ? { Authorization: `Bearer ${token}` } : {}),
+    [token]
+  );
 
-    const deductions = [
-        { label: "IRPF", amount: "€654.00" },
-        { label: "Seguridad Social", amount: "€290.40" },
-        { label: "Seguro de Salud", amount: "€120.00" },
-        { label: "Aporte a pension", amount: "€109.20" }
-    ];
-    const payrollHistory = [
-        { period: "Agosto de 2024", dateRange: "1 - 31 de Agosto", gross: "€3,630.00", deductions: "€1,173.60", netPay: "€2,456.40", status: "Pagado" },
-        { period: "Julio de 2024", dateRange: "1 - 31 de Julio", gross: "€3,200.00", deductions: "€1,088.00", netPay: "€2,112.00", status: "Pagado" },
-        { period: "Junio de 2024", dateRange: "1 - 30 de Junio", gross: "€3,400.00", deductions: "€1,156.00", netPay: "€2,244.00", status: "Pagado" },
+  useEffect(() => {
+    const fetchList = async () => {
+      setLoading(true);
+      setErrorMessage("");
+      try {
+        const response = await fetch(`${urlApi}/payrolls?limit=100&page=1`, {
+          headers: { ...headersAuth },
+        });
+        const data = await response.json().catch(() => ({}));
 
+        // soporta array o {items}
+        let list = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
 
-    ]
+        // normaliza campos mínimos
+        list = list.map(r => ({
+          id: r.id,
+          employee_id: r.employee_id,
+          period_year: r.period_year ?? r.year,
+          period_month: r.period_month ?? r.month,
+          original_filename: r.original_filename || `nomina_${r.id}.pdf`,
+          gross: r.gross ?? null,
+          deductions: r.deductions ?? null,
+          net: r.net ?? null,
+          status: r.status || "Pagado",
+          uploaded_at: r.uploaded_at || null,
+        }));
 
-    return (
-        <section className='content-area'>
-            <div className="content-header">
-                <div className='content-title'>Nominas</div>
-                <div className='content-subtitle'>Ver y administrar tu informacion salarial y tus desprendibles de nomina</div>
-            </div>
+        // si llega listado company-wide y tenemos user.id, filtramos client-side
+        if (user?.id) {
+          list = list.filter(r => String(r.employee_id) === String(user.id));
+        }
 
-            <div className="overview-cards">
-                <div className="overview-card">
-                    <div className="card-icon green">
-                        <Euro size={24} />
-                    </div>
-                    <div>
+        // orden descendente por año/mes
+        list.sort((a,b) => {
+          const kb = `${String(b.period_year).padStart(4,"0")}${String(b.period_month).padStart(2,"0")}`;
+          const ka = `${String(a.period_year).padStart(4,"0")}${String(a.period_month).padStart(2,"0")}`;
+          return kb.localeCompare(ka);
+        });
 
-                        <p className="card-label">Salario bruto</p>
-                        <p className="card-amount">€3,200</p>
-                        <p className="card-description">Salario base mensual</p>
-                    </div>
-                </div>
+        setItems(list);
 
-                <div className="overview-card">
-                    <div className="card-icon blue"><Calculator size={24} /></div>
-                    <div>
-                        <p className="card-label">Salario neto</p>
-                        <p className="card-amount">€2,456</p>
-                        <p className="card-description">Despues de impuestos y deducciones</p>
-                    </div>
-                </div>
-                <div className="overview-card">
-                    <div className="card-icon yellow"><TrendingUp size={24} /></div>
-                    <div>
-                        <p className="card-label">Acumulado anual</p>
-                        <p className="card-amount">€19,648</p>
-                        <p className="card-description">Enero - Agosto 2024</p>
-                    </div>
-                </div>
-            </div>
+        const years = Array.from(new Set(list.map(r => r.period_year))).sort((a,b)=>b-a);
+        if (years.length && !years.includes(Number(selectedYear))) {
+          setSelectedYear(String(years[0]));
+        }
+      } catch (error) {
+        setErrorMessage("No se pudieron cargar tus nóminas.");
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-            <div className="content-body">
-                <div className="breakdown-section">
-                    <div className="breakdown-header">
-                        <div className='section-title'>Desglose de agosto 2024</div>
-                    </div>
-                    <div className="breakdown-content">
-                        <div className="breakdown-grid">
-                            <div>
-                                <div className="section-title">
-                                    <div className="status-dot green"></div>
-                                    <h3>Ingresos</h3>
-                                </div>
-                                <div className="item-list">
-                                    {earnings.map((item, i) => (
-                                        <div key={i} className="item-row">
-                                            <span className="item-label">{item.label}</span>
-                                            <span className="item-amount">{item.amount}</span>
-                                        </div>
-                                    ))}
-                                    <div className="item-row total-row">
-                                        <span className="total-earnings">Total de ingresos</span>
-                                        <span className="total-earnings">€3,630.00</span>
-                                    </div>
-                                </div>
+    fetchList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  const years = useMemo(() => {
+    const setYears = new Set(items.map(r => r.period_year));
+    const arr = Array.from(setYears).sort((a,b)=>b-a);
+    return arr.length ? arr : [new Date().getFullYear()];
+  }, [items]);
+
+  const filtered = useMemo(
+    () => items.filter(r => String(r.period_year) === String(selectedYear)),
+    [items, selectedYear]
+  );
+
+  const handleDownload = async (id) => {
+    try {
+      const response = await fetch(`${urlApi}/payrolls/${id}/download`, {
+        headers: { ...headersAuth },
+      });
+      if (!response.ok) throw new Error("No se pudo descargar la nómina.");
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = `nomina_${id}.pdf`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(objectUrl);
+    } catch (error) {
+      setErrorMessage(error.message || "No se pudo descargar la nómina.");
+    }
+  };
+
+  return (
+    <section className="content-area">
+      <div className="content-header">
+        <div className="content-title">Nóminas</div>
+        <div className="content-subtitle">Ver y descargar tus nóminas en PDF</div>
+      </div>
+
+      <div className="content-body">
+        <div className="history-section">
+          <div className="history-header">
+            <div className="section-title">Historial de nóminas</div>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="year-select"
+            >
+              {years.map(y => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="table-container">
+            {loading ? (
+              <div style={{ padding: 16, opacity: 0.7 }}>Cargando…</div>
+            ) : errorMessage ? (
+              <div style={{ padding: 16, color: "#b91c1c" }}>{errorMessage}</div>
+            ) : filtered.length === 0 ? (
+              <div style={{ padding: 16, opacity: 0.7 }}>
+                No hay nóminas para {selectedYear}.
+              </div>
+            ) : (
+              <table className="payroll-table">
+                <thead>
+                  <tr>
+                    <th>Periodo</th>
+                    <th>Bruto</th>
+                    <th>Deducciones</th>
+                    <th>Líquido a percibir</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map(row => (
+                    <tr key={row.id}>
+                      <td>
+                        <div className="period-cell">
+                          <div className="period-name">
+                            {periodLabel(row.period_year, row.period_month)}
+                          </div>
+                          {row.uploaded_at ? (
+                            <div className="period-date">
+                              {new Date(row.uploaded_at).toLocaleDateString()}
                             </div>
-
-                            <div>
-                                <div className="section-title">
-                                    <div className="status-dot red"></div>
-                                    <h3>Deducciones</h3>
-                                </div>
-                                <div className="item-list">
-                                    {deductions.map((item, i) => (
-                                        <div key={i} className="item-row">
-                                            <span className="item-label">{item.label}</span>
-                                            <span className="item-amount">{item.amount}</span>
-                                        </div>
-                                    ))}
-                                    <div className="item-row total-row">
-                                        <span className="total-deductions">Total de deducciones</span>
-                                        <span className="total-deductions">€1,173.60</span>
-                                    </div>
-                                </div>
-                            </div>
+                          ) : null}
                         </div>
-
-                        <div className="net-pay-section">
-                            <div className="net-pay-card">
-                                <div className="net-pay-row">
-                                    <span className="net-pay-label">Pago neto</span>
-                                    <span className="net-pay-amount">€2,456.40</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <div className="history-section">
-                    <div className="history-header">
-                        <div className="section-title">Historial de nominas</div>
-                        <select
-                            value={selectedYear}
-                            onChange={(e) => setSelectedYear(e.target.value)}
-                            className="year-select"
+                      </td>
+                      <td className="amount-cell">{row.gross || "—"}</td>
+                      <td className="amount-cell">{row.deductions || "—"}</td>
+                      <td className="net-pay-cell">{row.net || "—"}</td>
+                      <td><span className="status-badge">{row.status}</span></td>
+                      <td>
+                        <button
+                          type="button"
+                          className="download-link"
+                          onClick={() => handleDownload(row.id)}
+                          title={row.original_filename || "Descargar nómina"}
                         >
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
-                        </select>
-                    </div>
-
-                    <div className="table-container">
-                        <table className="payroll-table">
-                            <thead>
-                                <tr>
-                                    <th>Periodo</th><th>Bruto</th><th>Deducciones</th><th>Líquido a percibir</th><th>Estado</th><th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {payrollHistory.map((r, i) => (
-                                    <tr key={i}>
-                                        <td>
-                                            <div className="period-cell">
-                                                <div className="period-name">{r.period}</div>
-                                                <div className="period-date">{r.dateRange}</div>
-                                            </div>
-                                        </td>
-                                        <td className="amount-cell">{r.gross} </td>
-                                        <td className="amount-cell">{r.deductions}</td>
-                                        <td className="net-pay-cell">{r.netPay}</td>
-                                        <td><span className="status-badge">{r.status}</span></td>
-                                        <td>
-                                            <a href="#" className="download-link">
-                                                <Download size={14} /> Descargar
-                                            </a>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
+                          <Download size={14} /> Descargar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };
+
+
 
