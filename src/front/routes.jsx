@@ -21,6 +21,7 @@ import { SiteFeaturesPage } from "./pages/SiteFeaturesPage";
 import { AdminPayrollPage } from "./pages/AdminPayrollPage";
 import { AdminRequestsPage } from "./pages/AdminRequestsPage";
 import { AdminShiftAssignment } from "./pages/AdminShiftAssignment";
+import { AdminEmpProfile } from "./pages/AdminEmpProfile";
 
 import { AuthLayout } from "./Layout/AuthLayout"; 
 
@@ -36,6 +37,7 @@ export const router = createBrowserRouter(
         <Route path="adminPayroll" element={<AdminPayrollPage />} />
         <Route path="adminRequests" element={<AdminRequestsPage />} />
         <Route path="adminShiftAssignment" element={<AdminShiftAssignment />} />
+        <Route path="adminEmpProfile" element={<AdminEmpProfile />} />
 
         {/* Privadas (envueltas por AuthLayout que comprueba token) */}
         <Route element={<AuthLayout redirectTo="/login" />}>
