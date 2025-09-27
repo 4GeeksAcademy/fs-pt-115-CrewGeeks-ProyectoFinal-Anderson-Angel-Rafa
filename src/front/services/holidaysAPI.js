@@ -1,10 +1,28 @@
+// holidaysAPI.js
 const baseApiUrl = import.meta.env.VITE_BACKEND_URL + "/api";
 
-const buildHeaders = (token, extra = {}) => ({
-  Authorization: `Bearer ${token}`,
-  ...extra,
-});
+// ---- Helpers: token seguro y cabeceras ----
+export const getAccessToken = (maybeToken) => {
+  if (maybeToken && maybeToken !== "undefined" && maybeToken !== "null") return maybeToken;
 
+  const fromLocal = localStorage.getItem("token");
+  if (fromLocal && fromLocal !== "undefined" && fromLocal !== "null") return fromLocal;
+
+  const fromSession = sessionStorage.getItem("token");
+  if (fromSession && fromSession !== "undefined" && fromSession !== "null") return fromSession;
+
+  return null;
+};
+
+export const buildHeaders = (token, extra = {}) => {
+  const safe = getAccessToken(token);
+  return {
+    ...(safe ? { Authorization: `Bearer ${safe}` } : {}),
+    ...extra,
+  };
+};
+
+// ---- Endpoints ----
 export const getMyHolidayBalance = async (token, { year } = {}) => {
   const url = new URL(`${baseApiUrl}/holidays/balance/me`);
   if (year) url.searchParams.set("year", String(year));
@@ -14,9 +32,7 @@ export const getMyHolidayBalance = async (token, { year } = {}) => {
   });
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(
-      data.error || data.msg || "Error al obtener el balance de vacaciones"
-    );
+    throw new Error(data.error || data.msg || "Error al obtener el balance de vacaciones");
   }
   return data; // { company_id, employee_id, year, allocated_days, used_days, updated_at, pending_days, remaining_days }
 };
@@ -24,18 +40,16 @@ export const getMyHolidayBalance = async (token, { year } = {}) => {
 export const listHolidays = async (token, { status, companyId } = {}) => {
   const url = new URL(`${baseApiUrl}/holidays/`);
   if (status) url.searchParams.set("status", String(status).toUpperCase());
-  if (companyId != null) url.searchParams.set("company_id", String(companyId)); // solo aplica para OWNERDB
+  if (companyId != null) url.searchParams.set("company_id", String(companyId)); // OWNERDB
 
   const response = await fetch(url.toString(), {
     headers: buildHeaders(token),
   });
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(
-      data.error || data.msg || "Error al listar las solicitudes de vacaciones"
-    );
+    throw new Error(data.error || data.msg || "Error al listar las solicitudes de vacaciones");
   }
-  return data; // array de holidays serialize()
+  return data; // array serialize()
 };
 
 export const getHolidayById = async (token, id) => {
@@ -44,9 +58,7 @@ export const getHolidayById = async (token, id) => {
   });
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(
-      data.error || data.msg || "Error al obtener la solicitud de vacaciones"
-    );
+    throw new Error(data.error || data.msg || "Error al obtener la solicitud de vacaciones");
   }
   return data;
 };
@@ -57,7 +69,7 @@ export const createHoliday = async (
 ) => {
   const payload = { start_date, end_date };
   if (reason != null) payload.reason = reason;
-  // employee_id: solo válido si eres OWNERDB o ADMIN/HR creando para otra persona
+  // employee_id: válido si eres OWNERDB o ADMIN/HR creando para otra persona
   if (employee_id != null) payload.employee_id = employee_id;
 
   const response = await fetch(`${baseApiUrl}/holidays/`, {
@@ -67,9 +79,7 @@ export const createHoliday = async (
   });
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(
-      data.error || data.msg || "Error al crear la solicitud de vacaciones"
-    );
+    throw new Error(data.error || data.msg || "Error al crear la solicitud de vacaciones");
   }
   return data;
 };
@@ -92,9 +102,7 @@ export const updateHoliday = async (
   });
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(
-      data.error || data.msg || "Error al actualizar la solicitud de vacaciones"
-    );
+    throw new Error(data.error || data.msg || "Error al actualizar la solicitud de vacaciones");
   }
   return data;
 };
@@ -106,9 +114,7 @@ export const deleteHoliday = async (token, id) => {
   });
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(
-      data.error || data.msg || "Error al eliminar la solicitud de vacaciones"
-    );
+    throw new Error(data.error || data.msg || "Error al eliminar la solicitud de vacaciones");
   }
   return data; // { message: "Holiday successfully deleted" }
 };
@@ -120,9 +126,7 @@ export const approveHoliday = async (token, id) => {
   });
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(
-      data.error || data.msg || "Error al aprobar la solicitud de vacaciones"
-    );
+    throw new Error(data.error || data.msg || "Error al aprobar la solicitud de vacaciones");
   }
   return data;
 };
@@ -134,9 +138,8 @@ export const rejectHoliday = async (token, id) => {
   });
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(
-      data.error || data.msg || "Error al rechazar la solicitud de vacaciones"
-    );
+    throw new Error(data.error || data.msg || "Error al rechazar la solicitud de vacaciones");
   }
   return data;
 };
+

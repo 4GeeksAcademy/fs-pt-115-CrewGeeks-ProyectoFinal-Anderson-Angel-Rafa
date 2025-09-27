@@ -75,7 +75,7 @@
 /* Tipos de Turno - Grid de tarjetas */
 .shift-types-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr; /* ← una por fila */
   gap: 12px;
 }
 
@@ -89,6 +89,7 @@
   background: white;
   cursor: pointer;
   transition: all 0.2s ease;
+  width: 100%;              /* ← ocupa todo el ancho */
 }
 
 .shift-type-card:hover {
