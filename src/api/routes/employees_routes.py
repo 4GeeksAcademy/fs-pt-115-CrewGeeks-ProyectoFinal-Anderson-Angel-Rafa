@@ -339,8 +339,25 @@ def login():
 @employee_bp.post("/refresh")
 @jwt_required(refresh=True)
 def refresh_access():
-    identity = get_jwt_identity()  # str
-    new_access = create_access_token(identity=str(identity))
+    user_id = get_jwt_identity()
+    employee = db.session.get(Employee, user_id)
+    if not employee:
+        return jsonify({"error": "Empleado no encontrado"}), 404
+
+    system_role = getattr(employee, "system_role", None)
+    if not system_role and getattr(employee, "role", None):
+        system_role = getattr(employee.role, "name", None)
+    if not system_role:
+        system_role = "EMPLOYEE"
+
+    claims = {
+        "system_role": system_role,
+        "company_id": getattr(employee, "company_id", None),
+        "email": getattr(employee, "email", None),
+        "roles": [system_role],
+    }
+
+    new_access = create_access_token(identity=user_id, additional_claims=claims)
     return jsonify({"access_token": new_access}), 200
 
 

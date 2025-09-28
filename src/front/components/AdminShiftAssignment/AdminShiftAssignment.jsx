@@ -1,68 +1,59 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./AdminShiftAssignment.css";
 
-// 🔌 Ajusta estos imports a tu estructura real
-import { getAllEmployees } from "../../services/employeesAPI"; // <-- cambia si tu archivo es otro
+import { getAllEmployees } from "../../services/employeesAPI";
 import {
 	getShiftTypes,
 	createSeries,
 	listShifts,
 	createShift,
 	deleteShift,
+	upsertSeriesException,
 	monthRange,
-} from "../../services/shiftsAPI"; // <-- apunta a tu shiftsAPI.js
+} from "../../services/shiftsAPI";
 
-// 🔒 Mapeo de horas por code (por ahora en front; tu /types no trae horas)
 const DEFAULT_HOURS_BY_CODE = {
 	MORNING: { start_time: "06:00", end_time: "14:00" },
 	EVENING: { start_time: "09:00", end_time: "17:00" },
 	REGULAR: { start_time: "14:00", end_time: "22:00" },
-	// HOLIDAY se oculta en esta pantalla
 };
 
-// 🤝 Utilidades
+
 const pad2 = (n) => String(n).padStart(2, "0");
 const toISO = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-
 const addDays = (dateISO, days) => {
 	const [y, m, d] = dateISO.split("-").map(Number);
 	const base = new Date(y, m - 1, d);
 	base.setDate(base.getDate() + days);
 	return toISO(base);
 };
-
 const isWeekend = (dateISO) => {
 	const [y, m, d] = dateISO.split("-").map(Number);
 	const day = new Date(y, m - 1, d).getDay(); // 0=Dom..6=Sab
 	return day === 0 || day === 6;
 };
 
-const overlaps = (aStart, aEnd, bStart, bEnd) => {
-	// intervalos [start, end), mismo criterio que en el back
-	return aStart < bEnd && bStart < aEnd;
-};
-
 export const AdminShiftAssignment = () => {
-	// --- Estado UI original ---
-	const [selectedEmployee, setSelectedEmployee] = useState("");
-	const [selectedShiftTypeId, setSelectedShiftTypeId] = useState(""); // ahora guardamos id real del tipo
-	const [weekRange, setWeekRange] = useState({ start: "", end: "" });
-	const [excludeWeekends, setExcludeWeekends] = useState(false);
-	const [overrideExisting, setOverrideExisting] = useState(false);
-	const [notifyEmployee, setNotifyEmployee] = useState(true);
-	const [additionalNotes, setAdditionalNotes] = useState("");
 
-	// --- Nuevo: intervalo de semanas (series) ---
+	const [selectedEmployee, setSelectedEmployee] = useState("");
+	const [selectedShiftTypeId, setSelectedShiftTypeId] = useState("");
+	const [weekRange, setWeekRange] = useState({ start: "", end: "" });
+	const [excludeWeekends, setExcludeWeekends] = useState(true);
+	const [overrideExisting, setOverrideExisting] = useState(false); // crear expresos
+	const [additionalNotes, setAdditionalNotes] = useState("");
 	const [intervalWeeks, setIntervalWeeks] = useState(1);
 
-	// --- Datos del back ---
+
 	const [employees, setEmployees] = useState([]);
 	const [shiftTypes, setShiftTypes] = useState([]);
+	const [recentShifts, setRecentShifts] = useState([]);
+
+
 	const [loading, setLoading] = useState(true);
 	const [submitting, setSubmitting] = useState(false);
 	const [error, setError] = useState(null);
 
-	// Carga inicial de empleados + tipos
+
 	useEffect(() => {
 		let mounted = true;
 		const load = async () => {
@@ -71,13 +62,11 @@ export const AdminShiftAssignment = () => {
 			try {
 				const [emps, types] = await Promise.all([getAllEmployees(), getShiftTypes()]);
 				if (!mounted) return;
-				// Filtramos HOLIDAY para esta vista
-				const usable = (types || []).filter((t) => t.code !== "HOLIDAY");
-
 				setEmployees(emps || []);
-				setShiftTypes(usable || []);
+				setShiftTypes((types || []).filter((t) => t.code !== "HOLIDAY"));
+				const { from, to } = monthRange();
+				setWeekRange({ start: from, end: to });
 			} catch (e) {
-				console.error("Init load failed:", e);
 				if (mounted) setError(e.message || "Error al cargar datos");
 			} finally {
 				if (mounted) setLoading(false);
@@ -89,75 +78,88 @@ export const AdminShiftAssignment = () => {
 		};
 	}, []);
 
-	// Construir grid de tarjetas con tiempo por defecto (desde code)
-	const shiftTypeCards = useMemo(() => {
-		return (shiftTypes || []).map((t) => {
-			const defaults = DEFAULT_HOURS_BY_CODE[t.code] || null;
-			const timeLabel = defaults ? `${defaults.start_time} - ${defaults.end_time}` : "—";
-			return {
-				id: String(t.id),
-				code: t.code,
-				name: t.name,
-				color: t.color_hex,
-				timeLabel,
-			};
-		});
-	}, [shiftTypes]);
+
+	useEffect(() => {
+		const refresh = async () => {
+			if (!selectedEmployee || !weekRange.start || !weekRange.end) {
+				setRecentShifts([]);
+				return;
+			}
+			try {
+				const shifts = await listShifts({
+					from: weekRange.start,
+					to: weekRange.end,
+					employeeId: Number(selectedEmployee),
+				});
+				setRecentShifts(shifts || []);
+			} catch {
+				setRecentShifts([]);
+			}
+		};
+		refresh();
+	}, [selectedEmployee, weekRange.start, weekRange.end]);
+
+
+	const shiftTypeCards = useMemo(
+		() =>
+			(shiftTypes || []).map((t) => {
+				const defaults = DEFAULT_HOURS_BY_CODE[t.code] || null;
+				const timeLabel = defaults ? `${defaults.start_time} - ${defaults.end_time}` : "—";
+				return { id: String(t.id), code: t.code, name: t.name, color: t.color_hex, timeLabel };
+			}),
+		[shiftTypes]
+	);
 
 	const selectedTypeObj = useMemo(
 		() => shiftTypes.find((t) => String(t.id) === String(selectedShiftTypeId)) || null,
 		[shiftTypes, selectedShiftTypeId]
 	);
-
-	const defaultHoursForSelected = useMemo(() => {
-		if (!selectedTypeObj) return null;
-		return DEFAULT_HOURS_BY_CODE[selectedTypeObj.code] || null;
-	}, [selectedTypeObj]);
+	const defaultHoursForSelected = useMemo(
+		() => (selectedTypeObj ? DEFAULT_HOURS_BY_CODE[selectedTypeObj.code] || null : null),
+		[selectedTypeObj]
+	);
 
 	const getWeeksInRange = () => {
 		if (!weekRange.start || !weekRange.end) return 0;
 		const start = new Date(weekRange.start);
 		const end = new Date(weekRange.end);
-		const diff = Math.abs(end - start);
-		return Math.ceil(diff / (1000 * 60 * 60 * 24 * 7));
+		return Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24 * 7));
 	};
 
-	// Fechas a procesar según el rango y excludeWeekends
 	const enumerateDates = (startISO, endISO, excludeWknds) => {
 		if (!startISO || !endISO) return [];
 		let cursor = startISO;
-		const result = [];
+		const out = [];
 		while (cursor <= endISO) {
-			if (!excludeWknds || !isWeekend(cursor)) result.push(cursor);
+			if (!excludeWknds || !isWeekend(cursor)) out.push(cursor);
 			cursor = addDays(cursor, 1);
 		}
-		return result;
+		return out;
 	};
 
-	// El “modo serie” crea una regla, el “modo override” crea día a día y borra solapes explícitos
+
 	const handleAssignShift = async () => {
-		if (!selectedEmployee || !selectedShiftTypeId || !weekRange.start || !weekRange.end) {
-			alert("Por favor completa todos los campos obligatorios");
+		if (!selectedEmployee || !selectedShiftTypeId || !weekRange.start) {
+			alert("Completa empleado, tipo y fecha de inicio");
 			return;
 		}
 		if (!defaultHoursForSelected) {
-			alert("Este tipo de turno no tiene horas por defecto configuradas.");
+			alert("Este tipo no tiene horas por defecto configuradas.");
 			return;
 		}
 		if (!Number.isInteger(Number(intervalWeeks)) || Number(intervalWeeks) < 1) {
-			alert("Intervalo de semanas debe ser un entero positivo (mínimo 1).");
+			alert("Intervalo de semanas debe ser >= 1");
 			return;
 		}
 
 		setSubmitting(true);
 		setError(null);
-
 		try {
 			const typeId = Number(selectedShiftTypeId);
 			const { start_time, end_time } = defaultHoursForSelected;
 
 			if (!overrideExisting) {
-				// ---- SERIE RECURRENTE ----
+
 				const weekdays = excludeWeekends
 					? ["MO", "TU", "WE", "TH", "FR"]
 					: ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
@@ -166,7 +168,7 @@ export const AdminShiftAssignment = () => {
 					employee_id: Number(selectedEmployee),
 					type_id: typeId,
 					start_date: weekRange.start,
-					end_date: weekRange.end,
+					end_date: weekRange.end || null,
 					start_time,
 					end_time,
 					weekdays,
@@ -174,39 +176,18 @@ export const AdminShiftAssignment = () => {
 					tz_name: "Europe/Madrid",
 					notes: additionalNotes || undefined,
 				});
-
 				alert("Serie creada correctamente");
 			} else {
-				// ---- DÍA A DÍA + OVERRIDE EXPLÍCITOS ----
+
+				if (!weekRange.end) {
+					alert("Para expresos necesitas fecha de fin");
+					return;
+				}
 				const days = enumerateDates(weekRange.start, weekRange.end, excludeWeekends);
-
-				// Para cada día: buscamos explícitos de ese día, borramos los que solapen y creamos el nuevo
 				for (const dayISO of days) {
-					// 1) Traemos turnos de ese día para el empleado
-					const shifts = await listShifts({
-						from: dayISO,
-						to: dayISO,
-						employeeId: Number(selectedEmployee),
-					});
-
-					// 2) Identificamos explícitos (los que tienen id != null y no generated) que solapen
-					const explicitSameDay = (shifts || []).filter(
-						(s) => s.id != null && !s.generated && s.date === dayISO
-					);
-
-					const toDelete = explicitSameDay.filter((s) =>
-						overlaps(start_time, end_time, s.start_time, s.end_time)
-					);
-
-					// 3) Borramos solapados
-					for (const s of toDelete) {
-						await deleteShift(s.id);
-					}
-
-					// 4) Creamos el turno de ese día
 					await createShift({
 						employee_id: Number(selectedEmployee),
-						type_id: typeId,
+						type_id: Number(selectedShiftTypeId),
 						date: dayISO,
 						start_time,
 						end_time,
@@ -214,19 +195,52 @@ export const AdminShiftAssignment = () => {
 						status: "planned",
 					});
 				}
-
-				alert("Turnos asignados (día a día) con sobrescritura de conflictos.");
+				alert("Turnos expresos creados.");
 			}
 
-			// Reset suave opcional (mantiene selección de tipo)
 			setAdditionalNotes("");
-			setNotifyEmployee(true);
+			setIntervalWeeks(1);
+
+			if (weekRange.end) {
+				const shifts = await listShifts({
+					from: weekRange.start,
+					to: weekRange.end,
+					employeeId: Number(selectedEmployee),
+				});
+				setRecentShifts(shifts || []);
+			}
 		} catch (e) {
-			console.error("Asignación fallida:", e);
 			setError(e.message || "No se pudo asignar el turno");
 			alert(e.message || "No se pudo asignar el turno");
 		} finally {
 			setSubmitting(false);
+		}
+	};
+
+
+	const handleDeleteShift = async (id) => {
+		if (!id) return;
+		await deleteShift(id);
+		const shifts = await listShifts({
+			from: weekRange.start,
+			to: weekRange.end,
+			employeeId: Number(selectedEmployee),
+		});
+		setRecentShifts(shifts || []);
+	};
+
+
+	const cancelOccurrence = async (series_id, dateISO) => {
+		try {
+			await upsertSeriesException(series_id, { date: dateISO, action: "cancel" });
+			const shifts = await listShifts({
+				from: weekRange.start,
+				to: weekRange.end,
+				employeeId: Number(selectedEmployee),
+			});
+			setRecentShifts(shifts || []);
+		} catch (e) {
+			alert(e.message || "No se pudo cancelar el día");
 		}
 	};
 
@@ -257,7 +271,7 @@ export const AdminShiftAssignment = () => {
 							</div>
 						) : (
 							<div className="form-content">
-								{/* Empleado */}
+								{/* Empleado + Intervalo */}
 								<div className="form-row">
 									<div className="form-group">
 										<label className="form-label">Seleccionar Empleado</label>
@@ -279,7 +293,8 @@ export const AdminShiftAssignment = () => {
 												);
 											})}
 										</select>
-										{/* Intervalo de semanas */}
+
+										{/* Intervalo semanas */}
 										<div className="form-row">
 											<div className="form-group">
 												<label className="form-label">Intervalo de semanas</label>
@@ -291,14 +306,14 @@ export const AdminShiftAssignment = () => {
 													value={intervalWeeks}
 													onChange={(e) => setIntervalWeeks(e.target.value)}
 													disabled={overrideExisting}
-													placeholder="1 = todas las semanas, 2 = semanas alternas…"
+													placeholder="1 = todas, 2 = alternas…"
 												/>
-												<div className="hint">
-													1 = todas las semanas · 2 = semanas alternas · 3 = cada 3 semanas
-												</div>
+												<div className="hint">1 = todas · 2 = alternas · 3 = cada 3…</div>
 											</div>
 										</div>
 									</div>
+
+									{/* Tipos */}
 									<div className="form-group">
 										<label className="form-label">Tipo de Horario</label>
 										<div className="shift-types-grid">
@@ -311,12 +326,8 @@ export const AdminShiftAssignment = () => {
 												>
 													<div
 														className="shift-icon"
-														style={{
-															backgroundColor: `${shift.color}20`,
-															color: shift.color,
-														}}
+														style={{ backgroundColor: `${shift.color}20`, color: shift.color }}
 													>
-														{/* Puedes poner iconos por code si quieres */}
 														{shift.code === "MORNING" && <i className="fa-solid fa-sun" />}
 														{shift.code === "EVENING" && <i className="fa-solid fa-cloud-sun" />}
 														{shift.code === "REGULAR" && <i className="fa-solid fa-clock" />}
@@ -331,7 +342,25 @@ export const AdminShiftAssignment = () => {
 									</div>
 								</div>
 
-								{/* Tipos de turno */}
+								{/* Opciones */}
+								<div className="checkbox-group">
+									<label className="checkbox-item">
+										<input
+											type="checkbox"
+											checked={excludeWeekends}
+											onChange={(e) => setExcludeWeekends(e.target.checked)}
+										/>
+										Excluir fines de semana
+									</label>
+									<label className="checkbox-item">
+										<input
+											type="checkbox"
+											checked={overrideExisting}
+											onChange={(e) => setOverrideExisting(e.target.checked)}
+										/>
+										Crear como turnos diarios (expresos)
+									</label>
+								</div>
 
 								{/* Rango de fechas */}
 								<div className="form-group">
@@ -344,9 +373,7 @@ export const AdminShiftAssignment = () => {
 													type="date"
 													className="form-input date-input"
 													value={weekRange.start}
-													onChange={(e) =>
-														setWeekRange((p) => ({ ...p, start: e.target.value }))
-													}
+													onChange={(e) => setWeekRange((p) => ({ ...p, start: e.target.value }))}
 												/>
 											</div>
 											<div className="date-separator">
@@ -360,6 +387,7 @@ export const AdminShiftAssignment = () => {
 													value={weekRange.end}
 													onChange={(e) => setWeekRange((p) => ({ ...p, end: e.target.value }))}
 												/>
+												<small className="hint">Déjalo vacío para serie sin fin</small>
 											</div>
 										</div>
 
@@ -367,8 +395,8 @@ export const AdminShiftAssignment = () => {
 											<div className="range-info">
 												<div className="info-badge">
 													<i className="fa-solid fa-info-circle" />
-													El horario se aplicará a los días del rango (filtrando fines si marcas la
-													opción).
+													El horario se aplicará a los días del rango
+													{excludeWeekends ? " (solo laborables)" : ""}.
 												</div>
 												<div className="weeks-counter">
 													<strong>{getWeeksInRange()}</strong> semanas aproximadamente
@@ -378,13 +406,20 @@ export const AdminShiftAssignment = () => {
 									</div>
 								</div>
 
+								{/* Notas */}
+								<div className="form-group">
+									<label className="form-label">Notas adicionales</label>
+									<textarea
+										className="form-textarea"
+										value={additionalNotes}
+										onChange={(e) => setAdditionalNotes(e.target.value)}
+										placeholder="Opcional"
+									/>
+								</div>
+
 								{/* Acciones */}
 								<div className="form-actions">
-									<button
-										className="btn btn-primary"
-										onClick={handleAssignShift}
-										disabled={submitting}
-									>
+									<button className="btn btn-primary" onClick={handleAssignShift} disabled={submitting}>
 										<i className="fa-solid fa-check" />
 										{submitting ? "Asignando…" : "Asignar Turno"}
 									</button>
@@ -394,11 +429,11 @@ export const AdminShiftAssignment = () => {
 											setSelectedEmployee("");
 											setSelectedShiftTypeId("");
 											setWeekRange({ start: "", end: "" });
-											setExcludeWeekends(false);
+											setExcludeWeekends(true);
 											setOverrideExisting(false);
-											setNotifyEmployee(true);
 											setAdditionalNotes("");
 											setIntervalWeeks(1);
+											setRecentShifts([]);
 										}}
 										disabled={submitting}
 									>
@@ -410,7 +445,51 @@ export const AdminShiftAssignment = () => {
 						)}
 					</div>
 				</div>
+
+				{/* Listado de turnos */}
+				<div className="assignment-preview" style={{ marginTop: 24 }}>
+					<div className="preview-header">
+						<i className="fa-solid fa-calendar-check" />
+						Turnos asignados en el rango
+					</div>
+
+					{(!recentShifts || recentShifts.length === 0) ? (
+						<div className="preview-placeholder">No hay turnos en este rango.</div>
+					) : (
+						<div className="preview-content">
+							{recentShifts.map((s) => (
+								<div key={s.id || `${s.series_id}-${s.date}-${s.start_time}`} className="preview-item">
+									<div>
+										<strong>{s.date}</strong> · {s.type?.name || "—"} ({s.start_time}–{s.end_time})
+										{s.generated ? " · (de serie)" : ""}
+									</div>
+
+									<div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+										{!s.generated && s.id ? (
+											<button className="btn btn-primary" onClick={() => handleDeleteShift(s.id)}>
+												Eliminar
+											</button>
+										) : (
+											<button
+												className="btn btn-primary"
+												onClick={() => cancelOccurrence(s.series_id, s.date)}
+											>
+												Eliminar
+											</button>
+										)}
+									</div>
+								</div>
+							))}
+						</div>
+					)}
+				</div>
 			</div>
 		</section>
 	);
 };
+
+
+
+
+
+
