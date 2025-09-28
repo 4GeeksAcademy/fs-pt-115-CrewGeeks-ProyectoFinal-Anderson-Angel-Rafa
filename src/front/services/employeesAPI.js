@@ -20,6 +20,27 @@ export const authHeaders = (extra = {}) => {
   };
 };
 
+export const createEmployee = async (payload) => {
+  try {
+    const response = await fetch(`${urlApi}/employees`, {
+      method: "POST",
+      headers: {
+        ...authHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || data.msg || "Error al crear el empleado");
+    }
+    return data; // empleado creado
+  } catch (error) {
+    console.error("createEmployee failed:", error);
+    throw error;
+  }
+};
+
 export const getAllEmployees = async () => {
   try {
     const response = await fetch(`${urlApi}/employees`, {
