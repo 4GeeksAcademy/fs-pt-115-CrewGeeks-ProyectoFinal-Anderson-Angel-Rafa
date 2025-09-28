@@ -14,6 +14,9 @@
   color: #94a3b8;
   box-sizing: border-box;
   background: #121a2d;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: transparent transparent;
 }
 
 /* Elementos solo-móvil ocultos por defecto (desktop) */
