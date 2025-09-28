@@ -3,15 +3,15 @@ import { Outlet } from "react-router-dom";
 import ScrollToTop from "../components/ScrollToTop";
 import { Navbar } from "../components/Navbar/Navbar";
 import { useAuth } from "../hooks/useAuth";
-// import { Footer } from "../components/Footer/Footer";
-
+import { TopbarLogged } from "../components/TopbarLogged/TopbarLogged";
 
 export const Layout = () => {
-	// const { loading } = useAuth(false)
-	return (
-		<ScrollToTop>
-			<Navbar />
-			<Outlet />
-		</ScrollToTop>
-	);
+  const { token } = useAuth();
+
+  return (
+    <ScrollToTop>
+      {token ? <TopbarLogged /> : <Navbar />}  
+      <Outlet />
+    </ScrollToTop>
+  );
 };

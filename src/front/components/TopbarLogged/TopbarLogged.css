@@ -1,0 +1,123 @@
+.cg-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: white;      
+  border-bottom: 1px solid #e5e7eb;
+  color: #0b1220;
+  width: 100%;
+}
+
+.cg-topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  gap: 12px;
+  width: 100%;
+  padding-inline: 24px;
+}
+
+.cg-topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.cg-topbar__logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.cg-topbar__brand-text {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  font-size: 18px;
+}
+
+.cg-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cg-topbar__user {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.cg-topbar__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  object-fit: cover;
+  display: block;
+  background: #111827;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.cg-topbar__avatar--fallback {
+  display: inline-grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.cg-topbar__name {
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cg-topbar__logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(239,68,68,0.35);
+  background: rgba(239,68,68,0.08);
+  color: #fecaca;
+  cursor: pointer;
+}
+.cg-topbar__logout:hover {
+  background: rgba(239,68,68,0.16);
+}
+.cg-topbar__logout i {
+  font-size: 14px;
+  line-height: 1;
+}
+.cg-topbar__logout-text {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Responsive */
+@media (max-width: 1024px){
+  .cg-topbar__user{
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .cg-topbar__name {
+    display: none;
+  }
+  .cg-topbar__logout-text {
+    display: none;
+  }
+  .cg-topbar__inner{
+    padding-inline: 12px; 
+  }
+}
