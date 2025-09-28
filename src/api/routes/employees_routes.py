@@ -1,9 +1,10 @@
 from flask import jsonify, Blueprint, request, render_template
-from api.models import db, Employee, Company, Role
+from api.models import db, Employee, VacationBalance, Holidays, Payroll, Shifts, ShiftSeries, Suggestions, TimePunch, Role, Company
 from flask_cors import CORS
 from flask_jwt_extended import (
     create_access_token,
     get_jwt_identity,
+    get_jwt,
     jwt_required,
     create_refresh_token,
 )
@@ -266,28 +267,41 @@ def update_employee(id):
 # AQUI OWNERDB PUEDE BORRAR CUALQUIER EMPLEADO Y ADMIN/HR SOLO DE SU EMPRESA
 @employee_bp.route("/delete/<int:id>", methods=["DELETE"])
 @jwt_required()
-def delete_employee(id):
-    employee = db.session.get(Employee, id)
-    if not employee:
+def delete_employee(id: int):
+    # Bloqueo owner auto-borrado:
+    claims = get_jwt()
+    if (claims.get("system_role") or "").upper() == "OWNERDB":
+        try:
+            if int(get_jwt_identity()) == id:
+                return jsonify({"error": "Owner cannot delete own account"}), 403
+        except (TypeError, ValueError):
+            return jsonify({"error": "Unauthorized"}), 401
+
+    target = db.session.get(Employee, id)
+    if not target:
         return jsonify({"error": "Employee not found"}), 404
 
-    if not is_ownerdb():
-        if not is_admin_or_hr():
-            return jsonify({"error": "Forbidden"}), 403
-        company_id = get_jwt_company_id()
-        if company_id is None:
-            return jsonify({"error": "Unauthorized"}), 401
-        if employee.company_id != company_id:
-            return jsonify({"error": "Employee not found"}), 404
-
     try:
-        db.session.delete(employee)
+        
+        db.session.query(TimePunch).filter_by(employee_id=id).delete(synchronize_session=False)
+        db.session.query(Suggestions).filter_by(employee_id=id).delete(synchronize_session=False)
+        db.session.query(Shifts).filter_by(employee_id=id).delete(synchronize_session=False)
+        db.session.query(ShiftSeries).filter_by(employee_id=id).delete(synchronize_session=False)
+        db.session.query(Payroll).filter_by(employee_id=id).delete(synchronize_session=False)
+        # Holidays: puede referenciar al empleado en dos FKs
+        db.session.query(Holidays).filter_by(employee_id=id).delete(synchronize_session=False)
+        db.session.query(Holidays).filter_by(approved_user_id=id).update(
+            {"approved_user_id": None}, synchronize_session=False
+        )
+        db.session.query(VacationBalance).filter_by(employee_id=id).delete(synchronize_session=False)
+
+        
+        db.session.delete(target)
         db.session.commit()
+        return jsonify({"message": f"Employee id={id} deleted"}), 200
     except IntegrityError:
         db.session.rollback()
         return jsonify({"error": "Integrity error deleting employee"}), 400
-
-    return jsonify({"message": f"Employee id={id} deleted"}), 200
 
 
 # nueva ruta de login con comprobaciones de administrador
