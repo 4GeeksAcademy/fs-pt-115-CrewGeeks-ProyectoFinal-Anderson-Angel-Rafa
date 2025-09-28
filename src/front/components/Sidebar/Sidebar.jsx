@@ -71,6 +71,16 @@ export const Sidebar = () => {
                                 <span className="label">Mi perfil</span>
                             </NavLink>
                         </div>
+                        {/* ===== Bloque adicional SOLO para Owner/Admin/HR ===== */}
+                        {isAdminPlus && (
+                            <div className="nav-section">
+                                <div className="nav-section-label">Administración</div>
+                                <NavLink to="/adminEmpProfile" className="nav-item">Empleados</NavLink>
+                                <NavLink to="/adminPayroll" className="nav-item">Subir nóminas</NavLink>
+                                <NavLink to="/adminRequests" className="nav-item">Gestión de solicitudes</NavLink>
+                                <NavLink to="/adminShiftAssignment" className="nav-item">Asignación de turnos</NavLink>
+                            </div>
+                        )}
 
                         <div className="nav-section">
                             <div className="nav-section-label">Trabajo</div>
@@ -94,16 +104,6 @@ export const Sidebar = () => {
                             <NavLink to="/suggestions" className="nav-item">Sugerencias</NavLink>
                         </div>
 
-                        {/* ===== Bloque adicional SOLO para Owner/Admin/HR ===== */}
-                        {isAdminPlus && (
-                            <div className="nav-section">
-                                <div className="nav-section-label">Administración</div>
-                                <NavLink to="/adminEmpProfile" className="nav-item">Empleados</NavLink>
-                                <NavLink to="/adminPayroll" className="nav-item">Subir nóminas</NavLink>
-                                <NavLink to="/adminRequests" className="nav-item">Gestión de solicitudes</NavLink>
-                                <NavLink to="/adminShiftAssignment" className="nav-item">Asignación de turnos</NavLink>
-                            </div>
-                        )}
 
                         <button className="nav-item" type="button" onClick={handleLogout}>
                             <i className="fas fa-sign-out-alt icon" aria-hidden="true"></i>
