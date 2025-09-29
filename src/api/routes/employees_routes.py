@@ -204,7 +204,9 @@ def create_employee():
             recipients=[new_employee.email],
             html=html_welcome,
         )
-        mail.send(msg)
+        # mail.send(msg)
+        response = mail.send(msg)
+        print(response)
     except Exception:
         pass
 
