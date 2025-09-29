@@ -8,7 +8,7 @@ export const Footer = () => (
 
 			<div>
 				<div className="cg-brand">
-					<img className='cg-logo' src="src/front/assets/img/Logotipo.png" alt="logotipo" />
+					<img className='cg-logo' src="Logotipo.png" alt="logotipo" />
 					CrewGeeks
 				</div>
 				<p>Simplificando la gestión de RRHH para equipos europeos.</p>

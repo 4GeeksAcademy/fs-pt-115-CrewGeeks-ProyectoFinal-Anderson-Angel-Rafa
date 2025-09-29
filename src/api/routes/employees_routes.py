@@ -223,51 +223,76 @@ def create_employee():
 # AQUI OWNERDB EDITA CUALQUIER EMPLEADO Y ADMIN/HR SOLO A LOS DE SU EMPRESA
 @employee_bp.route("/edit/<int:id>", methods=["PUT"])
 @jwt_required()
-def update_employee(id):
+def update_employee(id: int):
     employee = db.session.get(Employee, id)
     if not employee:
         return jsonify({"error": "Employee not found"}), 404
 
-    if not is_ownerdb():
-        if not is_admin_or_hr():
-            return jsonify({"error": "Forbidden"}), 403
-        company_id = get_jwt_company_id()
-        if company_id is None:
-            return jsonify({"error": "Unauthorized"}), 401
-        if employee.company_id != company_id:
+    # Quién soy
+    try:
+        current_user_id = int(get_jwt_identity())
+    except (TypeError, ValueError):
+        current_user_id = None
+
+    i_am_owner = is_ownerdb()
+    i_am_admin_or_hr = is_admin_or_hr()
+    same_company = False
+    jwt_company_id = get_jwt_company_id()
+
+    if jwt_company_id is not None:
+        same_company = (employee.company_id == jwt_company_id)
+
+    # ------- Autorización -------
+    if i_am_owner:
+        # owner puede editar a cualquiera
+        pass
+    elif i_am_admin_or_hr:
+        # admin/hr solo dentro de su empresa
+        if not same_company:
             return jsonify({"error": "Employee not found"}), 404
+    else:
+        # empleado normal: solo puede editarse a sí mismo
+        if current_user_id != employee.id:
+            return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "JSON body required"}), 400
 
-    # Validar/actualizar role_id
+    # ------- Qué campos se pueden editar -------
+    # Admin/HR/Owner pueden editar más campos
+    ADMIN_ALLOWED_FIELDS = {
+        "first_name", "last_name", "dni", "address", "seniority",
+        "email", "birth", "phone"
+    }
+    # Empleado normal: restringido a datos “personales”
+    SELF_ALLOWED_FIELDS = {"address", "phone", "birth", "email"}
+
+    allowed_fields = ADMIN_ALLOWED_FIELDS if (i_am_owner or i_am_admin_or_hr) else SELF_ALLOWED_FIELDS
+
+    # role_id: solo owner o admin/hr
     if "role_id" in data:
+        if not (i_am_owner or i_am_admin_or_hr):
+            return jsonify({"error": "Not allowed to change role"}), 403
         role_id_value = data["role_id"]
         if role_id_value and not db.session.get(Role, role_id_value):
             return jsonify({"error": f"Role id={role_id_value} does not exist"}), 400
         employee.role_id = role_id_value
 
-    for field in [
-        "first_name",
-        "last_name",
-        "dni",
-        "address",
-        "seniority",
-        "email",
-        "birth",
-        "phone",
-    ]:
+    # Actualizar campos permitidos según el rol
+    for field in allowed_fields:
         if field in data:
             setattr(employee, field, data[field])
 
     try:
         db.session.commit()
-    except IntegrityError:
+    except IntegrityError as e:
         db.session.rollback()
-        return jsonify({"error": "Integrity error updating employee"}), 400
+        # Puede ser colisión de email único u otra FK/unique
+        return jsonify({"error": "Integrity error updating employee"}), 409
 
     return jsonify(employee.serialize()), 200
+
 
 
 # AQUI OWNERDB PUEDE BORRAR CUALQUIER EMPLEADO Y ADMIN/HR SOLO DE SU EMPRESA
