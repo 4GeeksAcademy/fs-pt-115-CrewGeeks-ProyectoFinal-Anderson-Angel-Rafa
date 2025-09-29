@@ -12,7 +12,7 @@ from flask_mail import Message
 from sqlalchemy.exc import IntegrityError
 from api.mail_config import mail
 from datetime import timedelta
-
+from commands import seed_defaults
 # import app
 import cloudinary
 import cloudinary.uploader
@@ -32,6 +32,10 @@ employee_bp = Blueprint(
 
 CORS(employee_bp)
 
+@employee_bp.route("/create", methods=["GET"])
+def run_seed():
+    seed_defaults()
+    return jsonify({"message:" "ok"})
 
 # AQUI
 # OWNERDB TRAE A TODOS LOS EMPLEADOS
