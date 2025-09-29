@@ -12,7 +12,7 @@ from flask_mail import Message
 from sqlalchemy.exc import IntegrityError
 from api.mail_config import mail
 from datetime import timedelta
-from commands import seed_defaults
+from ..commands import seed_defaults
 # import app
 import cloudinary
 import cloudinary.uploader
