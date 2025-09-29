@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-// import { useLocation } from "react-router-dom";
 import './Navbar.css'
 import { useAuth } from "../../hooks/useAuth";
 
@@ -13,7 +12,7 @@ export const Navbar = () => {
 		<header className="header-site">
 			<div className="cg-container cg-nav">
 				<div className="cg-brand">
-					<img className="cg-logo" src="src/front/assets/img/Logotipo.png" alt="logotipo" />
+					<img className="cg-logo" src="../../assets/img/Logotipo.png" alt="logotipo" />
 					<a href="/" className="cg-brand-name">CrewGeeks</a>
 				</div>
 				<div className="cg-cluster">
