@@ -1,0 +1,252 @@
+/* ========== CONTENEDOR PRINCIPAL ========== */
+.sidewrap {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+  padding: 20px;
+  /* border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px; */
+  position: sticky;
+  top: 24px;
+  width: 280px;
+  z-index: 1;
+  color: #94a3b8;
+  box-sizing: border-box;
+  background: #121a2d;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: transparent transparent;
+}
+
+/* Elementos solo-móvil ocultos por defecto (desktop) */
+.sidewrap__close,
+.sidewrap-backdrop,
+.side-edge {
+  display: none;
+}
+
+/* ========== USER CARD ========== */
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  
+  z-index: 20;
+  font-weight: 700;
+  font-size: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.user-name {
+  font-weight: 700;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.user-role {
+  opacity: 0.75;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+/* ========== NAV SECTIONS ========== */
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav-section-label {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+  padding: 0 6px;
+  font-weight: 600;
+}
+
+/* ========== NAV ITEMS ========== */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: #ffffff;
+  text-decoration: none;
+  transition: background 0.25s, border-left 0.25s, transform 0.15s;
+  font-size: 14px;
+}
+
+.nav-item .icon {
+  width: 22px;
+  display: inline-grid;
+  place-items: center;
+  font-size: 16px;
+}
+
+.nav-item .label {
+  flex: 1;
+}
+
+.nav-item .badge {
+  font-size: 11px;
+  font-weight: 700;
+  background: #33c27f;
+  color: #0b3d2b;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.nav-item .badge.warn {
+  background: #e74c3c;
+  color: #fff;
+}
+
+/* estados */
+.nav-item:hover {
+  background: #3778e3;
+}
+
+.nav-item.active {
+  background: rgba(255, 255, 255, 0.18);
+  border-left-color: #fff;
+  color: #fff;
+}
+
+
+button.nav-item {
+  background: transparent;  
+  border: 0;                 
+  width: 100%;
+  text-align: left;
+  color: #fff;
+  font: inherit;             
+  cursor: pointer;
+  appearance: none;          /
+}
+
+
+button.nav-item:hover {
+  background: #3778e3;
+}
+
+button.nav-item:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+
+/* ========== RESPONSIVE (<1024px) ========== */
+@media (max-width: 1024px) {
+  /* Colapsar columna del grid sin tocar Layout */
+  :root {
+    --sidebar-w: 0px;
+  }
+
+  /* Ajustes leves internos */
+  .sidewrap {
+    padding: 12px;
+  }
+  .nav-item {
+    justify-content: flex-start;
+    padding: 12px;
+  }
+
+  /* Backdrop detrás del drawer */
+  .sidewrap-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms ease;
+    z-index: 900;
+  }
+  .sidewrap-backdrop.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Sidebar como drawer superpuesto */
+  .sidewrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    width: min(86vw, 340px);
+    transform: translateX(-100%);
+    transition: transform 240ms ease;
+    z-index: 1000;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  }
+  .sidewrap.is-open {
+    transform: translateX(0);
+  }
+
+  /* Botón cerrar dentro del drawer */
+  .sidewrap__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+ 
+
+  /* Tirador lateral (línea pegada al contenido) */
+  .side-edge {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 120px;
+    border-radius: 0 10px 10px 0;
+    background: #121a2d; /* mismo color que la sidebar */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    z-index: 850; /* por encima del contenido, por debajo del drawer */
+  }
+  .side-edge.is-hidden {
+    display: none;
+  }
+}

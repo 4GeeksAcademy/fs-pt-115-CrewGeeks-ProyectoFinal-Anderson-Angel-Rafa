@@ -10,6 +10,13 @@ from api.models import db
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
+from flask_jwt_extended import JWTManager
+from flask import Flask
+from api.mail_config import mail
+import cloudinary
+from datetime import timedelta
+
+
 
 # from models import Person
 
@@ -18,6 +25,11 @@ static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
 app.url_map.strict_slashes = False
+
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "change-me")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=30)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=7)
+jwt = JWTManager(app)
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -65,6 +77,23 @@ def serve_any_other_file(path):
     response.cache_control.max_age = 0  # avoid cache memory
     return response
 
+#configuracion flask email
+app.config['MAIL_SERVER'] = os.getenv ('MAIL_SERVER')
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = os.getenv ('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv ('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv ('MAIL_DEFAULT_SENDER')
+mail.init_app (app)
+
+#CLOUDIMARY
+cloudinary.config( 
+    cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'), 
+    api_key = os.getenv('CLOUDINARY_API_KEY'), 
+    api_secret = os.getenv('CLOUDINARY_API_SECRET') ,
+    secure=True
+)
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

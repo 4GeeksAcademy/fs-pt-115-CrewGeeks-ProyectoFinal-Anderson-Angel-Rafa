@@ -1,0 +1,178 @@
+
+.admin-req {
+  padding: 24px;
+}
+
+.admin-req__header {
+  margin-bottom: 16px;
+}
+
+.admin-req__title {
+  margin: 0 0 6px;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.admin-req__subtitle {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.admin-req__panel {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.admin-req__panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 700;
+}
+
+.admin-req__head-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-req__error {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.admin-req__empty {
+  padding: 16px;
+  opacity: 0.7;
+}
+
+.admin-req__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-req__row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.admin-req__row:last-child {
+  border-bottom: 0;
+}
+
+.admin-req__who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.admin-req__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+  flex: 0 0 auto;
+}
+
+.admin-req__who-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.admin-req__name {
+  margin: 0 0 2px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-req__reason {
+  opacity: 0.75;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-req__range {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-req__range-text {
+  font-weight: 600;
+}
+
+.admin-req__days {
+  opacity: 0.75;
+}
+
+.admin-req__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: end;
+}
+
+.admin-req__badge {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.admin-req__badge--approved {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.admin-req__badge--pending {
+  background: #fff7ed;
+  color: #9a3412;
+}
+
+.admin-req__badge--denied {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.admin-req__btn {
+  appearance: none;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-req__btn--approve {
+  background: #10b981;
+  color: #fff;
+}
+
+.admin-req__btn--deny {
+  background: #ef4444;
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-req__row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .admin-req__actions {
+    justify-self: start;
+  }
+}

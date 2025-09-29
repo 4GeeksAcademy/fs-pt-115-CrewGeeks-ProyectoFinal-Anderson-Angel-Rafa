@@ -1,0 +1,261 @@
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.cg-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+
+.cg-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;  
+  background: #fff;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px;
+  min-height: 120px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px red(16, 24, 40, 0.06);
+  transition: box-shadow 0.2s ease, transform 0.12s ease, border-color 0.2s ease;
+}
+
+.cg-action:hover {
+  transform: translateY(-1px);
+  
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.08);
+  border-color: #3778e3;
+}
+
+.cg-action:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25),
+    0 10px 24px rgba(17, 24, 39, 0.08);
+}
+
+.cg-aicon {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.cg-aicon--start {
+  background: #dcfce7;
+}
+
+.cg-aicon--pause {
+  background: #fef9c3;
+}
+
+.cg-aicon--stop {
+  background: #fee2e2;
+}
+
+.cg-aicon--leave {
+  background: #e0e7ff;
+}
+
+.cg-action__label {
+  font-weight: 600;
+  color: #0f172a;
+  text-align: center;
+}
+
+/* ===== KPIs (match exacto captura) ===== */
+.cg-kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+
+/* Card */
+.cg-kpi {
+  background: #fff;
+  border: 1px solid #e7edf6;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+}
+
+.cg-kpi-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cg-kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 900;
+  background: #EFF6FF;
+  flex: none;
+}
+
+.cg-kpi-title {
+  margin: 0;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+
+.cg-kpi-value {
+  margin-top: 2px;
+  font-size: 34px;
+  text-align: start;
+  color: #0f172a;
+  padding-left: 10px;
+}
+
+
+.cg-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  border: 1px solid transparent;
+}
+
+.activity-section {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+}
+
+.section-header {
+  padding: 25px 30px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.section-action {
+  color: #3B82F6;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.activity-list {
+  padding: 20px 30px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  font-size: 16px;
+  color: whitesmoke;
+}
+
+.activity-icon.success {
+  background: #E7F8F2;
+}
+.activity-icon.info {
+  background: #EBF2FE;
+}
+.activity-icon.warning {
+  background: #FFF8E9;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 3px;
+}
+
+.activity-time {
+  color: #adb5bd;
+  font-size: 12px;
+}
+
+@media (max-width: 1024px) {
+  
+  .cg-kpis-grid {
+    grid-template-columns: repeat(2, 1fr)
+  }
+}
+
+@media (max-width: 425px){
+  
+  .cg-actions-grid {
+    grid-template-columns: repeat(2, 1fr)
+  }
+
+  .cg-kpis-grid {
+    grid-template-columns: repeat(1, 1fr)
+  }
+  
+  .cg-kpi {
+    display: grid;
+    place-items: center;
+  }
+  
+  .content-header {
+    display: grid;
+    place-items: center;
+  }
+  
+  .section-header {
+    flex-direction: column;
+  }
+
+  .activity-item {
+    flex-direction: column;
+  }
+}
+
+
+

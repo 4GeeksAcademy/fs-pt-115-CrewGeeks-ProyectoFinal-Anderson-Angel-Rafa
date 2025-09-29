@@ -1,0 +1,137 @@
+.cg-auth {
+  min-height: 80vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.cg-auth-card {
+  width: min(480px, 94vw);
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+  padding: 28px;
+}
+
+.cg-auth-title {
+  margin: 4px 0 4px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+.cg-auth-sub {
+  margin: 0 0 14px;
+  color: #64748b;
+  font-size: 14px;
+  text-align: center;
+}
+
+.cg-form {
+  display: grid;
+  gap: 14px;
+}
+
+.cg-field {
+  display: grid;
+  gap: 8px;
+}
+
+.cg-label {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.cg-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  color: #0f172a;
+  font: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cg-input:focus {
+  outline: none;
+  border-color: #c7d2fe;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+.cg-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cg-remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.cg-link {
+  color: #3b82f6;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cg-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cg-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.cg-auth .cg-btn {
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease,
+    background-color 0.15s ease;
+}
+.cg-auth .cg-btn--primary {
+  color: #fff;
+  background: linear-gradient(90deg, #7b55d9 0%, #3b82f6 100%);
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.1);
+}
+.cg-auth .cg-btn--primary:hover {
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(17, 24, 39, 0.14);
+}
+
+.cg-auth .cg-btn--secondary:hover {
+  background: #f3f4f6;
+}
+
+.cg-alert {
+  display: none;
+  margin-top: 4px;
+  padding: 10px 12px;
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  color: #991b1b;
+  border-radius: 12px;
+  font-size: 14px;
+}
+

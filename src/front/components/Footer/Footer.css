@@ -1,0 +1,208 @@
+.cg-foot {
+  background: #f6f9fc;
+  color: #334155;
+  padding: 48px 0 24px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.cg-foot .cg-container {
+  width: min(1120px, 92vw);
+  margin-inline: auto;
+}
+
+.cg-foot-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.cg-foot .cg-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  margin: 0 0 6px;
+}
+
+.cg-foot .cg-brand-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #7b55d9, #3b82f6);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+.cg-foot p {
+  margin: 0;
+  color: #64748b;
+}
+
+.cg-foot h4 {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.cg-foot .cg-links {
+  display: grid;
+  gap: 8px;
+}
+
+.cg-foot a {
+  color: #334155;
+  text-decoration: none;
+}
+.cg-foot a:hover {
+  color: #0f172a;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.cg-foot-hr {
+  height: 3px;
+  background: #b2b4b8;
+  border: 0;
+  margin: 20px 0 12px; 
+}
+
+.cg-foot-bottom {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+
+
+/* *responsive*/
+
+/* === FOOTER · FULL BREAKPOINTS (2 columnas hasta el mínimo) === */
+
+/* ≥1536 */
+@media (min-width: 1536px) {
+  .cg-foot .cg-container { width: min(1360px, 90vw); }
+  .cg-foot-grid { gap: 28px; }
+}
+
+/* ≥1280 */
+@media (min-width: 1280px) {
+  .cg-foot .cg-container { width: min(1280px, 92vw); }
+  .cg-foot-grid { gap: 24px; }
+}
+
+/* ≤1240 — tope de contenedor */
+@media (max-width: 1240px) {
+  .cg-foot .cg-container { width: min(1240px, 92vw); }
+}
+
+/* ≤1024 — compacta aire */
+@media (max-width: 1024px) {
+  .cg-foot-grid { gap: 20px; }
+}
+
+/* ≤768 — fuerza layout de 2 columnas (brand ocupa toda la fila) */
+/* ≤768 — SIMULAR 1 COLUMNA (brand + 4 secciones apiladas y centradas) */
+/* ≤768 — brand centrado, 4 columnas (títulos arriba con sus listas debajo) */
+@media (max-width: 768px){
+  /* contenedor cómodo en tablet/chico */
+  .cg-foot .cg-container{ width: min(1120px, 94vw); }
+
+  /* grilla en 4 columnas para que los 4 bloques queden en una fila */
+  .cg-foot-grid{
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px 24px;
+    align-items: start;
+  }
+
+  /* el bloque de marca ocupa toda la fila superior y se centra */
+  .cg-foot-grid > :first-child{
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+  .cg-foot .cg-brand{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+  /* “Simplificando…” con aire inferior */
+  .cg-foot-grid > :first-child p,
+  .cg-foot .cg-foot-desc{
+    max-width: 60ch;
+    margin: 8px auto 18px;
+  }
+
+  /* centrado de títulos y enlaces de los 4 bloques */
+  .cg-foot h4{ text-align: center; }
+  .cg-foot .cg-links{ justify-items: center; }
+}
+
+
+
+/* ≤640 — agrupa: IZQ = Producto(2)+Compañía(3), DER = Legal(4)+Cumplimiento(5) */
+/* ≤640px — 2 columnas alineadas (Producto/Compañía a la IZQ, Legal/Cumplimiento a la DER) */
+@media (max-width: 640px) {
+  .cg-foot-grid {
+    grid-template-columns: 1fr 1fr; /* dos columnas fijas */
+    gap: 16px 24px;
+    align-items: start;
+  }
+
+  /* brand en fila 1 completa */
+  .cg-foot-grid > :first-child {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    text-align: center;
+  }
+
+  /* fila 2 */
+  .cg-foot-grid > :nth-child(2) { grid-column: 1; grid-row: 2; } /* Producto */
+  .cg-foot-grid > :nth-child(4) { grid-column: 2; grid-row: 2; } /* Legal    */
+
+  /* fila 3 */
+  .cg-foot-grid > :nth-child(3) { grid-column: 1; grid-row: 3; } /* Compañía */
+  .cg-foot-grid > :nth-child(5) { grid-column: 2; grid-row: 3; } /* Cumpl.   */
+
+  /* centrado de las 4 columnas de links */
+  .cg-foot-grid > :nth-child(2),
+  .cg-foot-grid > :nth-child(3),
+  .cg-foot-grid > :nth-child(4),
+  .cg-foot-grid > :nth-child(5) { text-align: center; }
+
+  /* títulos y elementos dentro de cada lista */
+  .cg-foot h4 { text-align: center; }
+  .cg-foot .cg-links { gap: 6px; justify-items: center; }
+
+  /* copy de marca */
+  .cg-brand { justify-content: center; gap: 10px; }
+  .cg-foot-desc { margin: 6px auto 0; max-width: 60ch; }
+}
+
+
+@media (max-width: 319px) {
+  .cg-foot .cg-container {
+    width: 100vw;
+    padding-inline: 10px; /* gutters mínimos seguros */
+  }
+
+  .cg-foot-grid {
+    grid-template-columns: 1fr; /* una sola columna */
+    gap: 12px;
+  }
+
+  /* resetear colocación y centrar todo */
+  .cg-foot-grid > :first-child,
+  .cg-foot-grid > :nth-child(2),
+  .cg-foot-grid > :nth-child(3),
+  .cg-foot-grid > :nth-child(4),
+  .cg-foot-grid > :nth-child(5) {
+    grid-column: auto;
+    grid-row: auto;
+    text-align: center;
+
+  }
+  }
+

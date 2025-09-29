@@ -1,0 +1,63 @@
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  color: #0f172a;
+  background: #f8fafc;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Layout base */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+.app-content { min-width: 0; }
+
+/* Móvil: sidebar no ocupa columna (contenido a 100%) */
+@media (max-width: 1024px) {
+  :root { --sidebar-w: 0px; }
+  .app-shell { grid-template-columns: 1fr; }
+}
+
+/* css global */
+.content-area {
+  padding: 0;
+  background: whitesmoke;
+  overflow-y: auto;
+  min-height: 100vh;
+  width: 100%
+}
+
+.content-header {
+  background: #121A2D;
+  padding: 30px 40px;
+  border-bottom: 1px solid #e9ecef;
+  align-items: flex-start;
+}
+
+.content-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.content-subtitle {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.content-body {
+  padding: 30px 40px;
+}
+

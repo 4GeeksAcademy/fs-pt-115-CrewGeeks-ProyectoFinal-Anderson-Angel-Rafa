@@ -1,0 +1,138 @@
+.cg-cta-dark{
+  background: #0f172a;            
+  padding: 88px 0;
+  text-align: center;
+  color: #e5e7eb;
+}
+.cg-cta-dark .cg-container{
+  width: min(1120px, 92vw);
+  margin-inline: auto;
+}
+
+.cg-cta-dark .cg-cta-title{
+  margin: 0 0 12px;
+  color: #f8fafc;                 
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: clamp(26px, 3.2vw, 40px);
+  line-height: 1.15;
+}
+.cg-cta-dark .cg-cta-sub{
+  margin: 0;
+  color: #cbd5e1;                 
+  font-size: 16px;
+  max-width: 68ch;
+  margin-inline: auto;
+}
+
+.cg-cta-dark .cg-cta-actions{
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.cg-cta-dark .cg-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 800;
+  line-height: 1.1;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, border-color .15s ease, filter .15s ease;
+}
+
+.cg-cta-dark .cg-btn--primary{
+  color: #ffffff;
+  background: #3b82f6;               
+  box-shadow: 0 10px 24px rgba(59,130,246,.25);
+}
+
+.cg-cta-dark .cg-btn--primary:hover{
+  filter: brightness(.98);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px rgba(59,130,246,.33);
+}
+
+.cg-cta-dark .cg-btn--secondary{
+  color: #e5e7eb;
+  background: transparent;
+  border-color: #334155;            
+}
+
+.cg-cta-dark .cg-btn--secondary:hover{
+  border-color: #475569;
+  background: rgba(148,163,184,.08);
+}
+
+.cg-cta-dark .cg-btn:focus-visible{
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(148,163,184,.35),
+    0 10px 24px rgba(2,6,23,.35);
+}
+
+.cg-cta-dark .cg-btn:disabled,
+.cg-cta-dark .cg-btn[disabled]{
+  opacity: .6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/*responsive*/
+
+/* --- CALL TO ACTION • BREAKPOINTS (añadir al final) --- */
+
+/* ≥1536px — desktop grande
+@media (min-width: 1536px){
+  .cg-cta-dark .cg-container{ width: min(1360px, 90vw); }
+  .cg-cta-dark .cg-cta-title{ font-size: clamp(44px, 3.2vw, 60px); }
+  .cg-cta-dark .cg-cta-actions{ gap: 18px; }
+} */
+
+/* ≥1280px — desktop común */
+@media (min-width: 1280px){
+  .cg-cta-dark .cg-container{ width: min(1280px, 92vw); }
+  .cg-cta-dark{ padding: 96px 0; }
+}
+
+/* ≤1024px — tablet paisaje / laptop chica */
+@media (max-width: 1024px){
+  .cg-cta-dark{ padding: clamp(48px, 8vw, 80px) 0; }
+  .cg-cta-dark .cg-cta-sub{ max-width: 70ch; }
+  .cg-cta-dark .cg-cta-actions{ gap: 12px; }
+}
+
+/* ≤768px — tablet chica / phablet */
+@media (max-width: 768px){
+  .cg-cta-dark .cg-container{ width: min(1120px, 94vw); } /* más respiro lateral */
+  .cg-cta-dark .cg-cta-title{ font-size: clamp(24px, 5.5vw, 32px); }
+  .cg-cta-dark .cg-cta-sub{ font-size: 15px; }
+  .cg-cta-dark .cg-btn{ padding: 10px 16px; border-radius: 10px; }
+}
+
+/* ≤640px — móvil: CTAs en columna ancho completo */
+@media (max-width: 640px){
+  .cg-cta-dark .cg-cta-actions{
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .cg-cta-dark .cg-btn{ width: 100%; }
+}
+
+/* ~266px (max 280px) — prueba ultra-angosta: sin overflow */
+@media (max-width: 280px){
+  .cg-cta-dark{ padding: 32px 0 40px; }
+  .cg-cta-dark .cg-container{ width: 100vw; padding-inline: 10px; }
+  .cg-cta-dark .cg-cta-title{ font-size: clamp(20px, 7vw, 24px); }
+  .cg-cta-dark .cg-cta-sub{ font-size: 0.92rem; }
+  .cg-cta-dark .cg-btn{ padding: 10px 12px; }
+}

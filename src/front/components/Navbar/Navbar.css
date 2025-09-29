@@ -1,0 +1,156 @@
+.header-site {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: saturate(1.2) blur(8px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.cg-container {
+  width: min(1120px, 92vw);
+  margin-inline: auto;
+}
+
+.cg-nav {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cg-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.cg-brand-name {
+    
+    font-size: 30px;
+}
+.cg-logo {
+  margin-top:2px;
+  width: 40px;
+  height: 40px;
+}
+
+.cg-nav-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.cg-nav-link {
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+.cg-cluster {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cg-btn {
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.cg-btn--primary {
+  color: #fff;
+  background: linear-gradient(90deg, #7b55d9 0%, #3b82f6 100%);
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+}
+
+/*responsive*/
+
+/* --- NAVBAR • 1024 → 320 (añadir al final) --- */
+
+/* ≤1024: compacta nav y adapta el botón */
+@media (max-width: 1024px){
+  .cg-nav{ height: 60px; }
+  .cg-btn{
+    /* más compacto, sin centrar */
+    padding-block: 10px;
+    padding-inline: 16px;
+    font-size: 0.95rem;
+    border-radius: 10px;
+  }
+}
+
+/* ≤768: mantiene oculto el menú y afina el botón */
+@media (max-width: 768px){
+  /* (ya lo tenías) ocultar links en tablet/ móvil */
+  .cg-nav-links{ display: none; }
+
+  /* asegura que el cluster quede a la derecha, no centrado */
+  .cg-cluster{ margin-left: auto; }
+
+  .cg-btn{
+    padding-block: 10px;
+    padding-inline: 14px;
+    min-width: 140px;
+    font-size: 0.94rem;
+  }
+}
+
+/* ≤640: ajusta marca y hace el botón más “responsive” sin fijar ancho */
+@media (max-width: 640px){
+  .cg-brand-name{ display: none; }
+  .cg-logo{ height: 65px; width: 65px; }
+
+  /* override del width fijo: que se adapte */
+  .cg-btn{
+    width: auto;         /* ← reemplaza el width:120px base */
+    min-width: 120px;    /* mantiene presencia sin verse enorme */
+    padding-block: 10px;
+    padding-inline: 14px;
+    font-size: 0.94rem;
+    border-radius: 10px;
+  }
+}
+
+/* ≤425: botón más alargado (menos alto) */
+@media (max-width: 425px){
+  .cg-btn{
+    min-width: 110px;
+    padding-block: 9px;
+    padding-inline: 12px;
+    font-size: 0.92rem;
+    border-radius: 10px;
+  }
+}
+
+/* ≤375: un paso más compacto */
+@media (max-width: 375px){
+  .cg-btn{
+    min-width: 100px;
+    padding-block: 8px;
+    padding-inline: 12px;
+    font-size: 0.90rem;
+  }
+}
+
+/* ≤320: mínimo cómodo */
+@media (max-width: 320px){
+  .cg-btn{
+    min-width: 92px;
+    padding-block: 8px;
+    padding-inline: 10px;
+    font-size: 0.88rem;
+    border-radius: 9px;
+  }
+}

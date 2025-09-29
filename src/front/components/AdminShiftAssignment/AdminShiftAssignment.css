@@ -1,0 +1,353 @@
+/* Secciones */
+.assignment-form-section,
+.additional-options-section {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e7edf6;
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 25px 30px;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8fafc;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title i {
+  color: #3B82F6;
+}
+
+/* Contenido del Formulario */
+.form-content,
+.options-content {
+  padding: 30px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-select,
+.form-input {
+  width: 100%;
+  height: 48px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 14px;
+  color: #374151;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.form-select:focus,
+.form-input:focus {
+  outline: none;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Tipos de Turno - Grid de tarjetas */
+.shift-types-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* ← una por fila */
+  gap: 12px;
+}
+
+.shift-type-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;              /* ← ocupa todo el ancho */
+}
+
+.shift-type-card:hover {
+  border-color: #3B82F6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+}
+
+.shift-type-card.selected {
+  border-color: #3B82F6;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+
+.shift-info {
+  flex: 1;
+}
+
+.shift-name {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.shift-time {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Selector de Rango de Semanas - REEMPLAZA EL RECTÁNGULO NARANJA */
+.week-range-selector {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.date-field {
+  flex: 1;
+}
+
+.date-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.date-input {
+  height: 44px;
+  border: 1px solid #cbd5e1;
+}
+
+.date-separator {
+  color: #64748b;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.range-info {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.info-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #3B82F6;
+  margin-bottom: 8px;
+}
+
+.weeks-counter {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+/* Checkboxes */
+.checkbox-group {
+  margin-bottom: 25px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #3B82F6;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #cbd5e1;
+  border-radius: 4px;
+  position: relative;
+  background: white;
+}
+
+/* Textarea */
+.form-textarea {
+  width: 100%;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 14px;
+  color: #374151;
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Botones */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #3B82F6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+  transform: translateY(-1px);
+}
+
+/* Vista Previa */
+.assignment-preview {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e7edf6;
+  padding: 25px;
+  height: fit-content;
+}
+
+.preview-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.preview-header i {
+  color: #10b981;
+}
+
+/* .preview-content {
+  space-y: 12px;
+} */
+
+.preview-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #374151;
+}
+
+.preview-item:last-child {
+  border-bottom: none;
+}
+
+.preview-placeholder {
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 30px 0;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .shift-assignment-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .shift-types-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .date-input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .date-separator {
+    text-align: center;
+    margin: 8px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-body {
+    padding: 20px;
+  }
+  
+  .form-content,
+  .options-content {
+    padding: 20px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+} 
+
