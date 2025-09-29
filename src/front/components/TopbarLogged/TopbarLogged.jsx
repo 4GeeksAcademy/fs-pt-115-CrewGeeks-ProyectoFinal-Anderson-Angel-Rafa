@@ -18,11 +18,13 @@ export const TopbarLogged = () => {
     <header className="cg-topbar" role="banner">
       <div className="cg-topbar__inner">
         <div className="cg-brand">
+          <Link to="/" >
           <img
             className="cg-logo"
             src="Logotipo.png"
             alt="logotipo"
           />
+          </Link>
           <Link to="/" className="cg-brand-name">CrewGeeks</Link>
         </div>
 
