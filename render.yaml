@@ -25,6 +25,8 @@ services:
             fromDatabase:
                 name: postgresql-trapezoidal-42170
                 property: connectionString
+      postDeployCommand: "flask seed"
+
 
 databases: # Render PostgreSQL database
     - name: postgresql-trapezoidal-42170
