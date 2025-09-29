@@ -20,7 +20,7 @@ export const TopbarLogged = () => {
         <div className="cg-brand">
           <img
             className="cg-logo"
-            src="src/front/assets/img/Logotipo.png"
+            src="Logotipo.png"
             alt="logotipo"
           />
           <Link to="/" className="cg-brand-name">CrewGeeks</Link>
