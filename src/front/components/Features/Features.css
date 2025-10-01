@@ -156,7 +156,7 @@
 
 
 /* ≤425px — lead justificado+centrado; contenidos de cards SOLO centrados; iconos centrados */
-@media (max-width: 425px){
+@media (max-width: 430px){
   /* Lead: “Optimice sus procesos …” */
   #features .cg-lead{
     text-align: justify;
