@@ -110,7 +110,7 @@
 
 /* ≤425px — botón más alargado y menos alto */
 /* ≤425px — párrafo justificado + CTA centrado y más “alargado” + detalles */
-@media (max-width: 425px){
+@media (max-width: 430px){
   /* Justificar el párrafo principal (“Plataforma integral…”) */
   .cg-hero p:not(.cg-trust){
     text-align: justify;

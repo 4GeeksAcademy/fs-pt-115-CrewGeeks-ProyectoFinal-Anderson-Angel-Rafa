@@ -462,7 +462,7 @@
   }
 }
 
-@media (max-width: 425px) {
+@media (max-width: 430px) {
   .cg-actions-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

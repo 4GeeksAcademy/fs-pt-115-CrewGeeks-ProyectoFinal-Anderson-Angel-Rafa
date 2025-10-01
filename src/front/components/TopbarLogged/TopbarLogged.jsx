@@ -1,11 +1,13 @@
 // Navbar para usuario logueado
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import "./TopbarLogged.css";
 import "../Navbar/Navbar.css";
 
 export const TopbarLogged = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
+  const isLanding = location.pathname === "/"
 
   const fullName =
     [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
@@ -15,15 +17,15 @@ export const TopbarLogged = () => {
   const avatarSrc = user?.image || null;
 
   return (
-    <header className="cg-topbar" role="banner">
+    <header className="header-site" role="banner">
       <div className="cg-topbar__inner">
         <div className="cg-brand">
           <Link to="/" >
-          <img
-            className="cg-logo"
-            src="Logotipo.png"
-            alt="logotipo"
-          />
+            <img
+              className="cg-logo"
+              src="Logotipo.png"
+              alt="logotipo"
+            />
           </Link>
           <Link to="/" className="cg-brand-name">CrewGeeks</Link>
         </div>
@@ -44,17 +46,27 @@ export const TopbarLogged = () => {
             )}
             <span className="cg-topbar__name">{fullName}</span>
           </div>
+          {isLanding ? (
+            <Link to = "/dashboard">
+              <button
+                type="button"
+                className="cg-btn cg-btn--primary"
+                title="Dasboard"
+              >Dashboard</button>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className="cg-topbar__logout"
+              onClick={logout}
+              title="Cerrar sesión"
+              aria-label="Cerrar sesión"
+            >
+              <i className="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+              <span className="cg-topbar__logout-text">Salir</span>
+            </button>
+          )}
 
-          <button
-            type="button"
-            className="cg-topbar__logout"
-            onClick={logout}
-            title="Cerrar sesión"
-            aria-label="Cerrar sesión"
-          >
-            <i className="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
-            <span className="cg-topbar__logout-text">Salir</span>
-          </button>
         </nav>
       </div>
     </header>
