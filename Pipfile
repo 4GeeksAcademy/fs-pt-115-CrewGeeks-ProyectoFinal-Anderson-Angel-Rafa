@@ -23,6 +23,8 @@ flask-jwt-extended = "*"
 flask-mail = "*"
 cloudinary = "*"
 tomli = "*"
+requests = "*"
+sendgrid = "*"
 
 [requires]
 python_version = "3.13"
