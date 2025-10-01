@@ -12,7 +12,7 @@ from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
 from flask import Flask
-from api.mail_config import mail
+# from api.mail_config import mail
 import cloudinary
 from datetime import timedelta
 
@@ -78,14 +78,15 @@ def serve_any_other_file(path):
     return response
 
 #configuracion flask email
-app.config['MAIL_SERVER'] = os.getenv ('MAIL_SERVER')
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = os.getenv ('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv ('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv ('MAIL_DEFAULT_SENDER')
-mail.init_app (app)
+# app.config['MAIL_SERVER'] = os.getenv ('MAIL_SERVER')
+# app.config['MAIL_PORT'] = 587
+# app.config['MAIL_USE_TLS'] = True
+# app.config['MAIL_USE_SSL'] = False
+# app.config['MAIL_USERNAME'] = os.getenv ('MAIL_USERNAME')
+# app.config['MAIL_PASSWORD'] = os.getenv ('MAIL_PASSWORD')
+# app.config['MAIL_DEFAULT_SENDER'] = os.getenv ('MAIL_DEFAULT_SENDER')
+# mail.init_app (app)
+
 
 #CLOUDIMARY
 cloudinary.config( 

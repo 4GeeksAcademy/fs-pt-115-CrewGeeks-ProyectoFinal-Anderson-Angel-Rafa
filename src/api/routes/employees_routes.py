@@ -8,9 +8,9 @@ from flask_jwt_extended import (
     jwt_required,
     create_refresh_token,
 )
-from flask_mail import Message
+# from flask_mail import Message
 from sqlalchemy.exc import IntegrityError
-from api.mail_config import mail
+from api.mail_config import send_email, EmailError
 from datetime import timedelta
 from ..commands import seed_defaults
 # import app
@@ -195,20 +195,17 @@ def create_employee():
     new_employee.set_password(password)
 
     # Email de bienvenida
+    html_welcome = render_template(
+        "welcome.html", first_name=new_employee.first_name or "")
     try:
-        html_welcome = render_template(
-            "welcome.html", first_name=new_employee.first_name or ""
-        )
-        msg = Message(
-            subject="Welcome to CrewGeeks",
-            recipients=[new_employee.email],
+        send_email(
+            to_email=email,
+            subject="Bienvenido a Hand to Hand",
             html=html_welcome,
         )
-        # mail.send(msg)
-        response = mail.send(msg)
-        print(response)
-    except Exception:
-        pass
+    except EmailError as e:
+        print(f'[email] error enviando bienvenida:{e}')
+        
 
     try:
         db.session.add(new_employee)
