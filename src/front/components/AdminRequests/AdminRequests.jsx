@@ -174,13 +174,13 @@ export const AdminRequests = () => {
   };
 
   return (
-    <div className="admin-req">
-      <header className="admin-req__header">
-        <h1 className="admin-req__title">Gestión de Solicitudes</h1>
-        <p className="admin-req__subtitle">Revisa y gestiona las solicitudes de vacaciones.</p>
-      </header>
+    <section className="content-area">
+      <div className="content-header">
+        <div className="content-title">Gestión de Solicitudes</div>
+        <div className="content-subtitle">Revisa y gestiona las solicitudes de vacaciones.</div>
+        </div>
 
-      <section className="admin-req__panel">
+      <div className="content-body">
         <div className="admin-req__panel-head">
           <span>Solicitudes</span>
           <div className="admin-req__head-meta">
@@ -213,13 +213,13 @@ export const AdminRequests = () => {
                   <button
                     className="admin-req__btn admin-req__btn--approve"
                     onClick={() => applyStatus(r.id, "approved")}
-                  >
+                    >
                     ✓ Aprobar
                   </button>
                   <button
                     className="admin-req__btn admin-req__btn--deny"
                     onClick={() => applyStatus(r.id, "denied")}
-                  >
+                    >
                     ✕ Denegar
                   </button>
                 </div>
@@ -227,7 +227,7 @@ export const AdminRequests = () => {
             ))}
           </ul>
         )}
-      </section>
-    </div>
+      </div>
+    </section>
   );
 };

@@ -50,7 +50,7 @@
 .search-bar {
   flex: 0.50;
   min-width: 300px;
-  flex: 0 1 420px;  
+  flex: 0 1 50px;  
 }
 
 .search-input-container {
