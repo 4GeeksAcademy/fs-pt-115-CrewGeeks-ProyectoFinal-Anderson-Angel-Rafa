@@ -31,7 +31,7 @@ export const ContactForm = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${urlApi}api/contacts`, {
+      const res = await fetch(`${urlApi}/api/contacts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

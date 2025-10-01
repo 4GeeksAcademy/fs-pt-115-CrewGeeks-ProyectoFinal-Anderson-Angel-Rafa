@@ -124,7 +124,7 @@
 }
 
 /* ≤425: botón más alargado (menos alto) */
-@media (max-width: 425px){
+@media (max-width: 430px){
   .cg-btn{
     min-width: 110px;
     padding-block: 9px;
