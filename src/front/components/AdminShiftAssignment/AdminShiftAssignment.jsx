@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./AdminShiftAssignment.css";
-
+import Swal from "sweetalert2";
 import { getAllEmployees } from "../../services/employeesAPI";
 import {
   getShiftTypes,
@@ -150,18 +150,39 @@ export const AdminShiftAssignment = () => {
     return out;
   };
 
-  // Asignar
+
   const handleAssignShift = async () => {
     if (!selectedEmployee || !selectedShiftTypeId || !weekRange.start) {
-      alert("Completa empleado, tipo y fecha de inicio");
+      Swal.fire({
+        title: "Completa empleado, tipo y fecha de inicio",
+        icon: "warning",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
       return;
     }
     if (!defaultHoursForSelected) {
-      alert("Este tipo no tiene horas por defecto configuradas.");
+      Swal.fire({
+        title: "Este tipo no tiene horas por defecto configuradas.",
+        icon: "warning",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
       return;
     }
     if (!Number.isInteger(Number(intervalWeeks)) || Number(intervalWeeks) < 1) {
-      alert("Intervalo de semanas debe ser >= 1");
+      Swal.fire({
+        title: "Intervalo de semanas debe ser >= 1",
+        icon: "warning",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
       return;
     }
 
@@ -189,11 +210,25 @@ export const AdminShiftAssignment = () => {
           tz_name: "Europe/Madrid",
           notes: additionalNotes || undefined,
         });
-        alert("Serie creada correctamente");
+        Swal.fire({
+          title: "Serie creada correctamente",
+          icon: "success",
+          background: "#F8FAFC",
+          color: "#121A2D",
+          confirmButtonText: "Aceptar",
+          confirmButtonColor: "#121A2D"
+        });
       } else {
         // Expresos
         if (!weekRange.end) {
-          alert("Para expresos necesitas fecha de fin");
+          Swal.fire({
+            title: "Para expresos necesitas fecha de fin",
+            icon: "warning",
+            background: "#F8FAFC",
+            color: "#121A2D",
+            confirmButtonText: "Aceptar",
+            confirmButtonColor: "#121A2D"
+          });
           return;
         }
         const days = enumerateDates(
@@ -212,7 +247,14 @@ export const AdminShiftAssignment = () => {
             status: "planned",
           });
         }
-        alert("Turnos expresos creados.");
+        Swal.fire({
+          title: "Turnos expresos creados.",
+          icon: "success",
+          background: "#F8FAFC",
+          color: "#121A2D",
+          confirmButtonText: "Aceptar",
+          confirmButtonColor: "#121A2D"
+        });
       }
 
       setAdditionalNotes("");
@@ -228,7 +270,14 @@ export const AdminShiftAssignment = () => {
       }
     } catch (e) {
       setError(e.message || "No se pudo asignar el turno");
-      alert(e.message || "No se pudo asignar el turno");
+      Swal.fire({
+        title: e.message || "No se pudo asignar el turno",
+        icon: "error",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
     } finally {
       setSubmitting(false);
     }
@@ -257,25 +306,65 @@ export const AdminShiftAssignment = () => {
       });
       setRecentShifts(shifts || []);
     } catch (e) {
-      alert(e.message || "No se pudo cancelar el día");
+      Swal.fire({
+        title: e.message || "No se pudo cancelar el día",
+        icon: "error",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
     }
   };
 
   // BORRAR TODO EL RANGO (expresos + ocurrencias de serie)
   const handleDeleteAllInRange = async () => {
     if (!selectedEmployee || !weekRange.start || !weekRange.end) {
-      alert("Selecciona empleado y un rango de fechas (inicio y fin).");
+      await Swal.fire({
+        title: "Selecciona empleado y un rango de fechas (inicio y fin).",
+        icon: "warning",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
       return;
     }
-    const ok = confirm(
-      `¿Eliminar TODOS los turnos del ${weekRange.start} al ${weekRange.end}?\n` +
-        "- Los expresos se borrarán.\n" +
-        "- Las ocurrencias de serie se cancelarán (excepción por día)."
-    );
-    if (!ok) return;
+
+    const { isConfirmed } = await Swal.fire({
+      title: `¿Eliminar TODOS los turnos del ${weekRange.start} al ${weekRange.end}?`,
+      html: `
+      <div style="text-align:left">
+        <ul style="margin:0; padding-left:1.25rem;">
+          <li>Los expresos se borrarán.</li>
+          <li>Las ocurrencias de serie se cancelarán (excepción por día).</li>
+        </ul>
+      </div>
+    `,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true,
+      background: "#F8FAFC",
+      color: "#121A2D",
+      confirmButtonColor: "#121A2D",
+      cancelButtonColor: "#e11d48"
+    });
+    if (!isConfirmed) return;
 
     try {
       setDeletingRange(true);
+
+      // Modal de "procesando"
+      Swal.fire({
+        title: "Procesando...",
+        text: "Eliminando y cancelando turnos del rango seleccionado",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+        background: "#F8FAFC",
+        color: "#121A2D"
+      });
 
       const shifts = await listShifts({
         from: weekRange.start,
@@ -306,9 +395,28 @@ export const AdminShiftAssignment = () => {
         employeeId: Number(selectedEmployee),
       });
       setRecentShifts(refreshed || []);
-      alert("Turnos eliminados/cancelados en el rango.");
+
+      Swal.close();
+
+      await Swal.fire({
+        title: "Turnos eliminados/cancelados en el rango.",
+        text: `Eliminados: ${explicit.length}. Cancelados: ${generated.length}.`,
+        icon: "success",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
     } catch (e) {
-      alert(e.message || "No se pudo eliminar el rango");
+      Swal.close(); // por si seguía el loading
+      await Swal.fire({
+        title: e.message || "No se pudo eliminar el rango",
+        icon: "error",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
     } finally {
       setDeletingRange(false);
     }
@@ -390,9 +498,8 @@ export const AdminShiftAssignment = () => {
                       {shiftTypeCards.map((shift) => (
                         <div
                           key={shift.id}
-                          className={`shift-type-card ${
-                            String(selectedShiftTypeId) === String(shift.id) ? "selected" : ""
-                          }`}
+                          className={`shift-type-card ${String(selectedShiftTypeId) === String(shift.id) ? "selected" : ""
+                            }`}
                           onClick={() => setSelectedShiftTypeId(shift.id)}
                         >
                           <div

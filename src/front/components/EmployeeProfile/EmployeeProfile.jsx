@@ -3,11 +3,23 @@ import "./EmployeeProfile.css";
 import { useAuth } from "../../hooks/useAuth";
 import { Loader } from "../Loader/Loader";
 import { editEmployee } from "../../services/employeesAPI";
+import Swal from "sweetalert2";
 
 export const EmployeeProfile = () => {
   const { user, token, uploadProfileImage, deleteProfileImage } = useAuth();
 
-  // Estado del perfil que se muestra siempre (se inicializa con user)
+  
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    background: "#F8FAFC",
+    color: "#121A2D",
+  });
+
+  // ====== Estado visible del perfil ======
   const [profile, setProfile] = useState(user || {});
   useEffect(() => {
     setProfile(user || {});
@@ -59,15 +71,15 @@ export const EmployeeProfile = () => {
     }
   }, [isEditing, profile]);
 
-  const handleChange = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
-  const toggleEdit = () => setIsEditing((prev) => !prev);
+  const handleChange = (key) => (event) =>
+    setForm((previous) => ({ ...previous, [key]: event.target.value }));
+  const toggleEdit = () => setIsEditing((previous) => !previous);
 
   // ====== IMAGEN: preview + subida + refresco ======
-  const [avatarPreview, setAvatarPreview] = useState(null); // object URL local
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const [imgUploading, setImgUploading] = useState(false);
 
   const handleOpenFileDialog = () => fileInputRef.current?.click();
-
 
   const handleFileChange = async (event) => {
     const file = event.target.files?.[0];
@@ -78,10 +90,30 @@ export const EmployeeProfile = () => {
 
     try {
       setImgUploading(true);
+      // Loading durante la subida
+      Swal.fire({
+        title: "Subiendo imagen...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+        background: "#F8FAFC",
+        color: "#121A2D",
+      });
+
       await uploadProfileImage(file);
+      Swal.close();
       setAvatarPreview(null);
+      Toast.fire({ icon: "success", title: "Imagen actualizada" });
     } catch (error) {
-      console.error("Error subiendo imagen:", error);
+      Swal.close();
+      await Swal.fire({
+        title: "Error al subir la imagen",
+        text: error?.message || "Inténtalo de nuevo.",
+        icon: "error",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D",
+      });
     } finally {
       setImgUploading(false);
       event.target.value = "";
@@ -90,85 +122,148 @@ export const EmployeeProfile = () => {
   };
 
   const handleDeleteImage = async () => {
+    const { isConfirmed } = await Swal.fire({
+      title: "¿Eliminar foto de perfil?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true,
+      background: "#F8FAFC",
+      color: "#121A2D",
+      confirmButtonColor: "#121A2D",
+      cancelButtonColor: "#e11d48",
+    });
+    if (!isConfirmed) return;
+
     try {
       setImgUploading(true);
+      Swal.fire({
+        title: "Eliminando imagen...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+        background: "#F8FAFC",
+        color: "#121A2D",
+      });
       await deleteProfileImage();
+      Swal.close();
       setAvatarPreview(null);
+      Toast.fire({ icon: "success", title: "Imagen eliminada" });
     } catch (error) {
-      console.error("Error eliminando imagen:", error);
+      Swal.close();
+      await Swal.fire({
+        title: "Error al eliminar la imagen",
+        text: error?.message || "No se pudo eliminar.",
+        icon: "error",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D",
+      });
     } finally {
       setImgUploading(false);
     }
   };
 
-  // ====== MODALES ======
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successText, setSuccessText] = useState("");
+  // ====== CAMBIAR CONTRASEÑA (Swal con formulario) ======
+  const handleChangePasswordSwal = async () => {
+    const { value, isConfirmed } = await Swal.fire({
+      title: "Cambiar contraseña",
+      html: `
+        <div class="cg-swal-grid">
+          <label style="display:block; text-align:left; margin-bottom:8px;">
+            <span>Contraseña actual</span>
+            <input type="password" id="swal-old" class="swal2-input" placeholder="Actual" style="margin:0; width:100%;" />
+          </label>
+          <label style="display:block; text-align:left; margin-bottom:8px;">
+            <span>Nueva contraseña</span>
+            <input type="password" id="swal-new" class="swal2-input" placeholder="Mín. 8 caracteres" style="margin:0; width:100%;" />
+          </label>
+          <label style="display:block; text-align:left; margin-bottom:8px;">
+            <span>Confirmar nueva contraseña</span>
+            <input type="password" id="swal-confirm" class="swal2-input" placeholder="Repetir" style="margin:0; width:100%;" />
+          </label>
+        </div>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true,
+      background: "#F8FAFC",
+      color: "#121A2D",
+      confirmButtonColor: "#121A2D",
+      cancelButtonColor: "#e11d48",
+      preConfirm: () => {
+        const oldPassword = document.getElementById("swal-old").value;
+        const newPassword = document.getElementById("swal-new").value;
+        const confirmPassword = document.getElementById("swal-confirm").value;
 
-  // ====== CAMBIAR CONTRASEÑA ======
-  const [showPwdModal, setShowPwdModal] = useState(false);
-  const [oldPwd, setOldPwd] = useState("");
-  const [newPwd, setNewPwd] = useState("");
-  const [confirmPwd, setConfirmPwd] = useState("");
-  const [pwdLoading, setPwdLoading] = useState(false);
-  const [pwdError, setPwdError] = useState("");
+        if (!oldPassword || !newPassword || !confirmPassword) {
+          Swal.showValidationMessage("Por favor, completa todos los campos.");
+          return;
+        }
+        if (newPassword.length < 8) {
+          Swal.showValidationMessage("La nueva contraseña debe tener al menos 8 caracteres.");
+          return;
+        }
+        if (newPassword !== confirmPassword) {
+          Swal.showValidationMessage("Las contraseñas no coinciden.");
+          return;
+        }
+        return { oldPassword, newPassword };
+      },
+    });
 
-  const resetPwdForm = () => {
-    setOldPwd("");
-    setNewPwd("");
-    setConfirmPwd("");
-    setPwdError("");
-  };
-
-  const closePwdModal = () => {
-    if (pwdLoading) return;
-    setShowPwdModal(false);
-    resetPwdForm();
-  };
-
-  const submitPwdChange = async (e) => {
-    e?.preventDefault?.();
-    setPwdError("");
-
-    if (!oldPwd || !newPwd || !confirmPwd) {
-      setPwdError("Por favor, completa todos los campos.");
-      return;
-    }
-    if (newPwd.length < 8) {
-      setPwdError("La nueva contraseña debe tener al menos 8 caracteres.");
-      return;
-    }
-    if (newPwd !== confirmPwd) {
-      setPwdError("Las contraseñas no coinciden.");
-      return;
-    }
+    if (!isConfirmed || !value) return;
 
     try {
-      setPwdLoading(true);
+      Swal.fire({
+        title: "Guardando...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+        background: "#F8FAFC",
+        color: "#121A2D",
+      });
+
       const baseUrl = import.meta.env.VITE_BACKEND_URL + "/api";
-      const resp = await fetch(`${baseUrl}/employees/change-password`, {
+      const response = await fetch(`${baseUrl}/employees/change-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ old_password: oldPwd, new_password: newPwd }),
+        body: JSON.stringify({ old_password: value.oldPassword, new_password: value.newPassword }),
       });
 
-      const data = await resp.json();
-      if (!resp.ok) {
-        setPwdError(data?.error || "No se pudo cambiar la contraseña.");
+      const data = await response.json().catch(() => ({}));
+      Swal.close();
+
+      if (!response.ok) {
+        await Swal.fire({
+          title: "No se pudo cambiar la contraseña",
+          text: data?.error || "Inténtalo de nuevo.",
+          icon: "error",
+          background: "#F8FAFC",
+          color: "#121A2D",
+          confirmButtonText: "Aceptar",
+          confirmButtonColor: "#121A2D",
+        });
         return;
       }
 
-      closePwdModal();
-      setSuccessText("La contraseña se actualizó correctamente.");
-      setShowSuccessModal(true);
-    } catch (err) {
-      console.error(err);
-      setPwdError("Error inesperado al cambiar la contraseña.");
-    } finally {
-      setPwdLoading(false);
+      Toast.fire({ icon: "success", title: "Contraseña actualizada" });
+    } catch (error) {
+      Swal.close();
+      await Swal.fire({
+        title: "Error inesperado",
+        text: error?.message || "No se pudo cambiar la contraseña.",
+        icon: "error",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D",
+      });
     }
   };
 
@@ -183,20 +278,18 @@ export const EmployeeProfile = () => {
         first_name: form.first_name,
         last_name: form.last_name,
         dni: form.dni,
-        birth: form.birth, // YYYY-MM-DD
+        birth: form.birth,
         address: form.address,
         email: form.email,
         phone: form.phone,
       };
 
-      // Intento con tu service
       let updated = null;
       try {
         updated = await editEmployee(form.id, payload);
       } catch {
-        // Fallback: PUT directo con token (ajusta a PATCH o /me si procede)
         const baseUrl = import.meta.env.VITE_BACKEND_URL + "/api";
-        const resp = await fetch(`${baseUrl}/employees/${form.id}`, {
+        const response = await fetch(`${baseUrl}/employees/${form.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -204,11 +297,11 @@ export const EmployeeProfile = () => {
           },
           body: JSON.stringify(payload),
         });
-        if (!resp.ok) {
-          const errData = await resp.json().catch(() => ({}));
-          throw new Error(errData?.error || "Error al actualizar el perfil.");
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData?.error || "Error al actualizar el perfil.");
         }
-        updated = await resp.json().catch(() => ({}));
+        updated = await response.json().catch(() => ({}));
       }
 
       const nextProfile =
@@ -218,12 +311,17 @@ export const EmployeeProfile = () => {
 
       setProfile(nextProfile);
       setIsEditing(false);
-      setSuccessText("Perfil actualizado correctamente.");
-      setShowSuccessModal(true);
-    } catch (err) {
-      console.error(err);
-      setSuccessText("Error al actualizar el perfil.");
-      setShowSuccessModal(true);
+      Toast.fire({ icon: "success", title: "Perfil actualizado" });
+    } catch (error) {
+      await Swal.fire({
+        title: "Error al actualizar el perfil",
+        text: error?.message || "Inténtalo de nuevo.",
+        icon: "error",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D",
+      });
     } finally {
       setSavingProfile(false);
     }
@@ -337,7 +435,7 @@ export const EmployeeProfile = () => {
                   </p>
                 </div>
               ) : (
-                <form className="ep-personal__grid" onSubmit={(e) => e.preventDefault()}>
+                <form className="ep-personal__grid" onSubmit={(event) => event.preventDefault()}>
                   <label>
                     Nombre
                     <input value={form.first_name} onChange={handleChange("first_name")} />
@@ -406,7 +504,7 @@ export const EmployeeProfile = () => {
                   <button
                     type="button"
                     className="ep-btn ep-btn--link"
-                    onClick={() => setShowPwdModal(true)}
+                    onClick={handleChangePasswordSwal}
                   >
                     Cambiar contraseña
                   </button>
@@ -417,105 +515,7 @@ export const EmployeeProfile = () => {
           {/* fin ajustes seguridad */}
         </div>
       </div>
-
-      {/* ======= MODAL CAMBIO DE CONTRASEÑA ======= */}
-      {showPwdModal && (
-        <div className="modal-overlay" role="dialog" aria-modal="true">
-          <div className="modal-card">
-            <div className="modal-header">
-              <h3>Cambiar contraseña</h3>
-              <button
-                type="button"
-                className="modal-close"
-                onClick={closePwdModal}
-                aria-label="Cerrar"
-              >
-                X
-              </button>
-            </div>
-
-            <form className="modal-body" onSubmit={submitPwdChange}>
-              <label className="modal-field">
-                <span>Contraseña actual</span>
-                <input
-                  type="password"
-                  value={oldPwd}
-                  onChange={(e) => setOldPwd(e.target.value)}
-                  autoFocus
-                />
-              </label>
-
-              <label className="modal-field">
-                <span>Nueva contraseña</span>
-                <input
-                  type="password"
-                  value={newPwd}
-                  onChange={(e) => setNewPwd(e.target.value)}
-                  placeholder="Mín. 8 caracteres"
-                />
-              </label>
-
-              <label className="modal-field">
-                <span>Confirmar nueva contraseña</span>
-                <input
-                  type="password"
-                  value={confirmPwd}
-                  onChange={(e) => setConfirmPwd(e.target.value)}
-                />
-              </label>
-
-              {pwdError && <div className="modal-error">{pwdError}</div>}
-
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  className="ep-btn ep-btn--ghost"
-                  onClick={closePwdModal}
-                  disabled={pwdLoading}
-                >
-                  Cancelar
-                </button>
-                <button type="submit" className="ep-btn ep-btn--primary" disabled={pwdLoading}>
-                  {pwdLoading ? "Guardando..." : "Guardar"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-      {/* ======= FIN MODAL CAMBIO DE CONTRASEÑA ======= */}
-
-      {/* ======= MODAL DE ÉXITO ======= */}
-      {showSuccessModal && (
-        <div className="modal-overlay" role="dialog" aria-modal="true">
-          <div className="modal-card">
-            <div className="modal-header">
-              <h3>Éxito</h3>
-              <button
-                type="button"
-                className="modal-close"
-                onClick={() => setShowSuccessModal(false)}
-                aria-label="Cerrar"
-              >
-                X
-              </button>
-            </div>
-            <div className="modal-body">
-              <p>{successText || "Operación realizada correctamente."}</p>
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  className="ep-btn ep-btn--primary"
-                  onClick={() => setShowSuccessModal(false)}
-                >
-                  Aceptar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* ======= FIN MODAL DE ÉXITO ======= */}
     </section>
   );
 };
+

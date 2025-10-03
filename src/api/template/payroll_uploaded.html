@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+  <body style="font-family: Arial, sans-serif;">
+    <h2>Hola {{ first_name }},</h2>
+    <p>Ya tienes disponible tu nómina de <strong>{{ "%02d"|format(period_month) }}/{{ period_year }}</strong>.</p>
+    {% if portal_url %}
+     <p>Para descargarla, entra en tu <a href="{{ portal_url }}" target="_blank" rel="noopener">portal de empleado</a>.</p>
+    {% else %}
+     <p>Para descargarla, entra en tu portal de empleado.</p>
+    {% endif %}
+    <hr>
+    <small>Este es un mensaje automático. Por favor, no responda a este correo.</small>
+  </body>
+</html>
