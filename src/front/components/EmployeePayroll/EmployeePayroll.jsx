@@ -8,7 +8,7 @@ const MONTHS = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Ago
 const periodLabel = (y,m) => `${MONTHS[Number(m)] || m} de ${y}`;
 
 export const EmployeePayroll = () => {
-  const { token, user } = useAuth(); // espero user?.id
+  const { token, user } = useAuth(); 
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -24,7 +24,7 @@ export const EmployeePayroll = () => {
       setLoading(true);
       setErrorMessage("");
       try {
-        const response = await fetch(`${urlApi}/payrolls?limit=100&page=1`, {
+        const response = await fetch(`${urlApi}/payrolls/me`, {
           headers: { ...headersAuth },
         });
         const data = await response.json().catch(() => ({}));

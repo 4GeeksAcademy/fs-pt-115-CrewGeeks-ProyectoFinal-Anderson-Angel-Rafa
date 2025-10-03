@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from "../../hooks/useAuth";
 import { createEmployee, getAllEmployees, editEmployee, deleteEmployee } from "../../services/employeesAPI";
 import './AdminEmpProfile.css';
+import Swal from 'sweetalert2';
 
 export const AdminEmpProfile = () => {
   // const { createEmployee, token } = useAuth();
@@ -154,16 +155,43 @@ export const AdminEmpProfile = () => {
   };
 
   const handleDeleteProfile = async (employeeId) => {
-    if (!window.confirm('¿Estás seguro de que quieres eliminar este empleado?')) return;
+    const { isConfirmed } = await Swal.fire({
+      title: "¿Estás seguro de que quieres eliminar este empleado?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true,
+      background: "#F8FAFC",
+      color: "#121A2D",
+      confirmButtonColor: "#121A2D",
+      cancelButtonColor: "#e11d48"
+    });
+    if (!isConfirmed) return;
 
     try {
       setLoading(true);
       await deleteEmployee(employeeId);
       await loadEmployees();
-      alert('Empleado eliminado correctamente');
+      Swal.fire({
+        title: "Empleado eliminado correctamente",
+        icon: "success",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
     } catch (err) {
       console.error('Error eliminando empleado:', err);
-      alert('Error al eliminar empleado: ' + err.message);
+      Swal.fire({
+        title: "Error al eliminar empleado",
+        text: err.message,
+        icon: "error",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
     } finally {
       setLoading(false);
     }
@@ -177,23 +205,58 @@ export const AdminEmpProfile = () => {
 
     // Validaciones extra (backend exige estos campos)
     if (!empData.birth?.trim()) {
-      alert('La fecha de nacimiento es obligatoria.');
+      Swal.fire({
+        title: "La fecha de nacimiento es obligatoria.",
+        icon: "warning",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
       return;
     }
     if (!empData.address?.trim()) {
-      alert('La dirección es obligatoria.');
+      Swal.fire({
+        title: "La dirección es obligatoria.",
+        icon: "warning",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
       return;
     }
     if (!empData.phone?.trim()) {
-      alert('El teléfono es obligatorio.');
+      Swal.fire({
+        title: "El telefono es obligatorio.",
+        icon: "warning",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
       return;
     }
     if (!empData.role_id?.toString().trim()) {
-      alert('El rol (role_id) es obligatorio.');
+      Swal.fire({
+        title: "El rol (role_id) es obligatorio.",
+        icon: "warning",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
       return;
     }
     if (!empData.seniority?.trim()) {
-      alert('La fecha de ingreso es obligatoria.');
+      Swal.fire({
+        title: "La fecha de ingreso es obligatoria.",
+        icon: "warning",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
       return;
     }
 
@@ -202,7 +265,14 @@ export const AdminEmpProfile = () => {
 
       if (isEditing) {
         await editEmployee(editingId, empData);
-        alert('Empleado actualizado correctamente');
+        Swal.fire({
+          title: "Empleado actualizado correctamente",
+          icon: "success",
+          background: "#F8FAFC",
+          color: "#121A2D",
+          confirmButtonText: "Aceptar",
+          confirmButtonColor: "#121A2D"
+        });
       } else {
         const payload = { ...empData };
 
@@ -231,7 +301,14 @@ export const AdminEmpProfile = () => {
           });
         }
 
-        alert('Empleado creado correctamente');
+        Swal.fire({
+          title: "Empleado creado correctamente",
+          icon: "success",
+          background: "#F8FAFC",
+          color: "#121A2D",
+          confirmButtonText: "Aceptar",
+          confirmButtonColor: "#121A2D"
+        });
       }
 
 
@@ -244,7 +321,15 @@ export const AdminEmpProfile = () => {
       setEditingId(null);
     } catch (err) {
       console.error('Error guardando empleado:', err);
-      alert('Error al guardar empleado: ' + err.message);
+      Swal.fire({
+        title: "Error al guardar empleado",
+        text: err.message,
+        icon: "error",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
     } finally {
       setLoading(false);
     }

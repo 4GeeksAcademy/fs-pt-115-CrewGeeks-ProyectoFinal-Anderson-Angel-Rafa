@@ -200,7 +200,7 @@ def create_employee():
     try:
         send_email(
             to_email=email,
-            subject="Bienvenido a Hand to Hand",
+            subject="Bienvenido a CrewGeeks",
             html=html_welcome,
         )
     except EmailError as e:

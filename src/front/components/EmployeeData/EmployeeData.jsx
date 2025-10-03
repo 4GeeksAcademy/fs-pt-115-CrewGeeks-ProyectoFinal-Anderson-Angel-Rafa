@@ -1,4 +1,5 @@
 import "./EmployeeData.css";
+import { Link } from "react-router-dom";
 import { useTimePunch, formatHMS, formatTimeHHMM } from "../../hooks/useTimePunch";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
@@ -178,13 +179,12 @@ export const EmployeeData = () => {
                         </span>
                         <span className="cg-action__label">Finalizar jornada</span>
                     </button>
-
-                    <button className="cg-action" type="button" aria-label="Solicitar permiso">
+                    <Link to="/holidays" className="cg-action">
                         <span className="cg-aicon cg-aicon--leave" aria-hidden="true">
                             <i className="fa-solid fa-file-export" style={{ color: "#4f46e5" }}></i>
                         </span>
                         <span className="cg-action__label">Solicitar permiso</span>
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="cg-kpis-grid">
