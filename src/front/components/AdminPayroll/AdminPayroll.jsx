@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { Loader } from "../Loader/Loader";
+import Swal from "sweetalert2";
 
 const MEGABYTE = 1024 * 1024;
 const MAX_FILE_MB = 10;
@@ -49,13 +49,12 @@ export const AdminPayroll = () => {
     () =>
       token
         ? {
-            Authorization: `Bearer ${token}`,
-          }
+          Authorization: `Bearer ${token}`,
+        }
         : {},
     [token]
   );
 
-  // Empleados (de la misma empresa)
   useEffect(() => {
     const loadEmployees = async () => {
       try {
@@ -71,7 +70,6 @@ export const AdminPayroll = () => {
     loadEmployees();
   }, [headersAuth]);
 
-  // Últimas subidas
   const fetchUploads = async (newPage = 1) => {
     try {
       const response = await fetch(
@@ -94,7 +92,6 @@ export const AdminPayroll = () => {
 
   useEffect(() => {
     fetchUploads(page);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, token]);
 
   const years = useMemo(() => {
@@ -144,14 +141,42 @@ export const AdminPayroll = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    background: "#F8FAFC",
+    color: "#121A2D"
+  });
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setOk(false);
     setError("");
-
-    if (!form.employeeId) return setError("Selecciona un empleado.");
-    if (!form.file) return setError("Adjunta el PDF de la nómina.");
-
+    if (!form.employeeId) {
+      await Swal.fire({
+        title: "Selecciona un empleado.",
+        icon: "warning",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
+      return;
+    }
+    if (!form.file) {
+      await Swal.fire({
+        title: "Adjunta el PDF de la nómina.",
+        icon: "warning",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
+      return;
+    }
     setSubmitting(true);
     try {
       const formData = new FormData();
@@ -160,29 +185,53 @@ export const AdminPayroll = () => {
       formData.append("year", String(form.year));
       formData.append("file", form.file);
 
-      const response = await fetch(`${urlApi}/payrolls`, {
-        method: "POST",
-        headers: { ...headersAuth }, // no fijar Content-Type con FormData
-        body: formData,
+      Swal.fire({
+        title: "Subiendo nómina...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+        background: "#F8FAFC",
+        color: "#121A2D"
       });
 
+      const response = await fetch(`${urlApi}/payrolls`, {
+        method: "POST",
+        headers: { ...headersAuth },
+        body: formData,
+      });
       if (!response.ok) {
         const responseError = await response.json().catch(() => ({}));
         throw new Error(
           responseError?.error || responseError?.msg || "Error subiendo la nómina."
         );
       }
-
+      Swal.close();      
       setOk(true);
       resetForm();
       setPage(1);
       fetchUploads(1);
+
+      Toast.fire({
+        icon: "success",
+        title: "Nómina subida correctamente"
+      });
+
     } catch (caughtError) {
+      Swal.close();        
       setError(caughtError.message);
+      await Swal.fire({
+        title: "Error al subir la nómina",
+        text: caughtError.message,
+        icon: "error",
+        background: "#F8FAFC",
+        color: "#121A2D",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#121A2D"
+      });
     } finally {
       setSubmitting(false);
     }
   };
+
 
   const handleDownload = async (payrollId) => {
     try {
@@ -309,7 +358,7 @@ export const AdminPayroll = () => {
             </div>
           </div>
 
-          {/* PDF (fila ancho completo; label arriba, dropzone debajo) */}
+          {/* PDF */}
           <div
             className="form-row"
             style={{
@@ -398,7 +447,6 @@ export const AdminPayroll = () => {
               alignItems: "center",
             }}
           >
-            {submitting ? <Loader /> : null}
             {error && (
               <span className="form-error" style={{ color: "#b91c1c" }}>
                 {error}
@@ -448,16 +496,15 @@ export const AdminPayroll = () => {
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <strong style={{ marginBottom: 2 }}>
                     {uploadItem.employee_name
-                      ? `${uploadItem.employee_name} - ${
-                          MONTHS.find(
-                            (m) => m.value === Number(uploadItem.period_month)
-                          )?.label ||
-                          MONTHS.find(
-                            (m) => m.value === Number(uploadItem.month)
-                          )?.label ||
-                          uploadItem.period_month ||
-                          uploadItem.month
-                        } ${uploadItem.period_year ?? uploadItem.year}`
+                      ? `${uploadItem.employee_name} - ${MONTHS.find(
+                        (m) => m.value === Number(uploadItem.period_month)
+                      )?.label ||
+                      MONTHS.find(
+                        (m) => m.value === Number(uploadItem.month)
+                      )?.label ||
+                      uploadItem.period_month ||
+                      uploadItem.month
+                      } ${uploadItem.period_year ?? uploadItem.year}`
                       : uploadItem.title || `Nómina #${uploadItem.id}`}
                   </strong>
                   <small style={{ opacity: 0.7 }}>
